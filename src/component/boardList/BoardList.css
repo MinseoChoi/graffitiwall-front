@@ -1,0 +1,36 @@
+.boardList {
+    position: absolute;
+    top: 5%;
+    left: 80px;
+}
+
+.boardList p {
+    position: absolute;
+    left: -55px;
+    width: 200px;
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+.boardList ul {
+    position: absolute;
+    top: 40px;
+    left: -80px;
+}
+
+.boardList li {
+    display: block;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    list-style-type: none;
+    transition: all 0.3s;
+}
+
+.boardList li:hover {
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 5px;
+}

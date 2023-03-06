@@ -1,0 +1,14 @@
+#canvas {
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 80%;
+    height: 77vh;
+    border: 1px solid #333;
+    padding: 10px 0 30px 0;
+    border-radius: 5px;
+    margin-bottom: 50px;
+    background-color: white;
+    overflow: auto;
+}

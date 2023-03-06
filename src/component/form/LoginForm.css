@@ -1,0 +1,49 @@
+.login-form {
+    position: absolute;
+    display:inline-block;
+    justify-content: center;
+    align-items: center;
+    top: 8%;
+    right: 34px;
+}
+
+.login-form p {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.login-form input {
+    display: block;
+    padding: 4px 6px;
+    width: 180px;
+    height: 15px;
+    font-size: 13px;
+    border-radius: 5px;
+    border-color: transparent;
+}
+
+.login-form button {
+    width: 80px;
+    height: 25px;
+    border-color: transparent;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 12px;
+    font-weight: bold;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.loginbutton + .registerbutton {
+    margin-left: 35px;
+}
+
+.login-form button:hover {
+    outline-color: transparent;
+    outline-style: solid;
+    box-shadow: 0 0 0 1px black;
+    border: none;
+    color: white;
+    background-color: black;
+}

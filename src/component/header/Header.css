@@ -1,0 +1,12 @@
+.App-header {
+    background-color: transparent;
+    top: 0;
+    height: 15%;
+    font-size: calc(1rem + 2vw);
+    font-family: "Last Ninja", Impact, fantasy;
+    text-shadow: 4px 2px 2px gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}

@@ -1,0 +1,161 @@
+/* board */
+.board-container {
+    margin: 0 auto;
+    width: 80%;
+    height: 77vh;
+    border: 1px solid #333;
+    padding: 10px 0 30px 0;
+    border-radius: 5px;
+    margin-bottom: 50px;
+    background-color: white;
+    overflow: auto;
+}
+
+/* postit in board */
+.board-postit {
+    position: relative;
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    padding-top: 6px;
+    box-shadow: 1px 1px 1px 1px gray;
+    border-radius: 5px;
+}
+
+.board-postit:hover {
+    cursor: pointer;
+    outline-color: transparent;
+    outline-style: solid;
+    background: #fff;
+    box-shadow: 0 0 0 2px black;
+}
+
+/* postit add */
+.addPostitButton {
+    position: fixed;
+    background-color: transparent;
+    border-color: black;
+    border-radius: 12px;
+    display: inline-block;
+    bottom: 15px;
+    right: 25px;
+    width: 50px;
+    height: 50px;
+    z-index: 9;
+    transition: 0.8s ease;
+    overflow: hidden;
+}
+
+.addPostitBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 29px;
+    width: 40px;
+    height: 40px;
+}
+
+/* modal */
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+.form-wrapper {
+    width: 40vw;
+    height: fit-content;
+    border-radius: 15px;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+}
+
+.close-button {
+    right: -40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    border-color: transparent;
+    background-color: transparent;
+    position: absolute;
+}
+
+.close-btn {
+    width: 25px;
+    height: 25px;
+}
+
+.title-input {
+    width: 80%;
+    height: 30px;
+    margin: 10px;
+    font-size: 15px;
+    background-color: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom-color: black;
+    outline: none;
+}
+
+.content-input {
+    width: 80%;
+    min-height: 250px;
+    padding-top: 8px;
+    padding-left: 8px;
+    border-radius: 5px;
+    outline: none;
+}
+
+.color-input {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    margin: 0.5rem;
+    border-color: white;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.color-input::-webkit-color-swatch {
+    border-radius: 50%;
+    height: 120%;
+    border: none;
+}
+
+.color-input::-moz-color-swatch {
+    border-radius: 50%;
+    border: none;
+}
+
+.submit-button {
+    width: 80px;
+    height: 35px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    border-color: transparent;
+    background-color: transparent;
+    vertical-align: middle;
+}
+
+button:hover {
+    cursor: pointer;
+    outline-color: transparent;
+    outline-style: solid;
+    background: transparent;
+    box-shadow: 0 0 0 1px black;
+}
+
+.color-input + .submit-button {
+    margin-left: 20px;
+}
