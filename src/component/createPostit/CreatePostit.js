@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDrag } from 'react-use-gesture';
+import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
 import './CreatePostit.css';
 import add from '../../image/addPostit.svg';
@@ -7,6 +8,10 @@ import modalClose from '../../image/modalClose.svg';
 
 const CreatePostit = () => {
     const [modal, setModal] = useState(false);
+    const {boardId} = useParams();
+    
+    // test
+    console.log(boardId);
 
     const [postitValue, setPostitValue] = useState({
         postitNo: 1,
@@ -118,7 +123,7 @@ const CreatePostit = () => {
         <div key="board">
             <div className='board-container'>
                 {postitListValue.map(element =>
-                    <Draggable nodeRef={nodeRef} key={element.postitNo} onDrag={(e, data) => trackPos(data)}>
+                    <Draggable nodeRef={nodeRef} key={element.postitNo} onDrag={(e, data) =>  {trackPos(data); console.log(data) }}>
                         <div ref={nodeRef} key={element.postitNo} className='board-postit' style={{ backgroundColor: element.color }}>
                             <h4>
                                 {element.postitNo}번째 포스트잇<br />
