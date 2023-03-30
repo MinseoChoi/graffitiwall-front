@@ -3,11 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from './Component/Header';
 import Sidebar from './Component/Sidebar/Sidebar';
-import BoardList from './Component/Page/BoardList';
-import CreatePostit from './Component/Page/CreatePostit';
-import CreateBoard from './Component/Page/CreateBoard';
-import Profile from './Component/Page/Profile';
-import Register from './Component/Page/Register';
+import {BoardList, CreateBoard,CreatePostit,Profile,Register} from './Component/Page'
 
 const App = () => {
   // const [boardList, setBoardList] = useState({});

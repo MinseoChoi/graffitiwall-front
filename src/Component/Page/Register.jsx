@@ -15,6 +15,7 @@ const Register = () => {
     // 코드 간소화 필요
 
     // 초기값 - 아이디, 닉네임, 비밀번호, 비밀번호 확인, 이메일, 이미지
+
     const [id, setId] = useState('');
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
