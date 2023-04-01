@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState, useRef } from "react";
-import modalClose from '../../image/modalClose.svg';
+import modalClose from '../../assets/modalClose.svg';
 
 const Modal = ({ postitNo, addPostitValue, closeModal }) => {
     // 포스트잇 정보
@@ -21,10 +21,6 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
             [name]: value
         })
     };
-
-    const titleRef = useRef(null);
-    const contentRef = useRef(null);
-
 
     // POST 메소드로 포스트잇 정보들 DB에 저장
     const onSubmit = async (e) => {
@@ -48,26 +44,26 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <TitleInput type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
-                <ContentInput className='contentInput' rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='content' required="required"></ContentInput><br />
-                <ColorInput className='colorInput' type='color' onChange={changePostitValue} name='color' />
+                <ContentInput rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='content' required="required"></ContentInput><br />
+                <ColorInput type='color' onChange={changePostitValue} name='color' />
                 {
                     postitValue.title === '' || postitValue.content === '' ?
-                    <CreatePostitButton className='submitButton' type="submit"
-                    disabled ={
-                        true
-                    }
-                    onClick={() => {
-                        addPostitValue(postitValue); // '제목-내용' 포스트잇 리스트에 추가
-                        closeModal();
-                    }}
-                >추가</CreatePostitButton>:
-                    (<CreatePostitButton className='submitButton' type="submit"
-                    disabled={false}
-                    onClick={() => {
-                        addPostitValue(postitValue); // '제목-내용' 포스트잇 리스트에 추가
-                        closeModal();
-                    }}
-                >추가</CreatePostitButton>)
+                        <CreatePostitButton 
+                            type="submit"
+                            disabled ={true}
+                            onClick={() => {
+                                addPostitValue(postitValue); // '제목-내용' 포스트잇 리스트에 추가
+                                closeModal();
+                            }}
+                        >추가</CreatePostitButton>
+                        : <CreatePostitButton 
+                            type="submit"
+                            disabled={false}
+                            onClick={() => {
+                                addPostitValue(postitValue); // '제목-내용' 포스트잇 리스트에 추가
+                                closeModal();
+                            }}
+                        >추가</CreatePostitButton>
                 }
                 
             </ModalWrapper>

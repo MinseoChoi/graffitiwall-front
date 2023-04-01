@@ -93,7 +93,7 @@ const BoardList = ({ closeSidebar }) => {
 
     return (
         /* 사이드바 즐겨찾기 영역 */
-        <BoardListContainer className="boardList">
+        <BoardListContainer>
             <BoardListTitle>Favorites</BoardListTitle>
             <BoardWrapper>
                 <ScrollBlind>

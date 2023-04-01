@@ -1,10 +1,10 @@
+import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
-import styled from 'styled-components';
-import Modal from '../Modal/Modal';
-import add from '../../image/addPostit.svg';
-import { Title } from '../../utils/Title.js';
+import Modal from '../components/Modal/Modal';
+import add from '../assets/addPostit.svg';
+import { Title } from '../components/common/Title.js';
 
 const CreatePostit = () => {
     // const containerRef = useRef(null);
@@ -121,7 +121,7 @@ const CreatePostit = () => {
             <BoardContainer className='boardContainer'>
                 {postitListValue.map(element =>
                     <Draggable nodeRef={nodeRef} key={element.postitNo} onDrag={(_, data) => trackPos(element, data)}>
-                        <PostitOnBoard ref={nodeRef} key={element.postitNo} color={element.color}>
+                        <PostitOnBoard ref={nodeRef} key={element.postitNo} color={element.color} onClick={() => alert('포스트잇 클릭!')}>
                             <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
                                 {element.postitNo}번째 포스트잇<br />
                                 제목: {element.title}

@@ -1,20 +1,13 @@
-import { useState } from 'react';
 import styled from 'styled-components';
-import { Button } from '../../utils/Button.js';
-import { Image } from '../../utils/Image.js';
-import { Title } from '../../utils/Title.js';
-import { FormContainer } from '../../utils/FormContainer.js';
-import { FormDiv } from '../../utils/FormDiv.js';
-import { FormLabel } from '../../utils/FormLabel.js';
-import { FormInput } from '../../utils/FormInput.js';
-import user from '../../image/user.svg';
+import { useState } from 'react';
+import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
+import user from '../assets/user.svg';
 
 const Profile = () => {
     // 프로필 img로 변경 필요
     // PW 변경 원할 시, Current PW와 New PW가 일치하지 않도록
     //               New PW와 Re New PW가 일치하도록 검사
     // 프로필에서는 변경사항이 없는 상태에서 변경 버튼을 누르면 기존 정보로 유지
-    // 코드 간소화 필요
     const [image, setImage] = useState('');
 
     return (

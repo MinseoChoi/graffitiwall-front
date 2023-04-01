@@ -1,61 +1,34 @@
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
-import { Button } from '../../utils/Button.js';
-import { Title } from '../../utils/Title.js';
-import { FormContainer } from '../../utils/FormContainer.js';
-import { FormDiv } from '../../utils/FormDiv.js';
-import { FormLabel } from '../../utils/FormLabel.js';
-import { FormInput } from '../../utils/FormInput.js';
-import { request } from '../../utils/api.js';
-
-const DUMMY_CATEGORY = [
-    {
-        id: 1,
-        category: 'lecture',
-        name: '강의',
-    },
-    {
-        id: 2,
-        category: 'sports',
-        name: '스포츠',
-    },
-    {
-        id: 3,
-        category: 'beauty',
-        name: '뷰티',
-    },
-    {
-        id: 4,
-        category: 'travel',
-        name: '여행',
-    },
-    {
-        id: 5,
-        category: 'drama',
-        name: '드라마',
-    },
-    {
-        id: 6,
-        category: 'game',
-        name: '게임',
-    },
-    {
-        id: 7,
-        category: 'cooking',
-        name: '요리'
-    },
-]
+import { useEffect, useState } from 'react';
+import { request } from '../utils/api';
+import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput } from '../components/common';
+import { boardCategory } from '../assets/boardCategory';
 
 const CreateBoard = () => {
     // tag 디자인 변경 필요 -> 일단 카테고리로
-    // 게시판 이름 중복 예외처리
-    // 카테고리 선택하지 않았을 때 생성 X
-    // 공개 / 비공개 선택하지 않았을 시 생성 X
     // 비공개인데, 비밀번호를 입력하지 않았을 때 생성 X
 
-    // 게시판 정보
+    // DB에 있는 게시판 정보들 가져와 저장
+    const [boardNameList, setBoardNameList] = useState([]);
+    useEffect(() => {
+        const getBoardList = async () => {
+            await request('/boards')
+            .then(json => setBoardNameList(json));
+        };
+        getBoardList();
+    }, []);
+
+    // 게시판 이름 중복 체크 함수
+    const isExist = (name) => {
+        const data = boardNameList.filter(data => data.title === name);
+        if (!data.length) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    // 게시판 정보 (게시판 이름, 카테고리, 공개 유무, 비공개 시 비밀번호)
     const [boardValue, setBoardValue] = useState({
         title: '',
         category: '',
@@ -67,11 +40,63 @@ const CreateBoard = () => {
     // 게시판 정보가 바뀔 때마다 set
     const changeBoardValue = e => {
         const { name, value } = e.target;
+        console.log(name, value)
         setBoardValue({
             ...boardValue,
             [name]: value
         });
+
+        // 유효성 검사
+        if (name === 'title') {
+            checkBoardTitle(value);
+        } else if (name === 'category') {
+            checkBoardCategory(value);
+        } else if (name === 'password') {
+            checkBoardPassword(value);
+        }
     };
+
+    const checkBoardTitle = value => {
+        if (isExist(value)) {
+            setBoardTitleMessage("이미 존재하는 게시판 입니다.");
+            setIsBoardTitle(false);
+        } else if (value.length < 2 || value.length > 20) {
+            setBoardTitleMessage("게시판 이름은 2글자 이상 20글자 이하로 입력해주세요.");
+            setIsBoardTitle(false);
+        } else {
+            setBoardTitleMessage("사용가능한 이름 입니다.");
+            setIsBoardTitle(true);
+        }
+    };
+
+    const checkBoardCategory = value => {
+        if (value === '') {
+            setIsCategory(false);
+        } else {
+            setIsCategory(true);
+        }
+    };
+
+    const checkBoardPassword = value => {
+        if (value.length < 4 || value.length > 12) {
+            setPasswordMessage("비밀번호는 4자리 이상 12자리 이하로 입력해주세요.");
+            setIsPassword(false);
+        } else {
+            setPasswordMessage("사용가능한 비밀번호 입니다.");
+            setIsPassword(true);
+            console.log(value);
+            console.log(isPassword);
+        }
+    };
+
+    // 오류메시지 상태 지정
+    const [boardTitleMessage, setBoardTitleMessage] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+
+    // 유효성 검사
+    const [isBoardTitle, setIsBoardTitle] = useState(false);
+    const [isCategory, setIsCategory] = useState(false);
+    const [isPassword, setIsPassword] = useState(false);
 
     // const [tags, setTags] = useState([]);
     // const [text, setText] = useState('');
@@ -92,41 +117,12 @@ const CreateBoard = () => {
     const onSubmit = async e => {
         e.preventDefault();
 
-        console.log(boardValue);
-        await fetch('http://52.78.90.15/api/v1/boards', {
+        // POST
+        await request('/boards', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(boardValue)
         })
-        .then(response => response.json())
-        .then(json => alert('게시판이 생성되었습니다.'))
-        .catch(error => {
-            console.log(error);
-        });
-
-        // GET
-        // const datas = await request('/boards/1')
-        // .then((response) => response.json())
-        // .then((json) => );
-
-        // const datas = await request('/boards/1');
-        // console.log(datas)
-        
-        // await fetch('http://52.78.90.15/api/v1/boards/1')
-        // .then(response => response.json())
-        // .then(json => console.log(json));
-        // console.log(boardValue);
-        
-        // axios.get('http://localhost:3000/api/v1/boards/1')
-        // .then((response) => {
-        //     setData(response.data);
-        //     console.log('success')
-        // })
-        // .catch(error => {
-        //     console.log(error)
-        // })
+        .then(json => alert('게시판이 생성되었습니다.'));
     }
 
     return (
@@ -135,14 +131,17 @@ const CreateBoard = () => {
             <FormContainer method='POST' top={50} left={-10}>
                 <FormDiv>
                     <FormLabel>게시판 이름</FormLabel>
-                    <FormInput type='text' name='title' onChange={changeBoardValue} />
+                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                        <FormInput type='text' name='title' onChange={changeBoardValue} />
+                        <ErrorMessage>{boardTitleMessage}</ErrorMessage>
+                    </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>카테고리</FormLabel>
                     <SelectCategory>
                         <select name='category' onChange={changeBoardValue}>
                             <option value=''>--- 카테고리를 선택해주세요. ---</option>
-                            {DUMMY_CATEGORY.map(value => 
+                            {boardCategory.map(value => 
                                 <option key={value.id} value={value.category}>{value.name}</option>
                             )}
                         </select>
@@ -172,22 +171,34 @@ const CreateBoard = () => {
                     <FormLabel>공개 유무</FormLabel>
                     <FormDiv padding='4px 6px' width={50} height='15px'>
                         <FormDiv textAlign='center'>
-                            <RadioInput type="radio" name="private" value={false} onClick={() => setBoardValue({ ...boardValue, isPrivate: false})} />
+                            <RadioInput type="radio" name="isPrivate" value={false} onClick={changeBoardValue} />
                             <RadioValue>공개</RadioValue>
                         </FormDiv>
                         <FormDiv textAlign='center'>
-                            <RadioInput type="radio" name="private" value={true} onClick={() => setBoardValue({ ...boardValue, isPrivate: true})} />
+                            <RadioInput type="radio" name="isPrivate" value={true} onClick={changeBoardValue} />
                             <RadioValue>비공개</RadioValue>
                         </FormDiv>
                         {boardValue.isPrivate ? (
                             <FormDiv>
                                 <FormLabel width={60} fontSize={11} color='gray'>비밀번호</FormLabel>
-                                <FormInput padding='2px 3px' width='80px' height={10} fontSize={10} type='password' name='password' onChange={changeBoardValue} />
+                                <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                                    <FormInput padding='2px 3px' width='80px' height={10} fontSize={10} type='password' name='password' onChange={changeBoardValue} />
+                                    <ErrorMessage>{passwordMessage}</ErrorMessage>
+                                </FormDiv>
                             </FormDiv>
                         ) : null}
                     </FormDiv>
                 </FormDiv>
-                <Button onClick={onSubmit}>Create</Button>
+                {isBoardTitle === true && isCategory === true && (boardValue.isPrivate === false || (boardValue.isPrivate === true && isPassword === true)) ?
+                    <Button 
+                        onClick={onSubmit}
+                        disalbed={false}
+                    >Create</Button>
+                    : <Button
+                        onClick={onSubmit}
+                        disabled={true}
+                    >Create</Button>
+                }
             </FormContainer>
         </div>
     );
@@ -222,4 +233,9 @@ const RadioValue = styled.span`
     display: inline-block;
     width: 100px;
     font-size: 13px;
+`;
+
+const ErrorMessage = styled.p`
+    color: red;
+    font-size: 12px;
 `;

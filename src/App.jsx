@@ -1,55 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import Header from './Component/Header';
-import Sidebar from './Component/Sidebar/Sidebar';
-import {BoardList, CreateBoard,CreatePostit,Profile,Register} from './Component/Page'
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar/Sidebar';
+import MyPage from './components/Sidebar/MyPage';
+import { BoardList, CreateBoard, CreatePostit, Profile, Register, UserPostitList } from './pages'
 
 const App = () => {
-  // const [boardList, setBoardList] = useState({});
-
-  // const getData = async () => {
-  //   let response = await fetch(('http://52.78.90.15/api/v1/boards/1'))
-  //   return response.json;
-  // }
-
-  // let res = getData();
-
-  // res.then(data => {
-  //   setBoardList({...boardList, data});
-  //   console.log(boardList);
-  // })
-  // useEffect(() => {
-  //   let res = getData();
-
-  //   res.then(json => { 
-  //     setBoardList({json});
-  //     console.log(json);
-  //   });
-  //   // fetch('http://52.78.90.15/api/v1/boards/1')
-  //   // .then(response => response.json())
-  //   // .then(json => {setBoardList({...boardList, json}); console.log(boardList)})
-  //   // .catch(error => console.log('error ', error));
-  //   // fetch('http://52.78.90.15/api/v1/boards/2')
-  //   // .then(response => response.json())
-  //   // .then(json => {setBoardList({...boardList, json}); console.log(boardList)})
-  //   // .catch(error => console.log('error ', error));
-  // }, []);
-
   return (
     <BrowserRouter>
-      <AppContainer className="App">
+      <AppContainer>
         <Header />
-        <AppBody className="AppBody">
+        <AppBody>
           <Sidebar />
-          <AppMain className="main">
+          <AppMain>
             <Routes>
               <Route path="/" element={<BoardList />}></Route>
               <Route path="/boards/create" element={<CreateBoard />}></Route>
               <Route path="/boards/:boardId" element={<CreatePostit />}></Route>
               <Route path="/register" element={<Register />}></Route>
               <Route path="/users/:userId" element={<Profile />}></Route>
-              <Route path="/users/:userId/postits" element={<Profile />}></Route>
+              <Route path="/users/:userId/postits" element={<UserPostitList />}></Route>
             </Routes>
           </AppMain>
         </AppBody>

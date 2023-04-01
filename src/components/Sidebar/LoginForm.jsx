@@ -9,12 +9,12 @@ const LoginForm = ({ closeSidebar }) => {
     };
 
     return (
-        <LoginContainer className="loginForm">
+        <LoginContainer>
             <LoginTitle>Log In</LoginTitle>
-            <LoginInput type="text" className="ID" placeholder="ID" /><br/>
-            <LoginInput type="password" className="Password" placeholder="PASSWORD" /><br/>
-            <LoginButton className="loginbutton">Log in</LoginButton>
-            <LoginButton className="registerbutton" onClick={handleClick}>Register</LoginButton>
+            <LoginInput type="text" placeholder="ID" /><br/>
+            <LoginInput type="password" placeholder="PASSWORD" /><br/>
+            <LoginButton>Log in</LoginButton>
+            <LoginButton onClick={handleClick}>Register</LoginButton>
         </LoginContainer>
     );
 };

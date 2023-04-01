@@ -1,0 +1,48 @@
+.open {
+    text-align: left;
+    align-content: center;
+    z-index: 100;
+    padding: 12px;
+    border-top-right-radius: 15px;
+    background-color: #B0D7B2;
+    width: 238px;
+    height: 100%;
+    top: 15%;
+    position: fixed;
+    animation: change 0.4s ease-in forwards;
+}
+
+@keyframes change {
+    from {
+        left: -238px;
+    }
+    to {
+        left: 0;
+        visibility: visible;
+    }
+}
+
+.close {
+    text-align: left;
+    align-content: center;
+    z-index: 100;
+    padding: 12px;
+    border-top-right-radius: 15px;
+    background-color: #B0D7B2;
+    width: 238px;
+    height: 100%;
+    left: -238px;
+    top: 15%;
+    position: fixed;
+    animation: showsidebar 0.4s ease-in forwards;
+}
+
+@keyframes showsidebar {
+    from {
+        transform: translateX(0px);
+        visibility: visible;
+    }
+    to {
+        transform: translateX(-238px);
+    }
+}

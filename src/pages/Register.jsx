@@ -1,21 +1,13 @@
-import { useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useRef, useState } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
-import { Button } from '../../utils/Button.js';
-import { Image } from '../../utils/Image.js';
-import { Title } from '../../utils/Title.js';
-import { FormContainer } from '../../utils/FormContainer.js';
-import { FormDiv } from '../../utils/FormDiv.js';
-import { FormLabel } from '../../utils/FormLabel.js';
-import { FormInput } from '../../utils/FormInput.js';
+import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
 
 const Register = () => {
     // 이미지를 입력하지 않으면 -> 기본 이미지로?
     // 등록 버튼 클릭 시 동작 구현 필요
-    // 코드 간소화 필요
 
     // 초기값 - 아이디, 닉네임, 비밀번호, 비밀번호 확인, 이메일, 이미지
-
     const [id, setId] = useState('');
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
@@ -98,7 +90,7 @@ const Register = () => {
             setEmailMessage("이메일의 형식이 올바르지 않습니다.");
             setIsEmail(false);
         } else {
-            setEmailMessage("사용 가능한 이메일 입니다.");
+            setEmailMessage("사용가능한 이메일 입니다.");
             setIsEmail(true);
         }
     };
@@ -106,45 +98,45 @@ const Register = () => {
     return (
         <div key="register" className="register">
             <Title>Register</Title>
-            <FormContainer className="registerForm">
+            <FormContainer>
                 <FormDiv>
                     <FormLabel>ID</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput className="idInput" type="text" name='id' onChange={onChangeId} />
-                        <ErrorMessage className="message">{idMessage}</ErrorMessage>
+                        <FormInput type="text" name='id' onChange={onChangeId} />
+                        <ErrorMessage>{idMessage}</ErrorMessage>
                     </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>NickName</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput className="nickname" type="text" name="nickname" onChange={onChangeName} />
-                        <ErrorMessage className="message">{nicknameMessage}</ErrorMessage>
+                        <FormInput type="text" name="nickname" onChange={onChangeName} />
+                        <ErrorMessage >{nicknameMessage}</ErrorMessage>
                     </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>PW</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput className="password" type="password" name="password" onChange={onChangePassword} />
-                        <ErrorMessage className="message">{passwordMessage}</ErrorMessage>
+                        <FormInput type="password" name="password" onChange={onChangePassword} />
+                        <ErrorMessage>{passwordMessage}</ErrorMessage>
                     </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Re PW</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput className="RePassword" type="password" name="RePassword" onChange={onChangePasswordConfirm} />
-                        <ErrorMessage className="message">{passwordConfirmMessage}</ErrorMessage>
+                        <FormInput type="password" name="RePassword" onChange={onChangePasswordConfirm} />
+                        <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                     </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Email</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput className="email" type="email" name="email" onChange={onChangeEmail} />
-                        <ErrorMessage className="message">{emailMessage}</ErrorMessage>
+                        <FormInput type="email" name="email" onChange={onChangeEmail} />
+                        <ErrorMessage>{emailMessage}</ErrorMessage>
                     </FormDiv>
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Profile Image</FormLabel>
-                    <FormDiv padding='4px 6px' marginBottom={-25} width={50} className="profileImage">
+                    <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
                         {image ? (
                             <Image src={URL.createObjectURL(image)} onClick={() => setImage("")} />
                         ) : (

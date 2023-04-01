@@ -1,13 +1,14 @@
-import './Sidebar.css';
+import '../../css/Sidebar.css';
+import styled from 'styled-components';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import LoginForm from './LoginForm';
 import Favorites from './Favorites';
-import home from '../../image/home.svg';
-import user from '../../image/user.svg';
-import boardList from '../../image/boardList.svg';
-import back from '../../image/back.svg';
+import home from '../../assets/home.svg';
+import user from '../../assets/user.svg';
+import boardList from '../../assets/boardList.svg';
+import back from '../../assets/back.svg';
+import MyPage from './MyPage';
 
 const Sidebar = () => {
     const [isOpen, setOpen] = useState(false);
@@ -25,15 +26,15 @@ const Sidebar = () => {
 
     return (
         <div>
-            <SidebarContainer className="sidebar">
+            <SidebarContainer>
                 <Image src={home} alt="home" onClick={handleClick}/>
                 <Image src={user} alt="user" onClick={() => toggle("user")}/>
                 <Image src={boardList} alt="boardList" onClick={() => toggle("boardList")}/>
             </SidebarContainer>
             <div className={isOpen ? 'open' : 'close'}>
-                <Image top={-5} right={-200} boxShadow='none' src={back} className="closeButton" alt="close" onClick={() => toggle('')}/>
+                <Image top={-5} right={-200} boxShadow='none' src={back} alt="close" onClick={() => toggle('')}/>
                 {
-                    name === 'user' ? <LoginForm closeSidebar={toggle} /> : (name === 'boardList' ? <Favorites closeSidebar={toggle} /> : null)
+                    name === 'user' ? <MyPage closeSidebar={toggle} /> : (name === 'boardList' ? <Favorites closeSidebar={toggle} /> : null)
                 }
             </div>
         </div>

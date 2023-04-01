@@ -1,56 +1,57 @@
 import styled from "styled-components";
-import { useNavigate  } from 'react-router-dom';
-import { Title } from "../../utils/Title";
-import add from '../../image/addPostit.svg';
-import { useAsync } from "../../utils/useAsync";
 import { useEffect, useState } from "react";
+import { useNavigate  } from 'react-router-dom';
+import { request } from "../utils/api.js";
+import { Title } from "../components/common/Title.js";
+import add from '../assets/addPostit.svg';
+
+const dataList = [
+    {
+        id: 1,
+        name: 'board1'
+    },
+    {
+        id: 2,
+        name: 'board2'
+    },
+    {
+        id: 3,
+        name: 'board3'
+    },
+    {
+        id: 4,
+        name: 'board4'
+    },
+    {
+        id: 5,
+        name: 'board5'
+    },
+    {
+        id: 6,
+        name: 'board6'
+    },
+    {
+        id: 7,
+        name: 'board7'
+    },
+    {
+        id: 8,
+        name: 'board8'
+    },
+    {
+        id: 9,
+        name: 'board9'
+    },
+    {
+        id: 10,
+        name: 'board10'
+    }
+];
 
 /* 메인 창 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
 const BoardList = () => {
     // 각 목록마다 보여줄 리스트 개수 정해두기(총 20개 ? 각 페이지마다 5개 ?)
     // 버튼 추가해서 페이지 목록 추가
-    const dataList = [
-        {
-            id: 1,
-            name: 'board1'
-        },
-        {
-            id: 2,
-            name: 'board2'
-        },
-        {
-            id: 3,
-            name: 'board3'
-        },
-        {
-            id: 4,
-            name: 'board4'
-        },
-        {
-            id: 5,
-            name: 'board5'
-        },
-        {
-            id: 6,
-            name: 'board6'
-        },
-        {
-            id: 7,
-            name: 'board7'
-        },
-        {
-            id: 8,
-            name: 'board8'
-        },
-        {
-            id: 9,
-            name: 'board9'
-        },
-        {
-            id: 10,
-            name: 'board10'
-        }
-    ];
 
     // 게시판 목록 저장
     const [boardList, setBoardList] = useState([]);
@@ -58,10 +59,9 @@ const BoardList = () => {
     // GET 메소드로 전체 게시판 목록 가져오기
     useEffect(() => {
         const getBoardList = async () => {
-            await fetch('http://52.78.90.15/api/v1/boards')
-            .then(response => response.json())
+            await request('/boards')
             .then(json => setBoardList(json))
-        }
+        };
         getBoardList();
     }, []);
 
