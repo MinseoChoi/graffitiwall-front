@@ -1,0 +1,34 @@
+@font-face {
+    font-family: "GamjaFlower";
+    src: url('../fonts/GamjaFlower-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Yoonwoo';
+    src: url('../fonts/온글잎\ 윤우체.ttf');
+}
+
+@font-face {
+    font-family: 'Humanbumsuk';
+    src: url('../fonts/휴먼범석체.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Binggrae';
+    src: url('../fonts/Binggrae.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Bazzi';
+    src: url('../fonts/Bazzi.ttf');
+
+}
+
+@font-face {
+    font-family: 'BMJUA';
+    src: url('../fonts/BMJUA_ttf.ttf');
+}

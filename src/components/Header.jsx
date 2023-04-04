@@ -25,7 +25,7 @@ const Header = () => {
     };
     
     return (
-        <AppHeader className="AppHeader">
+        <AppHeader>
             <H1 onClick={handleClick}>
                 Graffiti Wall
             </H1>

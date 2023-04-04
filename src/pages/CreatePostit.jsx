@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 import Modal from '../components/Modal/Modal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
+import { request } from '../utils/api';
 
 const CreatePostit = () => {
     // const containerRef = useRef(null);
@@ -33,7 +34,7 @@ const CreatePostit = () => {
 
     // const dragHandler = (e) => {
     //     const PosTemp = { ...pos };
-    //     PosTemp["left"] = e.target.offsetLeft + e.clientX - clientPos.x;
+        // PosTemp["left"] = e.target.offsetLeft + e.clientX - clientPos.x;
     //     PosTemp["top"] = e.target.offsetTop + e.clientY - clientPos.y;
     //     setPos(PosTemp);
 
@@ -68,9 +69,22 @@ const CreatePostit = () => {
     //     return true;
     // }
 
-    // useEffect 추가 필요할 수도..
-    useEffect(() => {
+    // 게시판 정보 ( 게시판 ID, 제목 )
+    const [boardData, setBoardData] = useState({
+        boardId: 1,
+        title: ''
+    });
 
+    // url에서 게시판 ID 가져오기
+    const {boardId} = useParams();
+
+    useEffect(() => {
+        // GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) 가져오기
+        const getBoardName = async () => {
+            await request(`/boards/${boardId}`)
+            .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
+        };
+        getBoardName();
     }, );
  
     const nodeRef = useRef();
@@ -97,43 +111,25 @@ const CreatePostit = () => {
     const openModal = () => setModal(true);
     const closeModal = () => setModal(false);
 
-    // 게시판 정보 ( 게시판 ID, 제목 )
-    const [boardData, setBoardData] = useState({
-        boardId: 1,
-        title: ''
-    });
-
-    // url에서 게시판 ID 가져오기
-    const {boardId} = useParams();
-
-    // GET 메소드로 게시판 정보 가져오기
-    const getBoardName = async () => {
-        await fetch(`http://52.78.90.15/api/v1/boards/${boardId}`)
-        .then(response => response.json())
-        .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
-    };
-    getBoardName();
-
     return (
         <div key="createPostit">
             <Title>{boardData.title}</Title>
             {/* 게시판 영역에 포스트잇 생성 */}
-            <BoardContainer className='boardContainer'>
+            <BoardContainer>
                 {postitListValue.map(element =>
                     <Draggable nodeRef={nodeRef} key={element.postitNo} onDrag={(_, data) => trackPos(element, data)}>
                         <PostitOnBoard ref={nodeRef} key={element.postitNo} color={element.color} onClick={() => alert('포스트잇 클릭!')}>
-                            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>
-                                {element.postitNo}번째 포스트잇<br />
-                                제목: {element.title}
+                            <div style={{ fontFamily: `${element.font}`, fontSize: '13px', fontWeight: 'bold' }}>
+                                {element.title}
                             </div>
-                            <div style={{ position: 'absolute', top: '50%', left: '50%', fontSize: '10px', transform: 'translate(-50%, -50%)'}}>
-                                내용: {element.content}
+                            <div style={{ position: 'absolute', top: '55%', left: '50%', fontFamily: `${element.font}`, fontSize: '11px', transform: 'translate(-50%, -50%)'}}>
+                                {element.content}
                             </div>
                         </PostitOnBoard>
                     </Draggable>
                 )}
             </BoardContainer>
-            <AddPostitButton src={add} className="addPostitButton" alt="addPostit" onClick={openModal} />
+            <AddPostitButton src={add} alt="addPostit" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
             {modal === true ? 
                 <Modal 

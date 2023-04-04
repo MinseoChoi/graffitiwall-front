@@ -22,19 +22,19 @@ const Profile = () => {
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>NickName</FormLabel>
-                    <FormInput className="nickname" type="text" name="nickname" />
+                    <FormInput type="text" name="nickname" />
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Current PW</FormLabel>
-                    <FormInput className="currentPassword" type="password" name="currentPassword" />
+                    <FormInput type="password" name="currentPassword" />
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>New PW</FormLabel>
-                    <FormInput className="newPassword" type="password" name="newPassword" />
+                    <FormInput type="password" name="newPassword" />
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Re New PW</FormLabel>
-                    <FormInput className="reNewPassword" type="password" name="reNewPassword" />
+                    <FormInput type="password" name="reNewPassword" />
                 </FormDiv>
                 <FormDiv>
                     <FormLabel>Introduce</FormLabel>

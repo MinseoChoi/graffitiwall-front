@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar/Sidebar';
 import MyPage from './components/Sidebar/MyPage';
 import { BoardList, CreateBoard, CreatePostit, Profile, Register, UserPostitList } from './pages'
+import './css/Font.css';
 
 const App = () => {
   return (

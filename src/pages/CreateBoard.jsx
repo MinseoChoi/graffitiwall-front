@@ -5,9 +5,6 @@ import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput } from '../
 import { boardCategory } from '../assets/boardCategory';
 
 const CreateBoard = () => {
-    // tag 디자인 변경 필요 -> 일단 카테고리로
-    // 비공개인데, 비밀번호를 입력하지 않았을 때 생성 X
-
     // DB에 있는 게시판 정보들 가져와 저장
     const [boardNameList, setBoardNameList] = useState([]);
     useEffect(() => {
@@ -36,6 +33,15 @@ const CreateBoard = () => {
         userId: 1,
         isPrivate: false
     });
+
+    // 오류메시지 상태 지정
+    const [boardTitleMessage, setBoardTitleMessage] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+
+    // 유효성 검사
+    const [isBoardTitle, setIsBoardTitle] = useState(false);
+    const [isCategory, setIsCategory] = useState(false);
+    const [isPassword, setIsPassword] = useState(false);
 
     // 게시판 정보가 바뀔 때마다 set
     const changeBoardValue = e => {
@@ -89,30 +95,6 @@ const CreateBoard = () => {
         }
     };
 
-    // 오류메시지 상태 지정
-    const [boardTitleMessage, setBoardTitleMessage] = useState('');
-    const [passwordMessage, setPasswordMessage] = useState('');
-
-    // 유효성 검사
-    const [isBoardTitle, setIsBoardTitle] = useState(false);
-    const [isCategory, setIsCategory] = useState(false);
-    const [isPassword, setIsPassword] = useState(false);
-
-    // const [tags, setTags] = useState([]);
-    // const [text, setText] = useState('');
-
-    // const addTag = () => {
-    //     if (text.length === 0) return;
-    //     setTags([...tags, text]);
-    //     setText('');
-    // };
-
-    // const deleteTag = (e) => {
-    //     const deleteTagItem = e.target.parentElement.firstChild.innerText;
-    //     setTags(tags.filter(text => text !== deleteTagItem));
-    //     // setTags(tags.filter((tag, index) => index !== deleteIndex));
-    // };
-
     // 버튼 클릭 시, POST 메소드로 입력한 게시판 정보들 DB에 저장
     const onSubmit = async e => {
         e.preventDefault();
@@ -146,26 +128,6 @@ const CreateBoard = () => {
                             )}
                         </select>
                     </SelectCategory>
-                    {/* <FormLabel>Tag</FormLabel>
-                    {tags.map((tag, index) => (
-                        <li key={index} className='tagList'>
-                            <div>{tag}</div>
-                            <button onClick={deleteTag}>X</button>
-                        </li>
-                    ))}
-                    <FormDiv>
-                        <TagInput 
-                            onChange={e => setText(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    addTag();
-                                }
-                            }}
-                            type="text"
-                            value={text} />
-                        <button onClick={addTag} type="button">+</button>
-                    </FormDiv> */}
                 </FormDiv>
                 <FormDiv textAlign='center'>
                     <FormLabel>공개 유무</FormLabel>
@@ -178,7 +140,7 @@ const CreateBoard = () => {
                             <RadioInput type="radio" name="isPrivate" value={true} onClick={changeBoardValue} />
                             <RadioValue>비공개</RadioValue>
                         </FormDiv>
-                        {boardValue.isPrivate ? (
+                        {boardValue.isPrivate === 'true' ? (
                             <FormDiv>
                                 <FormLabel width={60} fontSize={11} color='gray'>비밀번호</FormLabel>
                                 <FormDiv display='block' height='fit-content' marginBottom={-25}>
@@ -189,7 +151,7 @@ const CreateBoard = () => {
                         ) : null}
                     </FormDiv>
                 </FormDiv>
-                {isBoardTitle === true && isCategory === true && (boardValue.isPrivate === false || (boardValue.isPrivate === true && isPassword === true)) ?
+                {isBoardTitle === true && isCategory === true && (boardValue.isPrivate === 'false' || (boardValue.isPrivate === 'true' && isPassword === true)) ?
                     <Button 
                         onClick={onSubmit}
                         disalbed={false}

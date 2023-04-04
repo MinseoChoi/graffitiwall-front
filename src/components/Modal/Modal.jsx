@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { useEffect, useState, useRef } from "react";
 import modalClose from '../../assets/modalClose.svg';
+import { request } from "../../utils/api";
+import { fontData } from "../../assets/fontData";
 
 const Modal = ({ postitNo, addPostitValue, closeModal }) => {
     // 포스트잇 정보
@@ -8,6 +10,7 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
         postitNo: postitNo,
         title: '',
         content: '',
+        font: '',
         color: 'cornsilk',
         x: 0,
         y: 0,
@@ -24,7 +27,7 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
 
     // POST 메소드로 포스트잇 정보들 DB에 저장
     const onSubmit = async (e) => {
-        await fetch('http://52.78.90.15/api/v1/postits', {
+        await request('/postits', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +35,7 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
             body: JSON.stringify(postitValue)
         })
         .then(response => response.json())
-        .then(json => alert('게시판이 생성되었습니다.'))
+        .then(json => alert('포스트잇이 생성되었습니다.'))
         .catch(error => {
             console.log(error);
         });
@@ -43,8 +46,16 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
         <ModalOverlay>
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
-                <TitleInput type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
-                <ContentInput rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='content' required="required"></ContentInput><br />
+                <TitleInput fontFamily={postitValue.font} type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
+                <ContentInput fontFamily={postitValue.font} rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='content' required="required"></ContentInput><br />
+                <SelectFont>
+                        <select name='font' onChange={changePostitValue}>
+                            <option value=''>--- 폰트를 선택해주세요. ---</option>
+                            {fontData.map(value => 
+                                <option key={value.id} value={value.font}>{value.name}</option>
+                            )}
+                        </select>
+                    </SelectFont>
                 <ColorInput type='color' onChange={changePostitValue} name='color' />
                 {
                     postitValue.title === '' || postitValue.content === '' ?
@@ -65,7 +76,6 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
                             }}
                         >추가</CreatePostitButton>
                 }
-                
             </ModalWrapper>
         </ModalOverlay>
     );
@@ -118,7 +128,8 @@ const TitleInput = styled.input`
     width: 80%;
     height: 30px;
     margin: 10px;
-    font-size: 15px;
+    font-family: ${props => props.fontFamily};
+    font-size: 18px;
     background-color: transparent;
     border-top: none;
     border-left: none;
@@ -132,8 +143,20 @@ const ContentInput = styled.textarea`
     min-height: 250px;
     padding-top: 8px;
     padding-left: 8px;
+    font-family: ${props => props.fontFamily};
+    font-size: 15px;
     border-radius: 5px;
     outline: none;
+`;
+
+const SelectFont = styled.fieldset`
+    position: relative;
+    margin: 0 auto;
+    padding: 4px 6px;
+    width: 50vw;
+    height: 15px;
+    font-size: 13px;
+    border: none;
 `;
 
 const ColorInput = styled.input`
