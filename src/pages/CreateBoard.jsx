@@ -46,7 +46,6 @@ const CreateBoard = () => {
     // 게시판 정보가 바뀔 때마다 set
     const changeBoardValue = e => {
         const { name, value } = e.target;
-        console.log(name, value)
         setBoardValue({
             ...boardValue,
             [name]: value
@@ -90,8 +89,6 @@ const CreateBoard = () => {
         } else {
             setPasswordMessage("사용가능한 비밀번호 입니다.");
             setIsPassword(true);
-            console.log(value);
-            console.log(isPassword);
         }
     };
 

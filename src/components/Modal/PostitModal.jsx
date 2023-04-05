@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import modalClose from '../../assets/modalClose.svg';
 import { request } from "../../utils/api";
 import { fontData } from "../../assets/fontData";
 
-const Modal = ({ postitNo, addPostitValue, closeModal }) => {
+const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
     // 포스트잇 정보
     const [postitValue, setPostitValue] = useState({
         postitNo: postitNo,
@@ -12,8 +12,8 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
         content: '',
         font: '',
         color: 'cornsilk',
-        x: 0,
-        y: 0,
+        positionX: 0,
+        positionY: 0,
     });
 
     // input 값이 변경될 때마다 해당 값 set
@@ -81,7 +81,7 @@ const Modal = ({ postitNo, addPostitValue, closeModal }) => {
     );
 };
 
-export default Modal;
+export default PostitModal;
 
 const ModalOverlay = styled.div`
     position: fixed;

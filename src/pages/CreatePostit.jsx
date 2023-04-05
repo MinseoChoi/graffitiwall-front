@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
-import Modal from '../components/Modal/Modal';
+import PostitModal from '../components/Modal/PostitModal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
@@ -100,8 +100,8 @@ const CreatePostit = () => {
     // 수정 필요
     const trackPos = (element, data) => {
         nodeRef.current.focus();
-        element.x = data.x
-        element.y = data.y
+        element.positionX = data.x
+        element.positionY = data.y
     };
 
     // 모달 창 state
@@ -132,7 +132,7 @@ const CreatePostit = () => {
             <AddPostitButton src={add} alt="addPostit" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
             {modal === true ? 
-                <Modal 
+                <PostitModal 
                     postitNo={postitListValue.length + 1}
                     addPostitValue={addPostitValue} 
                     closeModal={closeModal} 
