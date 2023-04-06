@@ -5,68 +5,41 @@ import modalClose from '../../assets/modalClose.svg';
 
 const PasswordModal = ({boardValue, closeModal}) => {
     // 게시판 정보
-    const [password, setPassword] = useState(null);
+    const [password, setPassword] = useState(0);
 
     const [passwordMessage, setPasswordMessage] = useState('');
 
     const changePassword = e => {
         const { value } = e.target;
         setPassword(value);
+        setPasswordMessage('');
     };
 
     const navigate = useNavigate();
     const onConfirm = () => {
-        console.log(boardValue.password);
-        if (password === boardValue.password) {
-            navigate(`/boards/${boardValue.boardId}`);
+        if (password !== boardValue.password) {
+            setPasswordMessage('비밀번호가 일치하지 않습니다. 다시 입력해주세요.');
         } else {
-            setPasswordMessage("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+            navigate(`/boards/${boardValue.boardId}`);
         }
     }
-
-    // const onChangePassword = e => {
-    //     const currentPassword = e.target.value;
-    //     setPassword(currentPassword);
-    //     const passwordRegExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
-    //     if (!passwordRegExp.test(currentPassword)) {
-    //         setPasswordMessage("숫자 + 영문자 + 특수문자 조합으로 8자리 이상 입력해주세요.");
-    //         setIsPassword(false);
-    //     } else {
-    //         setPasswordMessage("안전한 비밀번호 입니다.");
-    //         setIsPassword(true);
-    //     }
-    // };
-
-    // POST 메소드로 포스트잇 정보들 DB에 저장
-    // const onSubmit = async (e) => {
-    //     await request('/postits', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(postitValue)
-    //     })
-    //     .then(response => response.json())
-    //     .then(json => alert('포스트잇이 생성되었습니다.'))
-    //     .catch(error => {
-    //         console.log(error);
-    //     });
-    // };
 
     return (
         /* 모달 창 */
         <ModalOverlay>
-            <ModalWrapper method='post'>
+            <ModalWrapper>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
-                <p>비공개 게시판입니다. 비밀번호를 입력해주세요.</p>
+                <p style={{ fontSize: '1.9vmin' }}>비공개 게시판입니다. 비밀번호를 입력해주세요.</p>
                 <PasswordInput type='password' placeholder='PASSWORD' onChange={changePassword} name='password' required="required" />
                 <ErrorMessage>{passwordMessage}</ErrorMessage>
                 {
-                    password === null ?
+                    password.length < 4 || password.length > 12 ?
                         <PasswordConfirmButton 
+                            type="button"
                             disabled ={true}
                         >확인</PasswordConfirmButton>
                         : <PasswordConfirmButton 
+                            type="button"
                             disabled={false}
                             onClick={() => {
                                 onConfirm();
