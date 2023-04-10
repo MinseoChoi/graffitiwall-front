@@ -2,8 +2,8 @@ import styled from "styled-components";
 
 export const Button = styled.button`
     position: absolute;
-    bottom: -40px;
-    right: 50px;
+    bottom: ${props => props.bottom || -40}px;
+    right: ${props => props.right || 50}px;
     width: 120px;
     height: 30px;
     border-color: transparent;

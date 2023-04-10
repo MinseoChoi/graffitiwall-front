@@ -188,9 +188,12 @@ const BoardList = () => {
 export default BoardList;
 
 const BoardContainer = styled.div`
-    position: relative;
+    position: absolute;
     display: flex;
     flex-direction: row;
+    top: 190px;
+    width: 80%;
+    height: 70vh;
 `;
 
 const BoardSpace = styled.div`

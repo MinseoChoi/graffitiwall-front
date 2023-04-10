@@ -4,16 +4,22 @@ import modalClose from '../../assets/modalClose.svg';
 import { request } from "../../utils/api";
 import { fontData } from "../../assets/fontData";
 
-const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
+const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) => {
     // 포스트잇 정보
     const [postitValue, setPostitValue] = useState({
-        postitNo: postitNo,
+        boardId: boardId,
+        userId: 1,
+        postitId: postitId,
         title: '',
-        content: '',
+        contents: '',
         font: '',
         color: 'cornsilk',
         positionX: 0,
         positionY: 0,
+        angle: 0,
+        sizeX: 100,
+        sizeY: 100,
+        views: 0
     });
 
     // input 값이 변경될 때마다 해당 값 set
@@ -27,14 +33,13 @@ const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
 
     // POST 메소드로 포스트잇 정보들 DB에 저장
     const onSubmit = async (e) => {
-        await request('/postits', {
+        await request('/postit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(postitValue)
         })
-        .then(response => response.json())
         .then(json => alert('포스트잇이 생성되었습니다.'))
         .catch(error => {
             console.log(error);
@@ -47,18 +52,18 @@ const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <TitleInput fontFamily={postitValue.font} type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
-                <ContentInput fontFamily={postitValue.font} rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='content' required="required"></ContentInput><br />
+                <ContentInput fontFamily={postitValue.font} rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='contents' required="required"></ContentInput><br />
                 <SelectFont>
-                        <select name='font' onChange={changePostitValue}>
-                            <option value=''>--- 폰트를 선택해주세요. ---</option>
-                            {fontData.map(value => 
-                                <option key={value.id} value={value.font}>{value.name}</option>
-                            )}
-                        </select>
-                    </SelectFont>
+                    <select name='font' onChange={changePostitValue}>
+                        <option value=''>--- 폰트를 선택해주세요. ---</option>
+                        {fontData.map(value => 
+                            <option key={value.id} value={value.font}>{value.name}</option>
+                        )}
+                    </select>
+                </SelectFont>
                 <ColorInput type='color' onChange={changePostitValue} name='color' />
                 {
-                    postitValue.title === '' || postitValue.content === '' ?
+                    postitValue.title === '' || postitValue.contents === '' ?
                         <CreatePostitButton 
                             type="submit"
                             disabled ={true}
@@ -73,6 +78,7 @@ const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
                             onClick={() => {
                                 addPostitValue(postitValue); // '제목-내용' 포스트잇 리스트에 추가
                                 closeModal();
+                                onSubmit();
                             }}
                         >추가</CreatePostitButton>
                 }
@@ -81,7 +87,7 @@ const PostitModal = ({ postitNo, addPostitValue, closeModal }) => {
     );
 };
 
-export default PostitModal;
+export default PostitCreateModal;
 
 const ModalOverlay = styled.div`
     position: fixed;

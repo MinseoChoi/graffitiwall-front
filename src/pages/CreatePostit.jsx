@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
-import PostitModal from '../components/Modal/PostitModal';
+import PostitCreateModal from '../components/Modal/PostitCreateModal';
+import PostitShowModal from '../components/Modal/PostitShowModal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
@@ -34,7 +35,7 @@ const CreatePostit = () => {
 
     // const dragHandler = (e) => {
     //     const PosTemp = { ...pos };
-        // PosTemp["left"] = e.target.offsetLeft + e.clientX - clientPos.x;
+    //     PosTemp["left"] = e.target.offsetLeft + e.clientX - clientPos.x;
     //     PosTemp["top"] = e.target.offsetTop + e.clientY - clientPos.y;
     //     setPos(PosTemp);
 
@@ -85,9 +86,19 @@ const CreatePostit = () => {
             .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
         };
         getBoardName();
-    }, );
+
+        const getPostits = async () => {
+            await request(`/boards/${boardId}/postits`)
+            .then(json => setPostitListValue(json))
+        };
+        getPostits();
+    }, []);
  
-    const nodeRef = useRef();
+    const boardRef = useRef(null);
+    const postitRef = useRef({
+        x: 0,
+        y: 0
+    });
 
     // 포스트잇 리스트
     const [postitListValue, setPostitListValue] = useState([]);
@@ -97,11 +108,82 @@ const CreatePostit = () => {
         setPostitListValue(postitListValue.concat({ ...postit }));
     };
 
-    // 수정 필요
-    const trackPos = (element, data) => {
-        nodeRef.current.focus();
-        element.positionX = data.x
-        element.positionY = data.y
+    const [opacity, setOpacity] = useState(false);
+
+    const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위한 변수
+    const [selectedPostitValue, setSelectedPostitValue] = useState({
+        show: false,
+        title: '',
+        contents: '',
+        color: '',
+        font: ''
+    });
+
+    const [shiftPosition, setShiftPosition] = useState({
+        shiftX: 0,
+        shiftY: 0
+    });
+
+    // 드래그 시작
+    const onStart = e => {
+        setDragStartPos({ x: e.pageX, y: e.pageY });
+        setShiftPosition({
+            shiftX: e.clientX - e.offsetX,
+            shiftY: e.clientY - e.offsetY
+        });
+    };
+
+    // 부모 요소(top)와의 거리
+    const distanceChildFromTop = () => {
+        let peTop = boardRef.current.getBoundingClientRect().top;
+        let chTop = postitRef.current.getBoundingClientRect().top;
+        return chTop - peTop;
+    };
+
+    // 부모 요쇼(left)와의 거리
+    const distanceChildFromLeft = () => {
+        let peLeft = boardRef.current.getBoundingClientRect().left;
+        let chLeft = postitRef.current.getBoundingClientRect().left;
+        return chLeft - peLeft;
+    }
+
+    // 드래그 중
+    const onDrag = e => {
+        const distanceChFromTop = distanceChildFromTop();
+        const distanceChFromLeft = distanceChildFromLeft();
+        console.log(distanceChFromTop, distanceChFromLeft);
+    }
+
+    // 드래그 끝
+    const onStop = (e, element) => {
+        const dragX = Math.abs(dragStartPos.x - e.pageX);
+        const dragY = Math.abs(dragStartPos.y - e.pageY);
+        
+        if (dragX === 0 && dragY === 0) {
+            setSelectedPostitValue({
+                show: true,
+                title: element.title,
+                contents: element.contents,
+                color: element.color,
+                font: element.font
+            })
+        } else {
+            // 좌표 저장
+            const x = distanceChildFromLeft();
+            const y = distanceChildFromTop();
+            console.log(x, y);
+
+            const savePostit = async () => {
+                await request(`/postit/${element.postitId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        positionX: x,
+                        positionY: y,
+                    })
+                })
+            }
+            savePostit();
+        }
     };
 
     // 모달 창 state
@@ -109,33 +191,55 @@ const CreatePostit = () => {
 
     // 모달 창 open / close
     const openModal = () => setModal(true);
-    const closeModal = () => setModal(false);
+    const closeModal = () => {
+        setModal(false);
+        setSelectedPostitValue({
+            ...selectedPostitValue,
+            show: false
+        })
+    }
 
     return (
         <div key="createPostit">
             <Title>{boardData.title}</Title>
-            {/* 게시판 영역에 포스트잇 생성 */}
-            <BoardContainer>
-                {postitListValue.map(element =>
-                    <Draggable nodeRef={nodeRef} key={element.postitNo} onDrag={(_, data) => trackPos(element, data)}>
-                        <PostitOnBoard ref={nodeRef} key={element.postitNo} color={element.color} onClick={() => alert('포스트잇 클릭!')}>
-                            <div style={{ fontFamily: `${element.font}`, fontSize: '13px', fontWeight: 'bold' }}>
-                                {element.title}
-                            </div>
-                            <div style={{ position: 'absolute', top: '55%', left: '50%', fontFamily: `${element.font}`, fontSize: '11px', transform: 'translate(-50%, -50%)'}}>
-                                {element.content}
-                            </div>
-                        </PostitOnBoard>
-                    </Draggable>
-                )}
-            </BoardContainer>
+            <BoardSpace>
+                {/* 게시판 영역에 포스트잇 생성 */}
+                <BoardContainer ref={boardRef}>
+                    {postitListValue.map(element =>
+                        <Draggable 
+                            key={element.postitId} 
+                            onStart={(e) => onStart(e, element)}
+                            onDrag={onDrag}
+                            onStop={(e) => onStop(e, element)}
+                        >
+                            <PostitOnBoard 
+                                ref={postitRef} 
+                                key={element.postitId} 
+                                top={element.positionY}
+                                left={element.positionX}
+                                color={element.color} 
+                                opacity={opacity ? 0.6 : 1}
+                            >
+                                <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                            </PostitOnBoard>
+                        </Draggable>
+                    )}
+                </BoardContainer>
+            </BoardSpace>
             <AddPostitButton src={add} alt="addPostit" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
             {modal === true ? 
-                <PostitModal 
-                    postitNo={postitListValue.length + 1}
+                <PostitCreateModal 
+                    boardId={boardId}
+                    postitId={postitListValue.length + 1}
                     addPostitValue={addPostitValue} 
                     closeModal={closeModal} 
+                /> : null
+            }
+            {/* 선택한 포스트잇 보여주는 모달 창 */}
+            {selectedPostitValue.show === true ?
+                <PostitShowModal element={selectedPostitValue} closeModal={closeModal}
                 /> : null
             }
         </div>
@@ -144,9 +248,17 @@ const CreatePostit = () => {
 
 export default CreatePostit;
 
+const BoardSpace = styled.div`
+    position: absolute;
+    top: 195px;
+    width: 100%;
+    height: 70vh;
+`;
+
 const BoardContainer = styled.div`
     position: relative;
     margin: 0 auto;
+    right: 25px;
     width: 80%;
     height: 67vh;
     border: 1px solid #333;
@@ -163,9 +275,13 @@ const PostitOnBoard = styled.div`
     width: 100px;
     height: 100px;
     padding-top: 6px;
+    top: ${props => props.top};
+    left: ${props => props.left};
     background-color: ${props => props.color || 'consilk'};
+    opacity: ${props => props.opacity};
     box-shadow: 1px 1px 1px 1px gray;
     border-radius: 5px;
+    z-index: 10;
 
     &:hover {
         cursor: pointer;
@@ -173,6 +289,21 @@ const PostitOnBoard = styled.div`
         outline-style: solid;
         box-shadow: 0 0 0 2px black;
     }
+`;
+
+const PostitTitle = styled.div`
+    font-family: ${props => props.fontFamily};
+    font-size: 13px;
+    font-weight: bold;
+`;
+
+const PostitContent = styled.div`
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    font-family: ${props => props.fontFamily};
+    font-size: 11px;
+    transform: translate(-50%, -50%);
 `;
 
 const AddPostitButton = styled.img`

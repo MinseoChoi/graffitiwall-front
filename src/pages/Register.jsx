@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
+import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
 
 const Register = () => {
@@ -95,73 +96,104 @@ const Register = () => {
         }
     };
 
+    const register = async e => {
+        e.preventDefault();
+
+        await request('/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: id,
+                nickname: nickname,
+                password: password,
+                email: email,
+                imageUrl: null,
+                introduce: ''
+            })
+        })
+        .then(json => alert('회원가입이 완료되었습니다.'));
+    };
+
     return (
         <div key="register" className="register">
             <Title>Register</Title>
-            <FormContainer>
-                <FormDiv>
-                    <FormLabel>ID</FormLabel>
-                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput type="text" name='id' onChange={onChangeId} />
-                        <ErrorMessage>{idMessage}</ErrorMessage>
+            <FormSpace>
+                <FormContainer>
+                    <FormDiv>
+                        <FormLabel>ID</FormLabel>
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="text" name='id' onChange={onChangeId} />
+                            <ErrorMessage>{idMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <FormDiv>
-                    <FormLabel>NickName</FormLabel>
-                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput type="text" name="nickname" onChange={onChangeName} />
-                        <ErrorMessage >{nicknameMessage}</ErrorMessage>
+                    <FormDiv>
+                        <FormLabel>NickName</FormLabel>
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="text" name="nickname" onChange={onChangeName} />
+                            <ErrorMessage >{nicknameMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <FormDiv>
-                    <FormLabel>PW</FormLabel>
-                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput type="password" name="password" onChange={onChangePassword} />
-                        <ErrorMessage>{passwordMessage}</ErrorMessage>
+                    <FormDiv>
+                        <FormLabel>PW</FormLabel>
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="password" name="password" onChange={onChangePassword} />
+                            <ErrorMessage>{passwordMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <FormDiv>
-                    <FormLabel>Re PW</FormLabel>
-                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput type="password" name="RePassword" onChange={onChangePasswordConfirm} />
-                        <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
+                    <FormDiv>
+                        <FormLabel>Re PW</FormLabel>
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="password" name="RePassword" onChange={onChangePasswordConfirm} />
+                            <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <FormDiv>
-                    <FormLabel>Email</FormLabel>
-                    <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                        <FormInput type="email" name="email" onChange={onChangeEmail} />
-                        <ErrorMessage>{emailMessage}</ErrorMessage>
+                    <FormDiv>
+                        <FormLabel>Email</FormLabel>
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="email" name="email" onChange={onChangeEmail} />
+                            <ErrorMessage>{emailMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <FormDiv>
-                    <FormLabel>Profile Image</FormLabel>
-                    <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
-                        {image ? (
-                            <Image src={URL.createObjectURL(image)} onClick={() => setImage("")} />
-                        ) : (
-                            <FileUploader handleChange={(file) => setImage(file)} name="file" type="file" multiple={false} />
-                        )}
+                    <FormDiv>
+                        <FormLabel>Profile Image</FormLabel>
+                        <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
+                            {image ? (
+                                <Image src={URL.createObjectURL(image)} onClick={() => setImage("")} />
+                            ) : (
+                                <FileUploader handleChange={(file) => setImage(file)} name="file" type="file" multiple={false} />
+                            )}
+                        </FormDiv>
                     </FormDiv>
-                </FormDiv>
-                <Button
-                    onClick={() => alert('회원가입이 완료되었습니다.')}
-                    disabled={
-                        isId === true &&
-                        isNickname === true &&
-                        isPassword === true &&
-                        isPasswordConfirm === true &&
-                        isEmail === true
-                            ? false
-                            : true
-                    }
-                >Register</Button>
-            </FormContainer>
+                    <Button
+                        right={150}
+                        onClick={register}
+                        disabled={
+                            isId === true &&
+                            isNickname === true &&
+                            isPassword === true &&
+                            isPasswordConfirm === true &&
+                            isEmail === true
+                                ? false
+                                : true
+                        }
+                    >Register</Button>
+                </FormContainer>
+            </FormSpace>
         </div>
     );
 };
 
 export default Register;
+
+const FormSpace = styled.div`
+    position: absolute;
+    top: 200px;
+    left: 100px;
+    width: 80%;
+    height: 70vh;
+`;
 
 const ErrorMessage = styled.p`
     color: red;

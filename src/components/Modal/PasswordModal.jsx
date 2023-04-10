@@ -30,7 +30,7 @@ const PasswordModal = ({boardValue, closeModal}) => {
             <ModalWrapper>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <p style={{ fontSize: '1.9vmin' }}>비공개 게시판입니다. 비밀번호를 입력해주세요.</p>
-                <PasswordInput type='password' placeholder='PASSWORD' onChange={changePassword} name='password' required="required" />
+                <PasswordInput type='password' placeholder='PASSWORD' onChange={changePassword} name='password' required="required" autoFocus/>
                 <ErrorMessage>{passwordMessage}</ErrorMessage>
                 {
                     password.length < 4 || password.length > 12 ?
