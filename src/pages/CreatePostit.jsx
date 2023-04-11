@@ -76,6 +76,9 @@ const CreatePostit = () => {
         title: ''
     });
 
+    // 포스트잇 리스트
+    const [postitListValue, setPostitListValue] = useState([]);
+
     // url에서 게시판 ID 가져오기
     const {boardId} = useParams();
 
@@ -87,30 +90,26 @@ const CreatePostit = () => {
         };
         getBoardName();
 
+        // GET 메소드로 포스트잇 정보 가져오기
         const getPostits = async () => {
             await request(`/boards/${boardId}/postits`)
             .then(json => setPostitListValue(json))
         };
         getPostits();
     }, []);
- 
-    const boardRef = useRef(null);
-    const postitRef = useRef({
-        x: 0,
-        y: 0
-    });
-
-    // 포스트잇 리스트
-    const [postitListValue, setPostitListValue] = useState([]);
 
     // 리스트에 포스트잇 추가
     const addPostitValue = postit => {
         setPostitListValue(postitListValue.concat({ ...postit }));
     };
 
-    const [opacity, setOpacity] = useState(false);
+    /* ------ 드래그 앤 드롭 / 클릭 이벤트 ------ */
+    const boardRef = useRef(null); // 게시판 영역(div) 위치 가져오기 위함
+    const postitRef = useRef([]); // 포스트잇 영역(div) 위치 가져오기 위함 (여러 개이므로 배열 형태)
 
-    const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위한 변수
+    const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위함
+
+    // 클릭한 포스트잇 정보
     const [selectedPostitValue, setSelectedPostitValue] = useState({
         show: false,
         title: '',
@@ -119,47 +118,33 @@ const CreatePostit = () => {
         font: ''
     });
 
-    const [shiftPosition, setShiftPosition] = useState({
-        shiftX: 0,
-        shiftY: 0
-    });
-
     // 드래그 시작
     const onStart = e => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
-        setShiftPosition({
-            shiftX: e.clientX - e.offsetX,
-            shiftY: e.clientY - e.offsetY
-        });
     };
 
-    // 부모 요소(top)와의 거리
-    const distanceChildFromTop = () => {
+    // 부모 요소(top)와의 거리 계산
+    const distanceChildFromTop = (postitId) => {
         let peTop = boardRef.current.getBoundingClientRect().top;
-        let chTop = postitRef.current.getBoundingClientRect().top;
+        let chTop = postitRef.current[postitId].getBoundingClientRect().top;
         return chTop - peTop;
     };
 
-    // 부모 요쇼(left)와의 거리
-    const distanceChildFromLeft = () => {
+    // 부모 요쇼(left)와의 거리 계산
+    const distanceChildFromLeft = (postitId) => {
         let peLeft = boardRef.current.getBoundingClientRect().left;
-        let chLeft = postitRef.current.getBoundingClientRect().left;
+        let chLeft = postitRef.current[postitId].getBoundingClientRect().left;
         return chLeft - peLeft;
-    }
-
-    // 드래그 중
-    const onDrag = e => {
-        const distanceChFromTop = distanceChildFromTop();
-        const distanceChFromLeft = distanceChildFromLeft();
-        console.log(distanceChFromTop, distanceChFromLeft);
     }
 
     // 드래그 끝
     const onStop = (e, element) => {
+        // 좌표 변화 계산
         const dragX = Math.abs(dragStartPos.x - e.pageX);
         const dragY = Math.abs(dragStartPos.y - e.pageY);
         
         if (dragX === 0 && dragY === 0) {
+            // 클릭 이벤트인 경우, 클릭한 포스트잇 정보 저장
             setSelectedPostitValue({
                 show: true,
                 title: element.title,
@@ -168,17 +153,27 @@ const CreatePostit = () => {
                 font: element.font
             })
         } else {
-            // 좌표 저장
-            const x = distanceChildFromLeft();
-            const y = distanceChildFromTop();
-            console.log(x, y);
+            // 드래그 앤 드롭 이벤트인 경우, 좌표 저장
+            const x = distanceChildFromLeft(element.postitId);
+            const y = distanceChildFromTop(element.postitId);
 
             const savePostit = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
+                        boardId: element.boardId,
+                        userId: element.userId,
+                        postitId: element.postitId,
+                        title: element.title,
+                        contents: element.contents,
+                        font: element.font,
+                        color: element.color,
                         positionX: x,
                         positionY: y,
+                        angle: element.angle,
+                        sizeX: element.sizeX,
+                        sizeY: element.sizeY,
+                        views: element.views
                     })
                 })
             }
@@ -186,10 +181,11 @@ const CreatePostit = () => {
         }
     };
 
-    // 모달 창 state
+    /* ------ 모달 창 ------ */
+    // 모달 창 state(open/close)
     const [modal, setModal] = useState(false);
 
-    // 모달 창 open / close
+    // 모달 창 state 변경 함수
     const openModal = () => setModal(true);
     const closeModal = () => {
         setModal(false);
@@ -209,16 +205,14 @@ const CreatePostit = () => {
                         <Draggable 
                             key={element.postitId} 
                             onStart={(e) => onStart(e, element)}
-                            onDrag={onDrag}
                             onStop={(e) => onStop(e, element)}
                         >
                             <PostitOnBoard 
-                                ref={postitRef} 
+                                ref={el => (postitRef.current[element.postitId] = el)} 
                                 key={element.postitId} 
                                 top={element.positionY}
                                 left={element.positionX}
-                                color={element.color} 
-                                opacity={opacity ? 0.6 : 1}
+                                color={element.color}
                             >
                                 <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                 <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
@@ -275,13 +269,11 @@ const PostitOnBoard = styled.div`
     width: 100px;
     height: 100px;
     padding-top: 6px;
-    top: ${props => props.top};
-    left: ${props => props.left};
+    top: ${props => props.top}px;
+    left: ${props => props.left}px;
     background-color: ${props => props.color || 'consilk'};
-    opacity: ${props => props.opacity};
     box-shadow: 1px 1px 1px 1px gray;
     border-radius: 5px;
-    z-index: 10;
 
     &:hover {
         cursor: pointer;
