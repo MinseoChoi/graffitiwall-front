@@ -2,8 +2,7 @@ import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
-import PostitCreateModal from '../components/Modal/PostitCreateModal';
-import PostitShowModal from '../components/Modal/PostitShowModal';
+import { PostitCreateModal, PostitShowModal } from '../components/Modal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
@@ -82,15 +81,14 @@ const CreatePostit = () => {
     // url에서 게시판 ID 가져오기
     const {boardId} = useParams();
 
+    // GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) / 포스트잇 정보 가져오기
     useEffect(() => {
-        // GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) 가져오기
         const getBoardName = async () => {
             await request(`/boards/${boardId}`)
             .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
         };
         getBoardName();
 
-        // GET 메소드로 포스트잇 정보 가져오기
         const getPostits = async () => {
             await request(`/boards/${boardId}/postits`)
             .then(json => setPostitListValue(json))
@@ -144,18 +142,43 @@ const CreatePostit = () => {
         const dragY = Math.abs(dragStartPos.y - e.pageY);
         
         if (dragX === 0 && dragY === 0) {
-            // 클릭 이벤트인 경우, 클릭한 포스트잇 정보 저장
+            // 클릭 이벤트인 경우, 클릭한 포스트잇 정보 저장 / 조회수 추가
             setSelectedPostitValue({
                 show: true,
                 title: element.title,
                 contents: element.contents,
                 color: element.color,
                 font: element.font
-            })
+            });
+
+            // 조회수 변경
+            const changeViews = async () => {
+                await request(`/postit/${element.postitId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        boardId: element.boardId,
+                        userId: element.userId,
+                        postitId: element.postitId,
+                        title: element.title,
+                        contents: element.contents,
+                        font: element.font,
+                        color: element.color,
+                        positionX: element.positionX,
+                        positionY: element.positionY,
+                        angle: element.angle,
+                        sizeX: element.sizeX,
+                        sizeY: element.sizeY,
+                        views: element.views + 1
+                    })
+                })
+            };
+            // changeViews();
         } else {
             // 드래그 앤 드롭 이벤트인 경우, 좌표 저장
             const x = distanceChildFromLeft(element.postitId);
             const y = distanceChildFromTop(element.postitId);
+            // postitRef.current[element.postitId].positionX = x;
+            // postitRef.current[element.postitId].positionY = y;
 
             const savePostit = async () => {
                 await request(`/postit/${element.postitId}`, {
@@ -175,7 +198,7 @@ const CreatePostit = () => {
                         sizeY: element.sizeY,
                         views: element.views
                     })
-                })
+                });
             }
             savePostit();
         }
@@ -192,11 +215,11 @@ const CreatePostit = () => {
         setSelectedPostitValue({
             ...selectedPostitValue,
             show: false
-        })
-    }
+        });
+    };
 
     return (
-        <div key="createPostit">
+        <div>
             <Title>{boardData.title}</Title>
             <BoardSpace>
                 {/* 게시판 영역에 포스트잇 생성 */}
@@ -233,8 +256,8 @@ const CreatePostit = () => {
             }
             {/* 선택한 포스트잇 보여주는 모달 창 */}
             {selectedPostitValue.show === true ?
-                <PostitShowModal element={selectedPostitValue} closeModal={closeModal}
-                /> : null
+                <PostitShowModal element={selectedPostitValue} closeModal={closeModal} /> 
+                : null
             }
         </div>
     );
