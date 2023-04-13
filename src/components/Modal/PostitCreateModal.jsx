@@ -109,6 +109,7 @@ const ModalWrapper = styled.form`
     height: fit-content;
     background-color: ${props => props.color || 'cornsilk'};
     border-radius: 15px;
+    box-shadow: 10px 10px 5px rgb(0, 0, 0, 0.1);
 `;
 
 const CloseModalButton = styled.img`
@@ -159,7 +160,6 @@ const SelectFont = styled.fieldset`
     position: relative;
     margin: 0 auto;
     padding: 4px 6px;
-    width: 50vw;
     height: 15px;
     font-size: 13px;
     border: none;

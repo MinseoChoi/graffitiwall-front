@@ -107,13 +107,39 @@ const CreatePostit = () => {
 
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위함
 
+    // 포스트잇 크기 변경
+    // const [{ x, y, w, h }, setConfig] = useState({
+    //     x: 0,
+    //     y: 0,
+    //     w: 0,
+    //     h: 0
+    // });
+
+    // const boundaryRef = useRef(null);
+
+    // useEffect(() => {
+    //     const boundary = boundaryRef.current.getBoundingClientRect();
+
+    //     if (boundary) {
+    //         const DEFAULT_W = 100;
+    //         const DEFAULT_H = 100;
+    //         setConfig({
+    //             x: Math.floor(boundary.width / 2 - DEFAULT_W / 2),
+    //             y: Math.floor(boundary.height / 2 - DEFAULT_H / 2),
+    //             w: DEFAULT_W,
+    //             h: DEFAULT_H
+    //         });
+    //     }
+    // }, []);
+
     // 클릭한 포스트잇 정보
     const [selectedPostitValue, setSelectedPostitValue] = useState({
         show: false,
         title: '',
         contents: '',
         color: '',
-        font: ''
+        font: '',
+        views: 0
     });
 
     // 드래그 시작
@@ -148,10 +174,11 @@ const CreatePostit = () => {
                 title: element.title,
                 contents: element.contents,
                 color: element.color,
-                font: element.font
+                font: element.font,
+                views: element.views
             });
 
-            // 조회수 변경
+            // 조회수 변경 -> 백엔드에서 구현 후 추가
             const changeViews = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
@@ -177,8 +204,9 @@ const CreatePostit = () => {
             // 드래그 앤 드롭 이벤트인 경우, 좌표 저장
             const x = distanceChildFromLeft(element.postitId);
             const y = distanceChildFromTop(element.postitId);
-            // postitRef.current[element.postitId].positionX = x;
-            // postitRef.current[element.postitId].positionY = y;
+            
+            postitRef.current[element.postitId].top = y;
+            postitRef.current[element.postitId].left = x;
 
             const savePostit = async () => {
                 await request(`/postit/${element.postitId}`, {
@@ -268,7 +296,8 @@ export default CreatePostit;
 const BoardSpace = styled.div`
     position: absolute;
     top: 195px;
-    width: 100%;
+    left: 120px;
+    width: 80%;
     height: 70vh;
 `;
 
@@ -276,13 +305,14 @@ const BoardContainer = styled.div`
     position: relative;
     margin: 0 auto;
     right: 25px;
-    width: 80%;
+    width: 100%;
     height: 67vh;
-    border: 1px solid #333;
+    border: 1px solid lightgray;
     padding: 10px 0 30px 0;
     border-radius: 5px;
     margin-bottom: 50px;
     background-color: white;
+    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     overflow: auto;
 `;
 
@@ -295,14 +325,14 @@ const PostitOnBoard = styled.div`
     top: ${props => props.top}px;
     left: ${props => props.left}px;
     background-color: ${props => props.color || 'consilk'};
-    box-shadow: 1px 1px 1px 1px gray;
+    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     border-radius: 5px;
 
     &:hover {
         cursor: pointer;
         outline-color: transparent;
         outline-style: solid;
-        box-shadow: 0 0 0 2px black;
+        box-shadow: 0 0 0 1px lightgray;
     }
 `;
 

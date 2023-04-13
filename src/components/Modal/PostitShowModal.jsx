@@ -2,15 +2,19 @@ import styled from "styled-components";
 import modalClose from '../../assets/modalClose.svg';
 
 const PostitShowModal = ({ element, closeModal }) => {
+    // 조회수 부분 CSS 수정
     return (
         /* 모달 창 */
         <ModalOverlay>
             <ModalWrapper color={element.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
+                <TextDiv height={30} fontFamily={element.font} fontSize={15}>
+                    조회수 {element.views}
+                </TextDiv>
                 <TextDiv height={30} fontFamily={element.font} fontSize={18}>
                     {element.title}
                 </TextDiv>
-                <TextDiv height={285} fontFamily={element.font} fontSize={15}>
+                <TextDiv height={250} fontFamily={element.font} fontSize={15}>
                     {element.contents}
                 </TextDiv>
             </ModalWrapper>
@@ -38,8 +42,9 @@ const ModalWrapper = styled.form`
     left: 33%;
     width: 33vw;
     height: 350px;
-    background-color: ${props => props.color || 'cornsilk'};
+    background-color: ${props => props.color};
     border-radius: 15px;
+    box-shadow: 10px 10px 5px rgb(0, 0, 0, 0.1);
 `;
 
 const CloseModalButton = styled.img`

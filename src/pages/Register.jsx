@@ -6,7 +6,6 @@ import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } fr
 
 const Register = () => {
     // 이미지를 입력하지 않으면 -> 기본 이미지로?
-    // 등록 버튼 클릭 시 동작 구현 필요
 
     // 초기값 - 아이디, 닉네임, 비밀번호, 비밀번호 확인, 이메일, 이미지
     const [id, setId] = useState('');
@@ -160,7 +159,10 @@ const Register = () => {
                         <FormLabel>Profile Image</FormLabel>
                         <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
                             {image ? (
-                                <Image src={URL.createObjectURL(image)} onClick={() => setImage("")} />
+                                <div>
+                                    <Image src={URL.createObjectURL(image)} />
+                                    <DeleteImageButton type='button' onClick={() => setImage("")}>✕</DeleteImageButton>
+                                </div>
                             ) : (
                                 <FileUploader handleChange={(file) => setImage(file)} name="file" type="file" multiple={false} />
                             )}
@@ -198,4 +200,26 @@ const FormSpace = styled.div`
 const ErrorMessage = styled.p`
     color: red;
     font-size: 12px;
+`;
+
+const DeleteImageButton = styled.button`
+    display: flex;
+    position: relative;
+    top: -97px;
+    left: 85px;
+    width: 23px;
+    height: 23px;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+
+    &:hover {
+        cursor: pointer;
+        outline-color: transparent;
+        outline-style: solid;
+        box-shadow: 0 0 0 1px lightgray;
+    }
 `;

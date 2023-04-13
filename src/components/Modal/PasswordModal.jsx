@@ -73,6 +73,7 @@ const ModalWrapper = styled.form`
     height: fit-content;
     background-color: white;
     border-radius: 15px;
+    box-shadow: 10px 10px 5px rgb(0, 0, 0, 0.1);
 `;
 
 const CloseModalButton = styled.img`

@@ -21,11 +21,12 @@ const UserPostitList = () => {
             .then(json => setPostitListValue(json))
         };
         getPostits();
-    }, []);
+    }, [postitListValue]);
 
     const containerRef = useRef(null);
-    const divRef = useRef([]);
+    const postitRef = useRef([]);
 
+    const [originPos, setOriginPos] = useState({ x: 0, y: 0 }); // 기존 포스트잇 위치
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위함
 
     // 클릭한 포스트잇 정보
@@ -47,19 +48,20 @@ const UserPostitList = () => {
     });
 
     // 드래그 시작
-    const onStart = e => {
+    const onStart = (e, element) => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
+        setOriginPos({ x: distanceChildFromLeft(element.postitId), y: distanceChildFromTop(element.postitId) });
     };
 
     const distanceChildFromTop = (postitId) => {
         let peTop = containerRef.current.getBoundingClientRect().top;
-        let chTop = divRef.current[postitId].getBoundingClientRect().top;
+        let chTop = postitRef.current[postitId].getBoundingClientRect().top;
         return chTop - peTop;
     };
 
     const distanceChildFromLeft = (postitId) => {
         let peLeft = containerRef.current.getBoundingClientRect().left;
-        let chLeft = divRef.current[postitId].getBoundingClientRect().left;
+        let chLeft = postitRef.current[postitId].getBoundingClientRect().left;
         return chLeft - peLeft;
     };
 
@@ -78,6 +80,9 @@ const UserPostitList = () => {
         } else {
             // 휴지통으로 드래그 앤 드롭 이벤트 넣어야 함
             // 드롭했을 때 휴지통 영역에 없으면 원래 자리로 이동
+            // ???
+            postitRef.current[element.postitId].top = originPos.y;
+            postitRef.current[element.postitId].left = originPos.x;
             const onDelete = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'DELETE'
@@ -113,7 +118,7 @@ const UserPostitList = () => {
                             onStop={(e) => onStop(e, element)}
                         >
                             <PostitOnContainer 
-                                ref={el => (divRef.current[element.postitId] = el)}
+                                ref={el => (postitRef.current[element.postitId] = el)}
                                 key={element.postitId} 
                                 color={element.color}
                             >
@@ -138,7 +143,8 @@ export default UserPostitList;
 const PostitSpace = styled.div`
     position: absolute;
     top: 195px;
-    width: 100%;
+    left: 120px;
+    width: 80%;
     height: 70vh;
 `;
 
@@ -153,6 +159,7 @@ const PostitContainer = styled.div`
     border-radius: 5px;
     margin-bottom: 50px;
     background-color: white;
+    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     overflow: auto;
 `;
 
@@ -163,16 +170,15 @@ const PostitOnContainer = styled.div`
     margin-top: 10px;
     margin-left: 10px;
     padding-top: 6px;
-    background-color: ${props => props.color || 'consilk'};
-    box-shadow: 1px 1px 1px 1px gray;
+    background-color: ${props => props.color};
+    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     border-radius: 5px;
-    z-index: 1000;
 
     &:hover {
         cursor: pointer;
         outline-color: transparent;
         outline-style: solid;
-        box-shadow: 0 0 0 2px black;
+        box-shadow: 0 0 0 1px lightgray;
     }
 `;
 
