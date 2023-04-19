@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar/Sidebar';
-import { BoardList, CreateBoard, CreatePostit, Profile, Register, UserPostitList } from './pages'
+import { BoardList, CreateBoard, CreatePostit, Profile, Register, UserBoardList, UserPostitList } from './pages'
 import './css/Font.css';
 
 const App = () => {
@@ -20,6 +20,7 @@ const App = () => {
               <Route path="/boards/:boardId" element={<CreatePostit />}></Route>
               <Route path="/register" element={<Register />}></Route>
               <Route path="/users/:userId" element={<Profile />}></Route>
+              <Route path="/users/:userId/boards" element={<UserBoardList />}></Route>
               <Route path="/users/:userId/postits" element={<UserPostitList />}></Route>
             </Routes>
           </AppMain>

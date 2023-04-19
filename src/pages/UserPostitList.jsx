@@ -7,7 +7,6 @@ import { Title } from "../components/common";
 import { request } from '../utils/api';
 
 const UserPostitList = () => {
-    // 삭제 => 휴지통으로 드래그 앤 드롭
     // 추후 가능하다면, 검색 기능
 
     // 포스트잇 리스트
@@ -52,7 +51,6 @@ const UserPostitList = () => {
     const onStart = (e, element) => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
         setOriginPos({ x: e.target.offsetLeft, y: e.target.offsetTop });
-        // setOriginPos({ x: distanceChildFromLeft(element.postitId), y: distanceChildFromTop(element.postitId) });
     };
 
     const onDrag = (e, element) => {
@@ -66,7 +64,6 @@ const UserPostitList = () => {
 
         if (dragStartPos.y - deleteTop >= 0 && dragStartPos.x - deleteLeft >= 0) {
             // 휴지통 영역에 드롭된 경우, 해당 포스트잇 삭제
-            console.log('delete!');
             const onDelete = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'DELETE'

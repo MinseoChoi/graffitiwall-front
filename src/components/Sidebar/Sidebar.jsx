@@ -27,12 +27,12 @@ const Sidebar = () => {
     return (
         <div>
             <SidebarContainer>
-                <Image src={home} alt="home" onClick={handleClick}/>
-                <Image src={user} alt="user" onClick={() => toggle("user")}/>
-                <Image src={boardList} alt="boardList" onClick={() => toggle("boardList")}/>
+                <Image src={home} alt="홈 화면" onClick={handleClick}/>
+                <Image src={user} alt="로그인 또는 마이페이지" onClick={() => toggle("user")}/>
+                <Image src={boardList} alt="게시판 즐겨찾기 리스트" onClick={() => toggle("boardList")}/>
             </SidebarContainer>
             <div className={isOpen ? 'open' : 'close'}>
-                <Image top={-5} right={-200} boxShadow='none' src={back} alt="close" onClick={() => toggle('')}/>
+                <Image top={-5} right={-200} boxShadow='none' src={back} alt="사이드바 닫기" onClick={() => toggle('')}/>
                 {
                     name === 'user' ? <MyPage closeSidebar={toggle} /> : (name === 'boardList' ? <Favorites closeSidebar={toggle} /> : null)
                 }

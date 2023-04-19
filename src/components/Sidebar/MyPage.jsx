@@ -17,7 +17,8 @@ const MyPage = ({ closeSidebar }) => {
             <MyPageTitle>{userName} 님 마이페이지</MyPageTitle>
             <MyPageWrapper>
                 <MyPageButton onClick={() => handleClick(`/users/${userId}`)}>내 프로필</MyPageButton>
-                <MyPageButton onClick={() => handleClick('/boards/create')}>✚ 게시판 추가</MyPageButton>
+                <MyPageButton onClick={() => handleClick('/boards/create')}>✚ 게시판 생성</MyPageButton>
+                <MyPageButton onClick={() => handleClick(`/users/${userId}/boards`)}>🪧 생성한 게시판 목록</MyPageButton>
                 <MyPageButton onClick={() => handleClick(`/users/${userId}/postits`)}>📝 작성한 포스트잇 목록</MyPageButton>
                 <MyPageButton marginTop={30} backgroundColor='white' hoverBackgroundColor='black' hoverColor='white' onClick={() => alert('로그아웃!')}>↩︎ Log out</MyPageButton>
             </MyPageWrapper>

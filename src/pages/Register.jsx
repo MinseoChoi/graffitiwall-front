@@ -160,7 +160,7 @@ const Register = () => {
                         <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
                             {image ? (
                                 <div>
-                                    <Image src={URL.createObjectURL(image)} />
+                                    <Image src={URL.createObjectURL(image)} alt='프로필 이미지' />
                                     <DeleteImageButton type='button' onClick={() => setImage("")}>✕</DeleteImageButton>
                                 </div>
                             ) : (

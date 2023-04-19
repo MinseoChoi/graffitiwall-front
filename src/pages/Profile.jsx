@@ -7,9 +7,6 @@ import userImage from '../assets/user.svg';
 
 const Profile = () => {
     // 프로필 img로 변경 필요
-    // PW 변경 원할 시, Current PW와 New PW가 일치하지 않도록
-    //               New PW와 Re New PW가 일치하도록 검사
-    // 프로필에서는 변경사항이 없는 상태에서 변경 버튼을 누르면 기존 정보로 유지?
     const [user, setUser] = useState({
         id: 1,
         userId: '',
@@ -84,23 +81,31 @@ const Profile = () => {
     const editUser = async e => {
         e.preventDefault();
 
+        if (!currentPassword && !newPassword) {
+            return;
+        }
+
         if (currentPassword !== user.password) {
             alert('현재 비밀번호와 일치하지 않습니다. 다시 입력해주세요.');
             return;
         } else if (currentPassword === newPassword) {
             alert('현재 비밀번호와 동일한 비밀번호 입니다. 새로운 비밀번호를 입력해주세요.');
+            return;
+        } else if (newPassword !== reNewPassword) {
+            alert('새로운 비밀번호가 일치하지 않습니다. 동일하게 입력해주세요.');
+            return;
         } else {
-            // await request('/users/1', {
-            //     method: 'PATCH',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({
-            //         ...user,
-            //         password: newPassword
-            //     })
-            // })
-            // .then(json => alert('프로필이 수정되었습니다.'));
+            await request('/users/1', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...user,
+                    password: newPassword
+                })
+            })
+            .then(json => alert('프로필이 수정되었습니다.'));
         }
     };
 
@@ -114,13 +119,12 @@ const Profile = () => {
                         <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
                             {user.imageUrl ? (
                                 <div>
-                                    <Image src={URL.createObjectURL(user.imageUrl)} />
+                                    <Image src={URL.createObjectURL(user.imageUrl)} alt='프로필 이미지' />
                                     <DeleteImageButton type='button' onClick={() => setUser({ ...user, imageUrl: "" })}>✕</DeleteImageButton>
                                 </div>
                             ) : (
                                 <FileUploader handleChange={(file) => setUser({ ...user, imageUrl: file})} name="file" type="file" multiple={false} />
                             )}
-                            {/* <Image src={userImage} /> */}
                         </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={25}>
@@ -133,11 +137,17 @@ const Profile = () => {
                     </FormDiv>
                     <FormDiv marginBottom={25}>
                         <FormLabel>New PW</FormLabel>
-                        <FormInput type="password" name="newPassword" onChange={changeUserValue} />
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="password" name="newPassword" onChange={changeUserValue} />
+                            <ErrorMessage>{passwordMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={25}>
                         <FormLabel>Re New PW</FormLabel>
-                        <FormInput type="password" name="reNewPassword" onChange={changeUserValue} />
+                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                            <FormInput type="password" name="reNewPassword" onChange={changeUserValue} />
+                            <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={25}>
                         <FormLabel>Email</FormLabel>
@@ -184,6 +194,11 @@ const DeleteImageButton = styled.button`
         outline-style: solid;
         box-shadow: 0 0 0 1px lightgray;
     }
+`;
+
+const ErrorMessage = styled.p`
+    color: red;
+    font-size: 12px;
 `;
 
 const FormTextarea = styled.textarea`

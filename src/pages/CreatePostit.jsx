@@ -265,7 +265,6 @@ const CreatePostit = () => {
                         >
                             <Resizable
                                 key={element.postitId}
-                                ref={el => postitRef.current[element.postitId] = el}
                                 defaultSize={{ width: element.sizeX, height: element.sizeY }}
                                 minWidth={50}
                                 minHeight={50}
@@ -300,6 +299,7 @@ const CreatePostit = () => {
                                 enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
                             >
                                 <PostitOnBoard
+                                    ref={el => postitRef.current[element.postitId] = el}
                                     key={element.postitId}
                                     top={element.positionY}
                                     left={element.positionX}
@@ -335,7 +335,7 @@ const CreatePostit = () => {
                     )}
                 </BoardContainer> */}
             </BoardSpace>
-            <AddPostitButton src={add} alt="addPostit" onClick={openModal} />
+            <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
             {modal === true ? 
                 <PostitCreateModal 

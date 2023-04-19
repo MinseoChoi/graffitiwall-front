@@ -3,8 +3,8 @@ import modalClose from '../../assets/modalClose.svg';
 
 const PostitShowModal = ({ element, closeModal }) => {
     const updatedAt = new Date(element.updatedAt);
-    console.log(updatedAt);
-    // 조회수 부분 CSS 수정
+
+    // 조회수 & 수정 날짜 부분 CSS 수정
     return (
         /* 모달 창 */
         <ModalOverlay>
