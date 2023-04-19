@@ -2,6 +2,8 @@ import styled from "styled-components";
 import modalClose from '../../assets/modalClose.svg';
 
 const PostitShowModal = ({ element, closeModal }) => {
+    const updatedAt = new Date(element.updatedAt);
+    console.log(updatedAt);
     // 조회수 부분 CSS 수정
     return (
         /* 모달 창 */
@@ -9,7 +11,8 @@ const PostitShowModal = ({ element, closeModal }) => {
             <ModalWrapper color={element.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <TextDiv height={30} fontFamily={element.font} fontSize={15}>
-                    조회수 {element.views}
+                    조회수 {element.views}<br/>
+                    수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
                 </TextDiv>
                 <TextDiv height={30} fontFamily={element.font} fontSize={18}>
                     {element.title}

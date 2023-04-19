@@ -2,10 +2,13 @@ import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
+import { Resizable } from 're-resizable';
 import { PostitCreateModal, PostitShowModal } from '../components/Modal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
+
+// const { Resizable, ResizableBox } = require('react-resizable');
 
 const CreatePostit = () => {
     // const containerRef = useRef(null);
@@ -139,7 +142,8 @@ const CreatePostit = () => {
         contents: '',
         color: '',
         font: '',
-        views: 0
+        views: 0,
+        updatedAt: ''
     });
 
     // 드래그 시작
@@ -175,7 +179,8 @@ const CreatePostit = () => {
                 contents: element.contents,
                 color: element.color,
                 font: element.font,
-                views: element.views
+                views: element.views,
+                updatedAt: element.updatedAt
             });
 
             // 조회수 변경 -> 백엔드에서 구현 후 추가
@@ -253,16 +258,74 @@ const CreatePostit = () => {
                 {/* 게시판 영역에 포스트잇 생성 */}
                 <BoardContainer ref={boardRef}>
                     {postitListValue.map(element =>
-                        <Draggable 
-                            key={element.postitId} 
+                        <Draggable
+                            key={element.postitId}
+                            onStart={e => onStart(e, element)}
+                            onStop={e => onStop(e, element)}
+                        >
+                            <Resizable
+                                key={element.postitId}
+                                ref={el => postitRef.current[element.postitId] = el}
+                                defaultSize={{ width: element.sizeX, height: element.sizeY }}
+                                minWidth={50}
+                                minHeight={50}
+                                maxWidth={400}
+                                maxHeight={400}
+                                onResizeStart={(e, direction) => {
+                                    e.stopPropagation();
+                                }}
+                                onResizeStop={(e, direction, ref, d) => {
+                                    const savePostit = async () => {
+                                        await request(`/postit/${element.postitId}`, {
+                                            method: 'PATCH',
+                                            body: JSON.stringify({
+                                                boardId: element.boardId,
+                                                userId: element.userId,
+                                                postitId: element.postitId,
+                                                title: element.title,
+                                                contents: element.contents,
+                                                font: element.font,
+                                                color: element.color,
+                                                positionX: element.positionX,
+                                                positionY: element.positionY,
+                                                angle: element.angle,
+                                                sizeX: element.sizeX + d.width,
+                                                sizeY: element.sizeY + d.height,
+                                                views: element.views
+                                            })
+                                        });
+                                    }
+                                    savePostit();
+                                }}
+                                enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                            >
+                                <PostitOnBoard
+                                    key={element.postitId}
+                                    top={element.positionY}
+                                    left={element.positionX}
+                                    color={element.color}
+                                >
+                                    <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                    <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                </PostitOnBoard>
+                            </Resizable>
+                        </Draggable>
+                    )}
+                </BoardContainer>
+                {/* <BoardContainer ref={boardRef}>
+                    {postitListValue.map(element =>
+                        <Draggable
+                            key={element.postitId}
                             onStart={(e) => onStart(e, element)}
                             onStop={(e) => onStop(e, element)}
                         >
-                            <PostitOnBoard 
-                                ref={el => (postitRef.current[element.postitId] = el)} 
-                                key={element.postitId} 
+                            <PostitOnBoard
+                                ref={el => (postitRef.current[element.postitId] = el)}
+                                key={element.postitId}
                                 top={element.positionY}
                                 left={element.positionX}
+                                width={element.width}
+                                height={element.height}
                                 color={element.color}
                             >
                                 <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
@@ -270,7 +333,7 @@ const CreatePostit = () => {
                             </PostitOnBoard>
                         </Draggable>
                     )}
-                </BoardContainer>
+                </BoardContainer> */}
             </BoardSpace>
             <AddPostitButton src={add} alt="addPostit" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
@@ -319,8 +382,8 @@ const BoardContainer = styled.div`
 const PostitOnBoard = styled.div`
     position: absolute;
     display: inline-block;
-    width: 100px;
-    height: 100px;
+    width: ${props => props.width || 100}px;
+    height: ${props => props.height || 100}px;
     padding-top: 6px;
     top: ${props => props.top}px;
     left: ${props => props.left}px;
