@@ -113,22 +113,6 @@ const UserPostitList = () => {
             <PostitSpace>
                 <PostitContainer ref={containerRef}>
                     {postitListValue.map(element =>
-                        // <Draggable
-                        //     key={element.postitId}
-                        //     onStart={(e) => onStart(e, element)}
-                        //     onStop={(e) => onStop(e, element)}
-                        // >
-                        //     <PostitOnContainer 
-                        //         ref={el => (postitRef.current[element.postitId] = el)}
-                        //         key={element.postitId} 
-                        //         top={dragStartPos.y}
-                        //         left={dragStartPos.x}
-                        //         color={element.color}
-                        //     >
-                        //         <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                        //         <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                        //     </PostitOnContainer>
-                        // </Draggable>
                         <PostitOnContainer
                             ref={el => postitRef.current[element.postitId] = el}
                             key={element.postitId}
@@ -165,11 +149,13 @@ const PostitSpace = styled.div`
 `;
 
 const PostitContainer = styled.div`
-    display: flex;
+    display: grid;
+    grid-template-rows: repeat(auto-fill, 120px);
+    grid-template-columns: repeat(auto-fill, 120px);
     position: relative;
     margin: 0 auto;
     right: 25px;
-    width: 80vw;
+    width: 74vw;
     height: 550px;
     border: 1px solid lightgray;
     border-radius: 5px;

@@ -259,6 +259,7 @@ const CreatePostit = () => {
                 <BoardContainer ref={boardRef}>
                     {postitListValue.map(element =>
                         <Resizable
+                            style={{ top: element.positionY, left: element.positionX }}
                             key={element.postitId}
                             defaultSize={{ width: element.sizeX, height: element.sizeY }}
                             minWidth={50}
@@ -270,6 +271,7 @@ const CreatePostit = () => {
                             }}
                             onResizeStop={(e, direction, ref, d) => {
                                 const savePostit = async () => {
+                                    console.log('111');
                                     await request(`/postit/${element.postitId}`, {
                                         method: 'PATCH',
                                         body: JSON.stringify({
@@ -293,16 +295,16 @@ const CreatePostit = () => {
                             }}
                             enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
                         >
-                            <div key={element.postitId}
-                                style={{ 
-                                    position: 'relative',
-                                    top: `${element.positionY - 1}px`,
-                                    left: `${element.positionX - 1}px`,
-                                    backgroundColor: 'black', 
-                                    width: `${element.sizeX + 3}px`,
-                                    height: `${element.sizeY + 10}px` 
-                                }}
-                            >
+                            {/* // <div key={element.postitId}
+                            //     style={{ 
+                            //         position: 'relative',
+                            //         top: `${element.positionY - 1}px`,
+                            //         left: `${element.positionX - 1}px`,
+                            //         backgroundColor: 'black', 
+                            //         width: `${element.sizeX + 3}px`,
+                            //         height: `${element.sizeY + 10}px` 
+                            //     }}
+                            // > */}
                                 <Draggable
                                     key={element.postitId}
                                     onStart={e => onStart(e, element)}
@@ -311,19 +313,19 @@ const CreatePostit = () => {
                                     <PostitOnBoard
                                         ref={el => postitRef.current[element.postitId] = el}
                                         key={element.postitId}
-                                        top={1}
-                                        left={1}
+                                        // top={1}
+                                        // left={1}
                                         width={element.sizeX}
                                         height={element.sizeY}
-                                        // top={element.positionY}
-                                        // left={element.positionX}
+                                        top={element.positionY}
+                                        left={element.positionX}
                                         color={element.color}
                                     >
                                         <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                         <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
                                     </PostitOnBoard>
                                 </Draggable>
-                            </div>
+                            {/* </div> */}
                         </Resizable>
                         // <Draggable
                         //     key={element.postitId}
@@ -448,7 +450,7 @@ const BoardContainer = styled.div`
 
 const PostitOnBoard = styled.div`
     position: absolute;
-    display: inline-block;
+    display: block;
     width: ${props => props.width || 100}px;
     height: ${props => props.height || 100}px;
     padding-top: 6px;

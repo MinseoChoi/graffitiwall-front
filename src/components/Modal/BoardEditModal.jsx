@@ -117,7 +117,7 @@ const BoardEditModal = ({ element, closeModal }) => {
         <SelectedBoardContainer>
             <CloseModalButton src={modalClose} alt="게시판 수정 창 닫기" onClick={closeModal} />
             <ModalTitle>게시판 수정</ModalTitle>
-            <FormDiv display='block' padding='80px 50px' textAlign='center'>
+            <FormDiv display='block' padding='80px calc(1rem + 0.5vw)' textAlign='center'>
                 <FormDiv marginBottom={40}>
                     <FormLabel fontSize='calc(0.6rem + 0.2vw)'>게시판 이름</FormLabel>
                     <FormDiv display='block' height='fit-content' marginBottom={-2}>
@@ -128,7 +128,7 @@ const BoardEditModal = ({ element, closeModal }) => {
                 <FormDiv>
                     <FormLabel fontSize='calc(0.6rem + 0.2vw)'>카테고리</FormLabel>
                     <SelectCategory>
-                        <select style={{ width: 'calc(1rem + 9vw)' }} name="category" defaultValue={boardValue.category} onChange={changeBoardValue}>
+                        <select style={{ width: 'calc(1rem + 8vw)' }} name="category" defaultValue={boardValue.category} onChange={changeBoardValue}>
                             <option value=''>--- 카테고리를 선택해주세요. ---</option>
                             {boardCategory.map(value =>
                                 <option key={value.id} value={value.category}>{value.name}</option>
@@ -149,10 +149,10 @@ const BoardEditModal = ({ element, closeModal }) => {
                             </PrivateBtn>
                         </Switch>
                         {boardValue.isPrivate === 'true' ? (
-                            <FormDiv marginTop='12px' marginBottom={-25}>
-                                <FormLabel width={60} fontSize='calc(0.6rem + 0.15vw)' color='gray'>비밀번호</FormLabel>
+                            <FormDiv width={12} marginTop='12px' marginBottom={-25}>
+                                <FormLabel width={60} fontSize='calc(0.5rem + 0.15vw)' color='gray'>비밀번호</FormLabel>
                                 <FormDiv display='block' height='fit-content' marginTop='-2px' marginBottom={-20}>
-                                    <FormInput padding='2px 3px' width='80px' height={10} fontSize='10px' type='password' name='password' onChange={changeBoardValue} />
+                                    <FormInput padding='2px 3px' width='calc(0.5rem + 5vw)' height={10} fontSize='10px' type='password' name='password' onChange={changeBoardValue} />
                                     <ErrorMessage top={4}>{passwordMessage}</ErrorMessage>
                                 </FormDiv>
                             </FormDiv>
@@ -241,7 +241,7 @@ const SelectCategory = styled.fieldset`
 
 const Switch = styled.div`
     position: relative;
-    width: 120%;
+    width: calc(1rem + 8vw);
     height: 24px;
     margin-top: -8px;
     padding-bottom: 4px;
@@ -250,6 +250,7 @@ const Switch = styled.div`
     border-radius: 10px 10px 10px 10px;
     span {
         position: absolute;
+        // width: calc(1rem + 2.4vw);
         width: 48%;
         height: 24px;
         top: 2px;
@@ -260,21 +261,22 @@ const Switch = styled.div`
         z-index: 3;
         opacity: 0.4;
         ${props => props.value === 'public' ? 'transform: translateX(0px)'
-        : 'transform: translateX(48px)'}
+        : 'transform: translateX(100%)'}
     }
 `;
 
 const PublicBtn = styled.button`
     position: relative;
     top: 2px;
-    width: 46%;
+    // width: calc(1rem + 2.4vw);
+    width: 48%;
     height: 24px;
-    margin-left: 4px;
+    margin-left: 3px;
     color: ${props => props.mode === 'public' ? 'black' : 'gray'};
     background-color: ${props => props.mode === 'public' ? '#B0D7B2' : 'white'};
     border: none;
     border-radius: 10px;
-    font-size: calc(0.1rem + 0.6vw);
+    font-size: calc(0.4rem + 0.2vw);
     cursor: pointer;
     z-index: 2;
     transition: color 2s ease;
@@ -283,13 +285,14 @@ const PublicBtn = styled.button`
 const PrivateBtn = styled.button`
     position: relative;
     top: 2px;
-    width: 46%;
+    // width: calc(1rem + 2.4vw);
+    width: 48%;
     height: 24px;
     color: ${props => props.mode === 'private' ? 'black' : 'gray'};
     background-color: ${props => props.mode === 'private' ? '#B0D7B2' : 'white'};
     border: none;
     border-radius: 10px;
-    font-size: calc(0.1rem + 0.6vw);
+    font-size: calc(0.4rem + 0.2vw);
     cursor: pointer;
     z-index: 2;
     transition: color 2s ease;
@@ -308,9 +311,9 @@ const ErrorMessage = styled.p`
 
 const EditBoardButton = styled.button`
     position: relative;
-    width: 80px;
-    height: 35px;
-    font-size: 13px;
+    width: calc(1rem + 4vw);
+    height: calc(1rem + 2.5vh);
+    font-size: calc(0.5rem + 0.3vw);
     font-weight: bold;
     text-align: center;
     border: 1px solid black;
