@@ -82,16 +82,7 @@ const UserPostitList = () => {
             show: true,
             ...element
         })
-    }
-
-    // const onDrop = e => {
-    //     e.preventDefault();
-    //     console.log('delete');
-    // };
-
-    // const onDragEnter = e => {
-    //     e.preventDefault();
-    // }
+    };
 
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
@@ -188,18 +179,22 @@ const PostitOnContainer = styled.div`
 `;
 
 const PostitTitle = styled.div`
+    position: relative;
+    margin-bottom: 6px;
     font-family: ${props => props.fontFamily};
     font-size: 13px;
     font-weight: bold;
 `;
 
 const PostitContent = styled.div`
-    position: absolute;
-    top: 55%;
-    left: 50%;
+    position: relative;
+    padding: 4px 2px;
     font-family: ${props => props.fontFamily};
     font-size: 11px;
-    transform: translate(-50%, -50%);
+    padding-left: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 `;
 
 const DeletePostitButton = styled.img`

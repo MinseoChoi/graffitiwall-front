@@ -11,13 +11,12 @@ const PostitShowModal = ({ element, closeModal }) => {
             <ModalWrapper color={element.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <TextDiv height={30} fontFamily={element.font} fontSize={15}>
-                    조회수 {element.views}<br/>
-                    수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
+                    조회수 {element.views} / 수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
                 </TextDiv>
                 <TextDiv height={30} fontFamily={element.font} fontSize={18}>
                     {element.title}
                 </TextDiv>
-                <TextDiv height={250} fontFamily={element.font} fontSize={15}>
+                <TextDiv height={250} fontFamily={element.font} fontSize={15} textAlign='left'>
                     {element.contents}
                 </TextDiv>
             </ModalWrapper>
@@ -75,10 +74,15 @@ const TextDiv = styled.div`
     width: 30vw;
     height: ${props => props.height}px;
     margin-top: 10px;
+    padding-left: 6px;
     font-family: ${props => props.fontFamily};
     font-size: ${props => props.fontSize}px;
+    text-align: ${props => props.textAlign || 'center'};
+    white-space: normal;
+    word-break: break-all;
     background-color: white;
     border-radius: 5px;
     outline: none;
     opacity: 0.6;
+    overflow: hidden;
 `;

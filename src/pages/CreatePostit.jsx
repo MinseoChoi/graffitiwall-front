@@ -209,6 +209,27 @@ const CreatePostit = () => {
         }
     };
 
+    const savePostit = async (element, d) => {
+        await request(`/postit/${element.postitId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                boardId: element.boardId,
+                userId: element.userId,
+                postitId: element.postitId,
+                title: element.title,
+                contents: element.contents,
+                font: element.font,
+                color: element.color,
+                positionX: element.positionX,
+                positionY: element.positionY,
+                angle: element.angle,
+                sizeX: element.sizeX + d.width,
+                sizeY: element.sizeY + d.height,
+                views: element.views
+            })
+        });
+    };
+
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
     const [modal, setModal] = useState(false);
@@ -241,7 +262,7 @@ const CreatePostit = () => {
                                     display: 'block',
                                     width: element.sizeX + 'px',
                                     height: element.sizeY + 'px',
-                                    paddingTop: '6px',
+                                    paddingTop: '10px',
                                     top: element.positionY + 'px',
                                     left: element.positionX + 'px',
                                     backgroundColor: element.color,
@@ -251,35 +272,15 @@ const CreatePostit = () => {
                                 }}
                                 key={element.postitId}
                                 defaultSize={{ width: element.sizeX, height: element.sizeY }}
-                                minWidth={50}
-                                minHeight={50}
-                                maxWidth={400}
-                                maxHeight={400}
+                                minWidth={80}
+                                minHeight={80}
+                                maxWidth={300}
+                                maxHeight={300}
                                 onResizeStart={(e, direction) => {
                                     e.stopPropagation();
                                 }}
                                 onResizeStop={(e, direction, ref, d) => {
-                                    const savePostit = async () => {
-                                        await request(`/postit/${element.postitId}`, {
-                                            method: 'PATCH',
-                                            body: JSON.stringify({
-                                                boardId: element.boardId,
-                                                userId: element.userId,
-                                                postitId: element.postitId,
-                                                title: element.title,
-                                                contents: element.contents,
-                                                font: element.font,
-                                                color: element.color,
-                                                positionX: element.positionX,
-                                                positionY: element.positionY,
-                                                angle: element.angle,
-                                                sizeX: element.sizeX + d.width,
-                                                sizeY: element.sizeY + d.height,
-                                                views: element.views
-                                            })
-                                        });
-                                    }
-                                    savePostit();
+                                    savePostit(element, d);
                                 }}
                                 enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
                             >
@@ -291,28 +292,6 @@ const CreatePostit = () => {
                         </Draggable>
                     )}
                 </BoardContainer>
-                {/* <BoardContainer ref={boardRef}>
-                    {postitListValue.map(element =>
-                        <Draggable
-                            key={element.postitId}
-                            onStart={(e) => onStart(e, element)}
-                            onStop={(e) => onStop(e, element)}
-                        >
-                            <PostitOnBoard
-                                ref={el => (postitRef.current[element.postitId] = el)}
-                                key={element.postitId}
-                                top={element.positionY}
-                                left={element.positionX}
-                                width={element.width}
-                                height={element.height}
-                                color={element.color}
-                            >
-                                <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                            </PostitOnBoard>
-                        </Draggable>
-                    )}
-                </BoardContainer> */}
             </BoardSpace>
             <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
             {/* 포스트잇 입력 모달 창 */}
@@ -379,18 +358,21 @@ const PostitOnBoard = styled.div`
 `;
 
 const PostitTitle = styled.div`
+    position: relative;
+    margin-bottom: 10px;
     font-family: ${props => props.fontFamily};
-    font-size: 13px;
+    font-size: 80%;
     font-weight: bold;
 `;
 
 const PostitContent = styled.div`
-    position: absolute;
-    top: 55%;
-    left: 50%;
+    position: relative;
+    padding: 4px 6px;
     font-family: ${props => props.fontFamily};
-    font-size: 11px;
-    transform: translate(-50%, -50%);
+    font-size: 75%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 `;
 
 const AddPostitButton = styled.img`
