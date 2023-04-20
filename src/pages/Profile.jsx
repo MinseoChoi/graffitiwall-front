@@ -115,10 +115,10 @@ const Profile = () => {
             <FormSpace>
                 <FormContainer>
                     <FormDiv marginBottom={30}>
-                        <FormLabel>Profile Image</FormLabel>
-                        <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
+                        <FormLabel fontSize='14px'>Profile Image</FormLabel>
+                        <FormDiv padding='4px 6px' marginBottom={-20} width={50}>
                             {user.imageUrl ? (
-                                <div>
+                                <div style={{ position: 'relative', marginBottom: '-30px' }}>
                                     <Image src={URL.createObjectURL(user.imageUrl)} alt='프로필 이미지' />
                                     <DeleteImageButton type='button' onClick={() => setUser({ ...user, imageUrl: "" })}>✕</DeleteImageButton>
                                 </div>
@@ -127,34 +127,34 @@ const Profile = () => {
                             )}
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={25}>
-                        <FormLabel>NickName</FormLabel>
+                    <FormDiv marginBottom={32}>
+                        <FormLabel fontSize='14px'>NickName</FormLabel>
                         <FormInput type="text" name="userId" value={user.userId} onChange={changeUserValue} />
                     </FormDiv>
-                    <FormDiv marginBottom={25}>
-                        <FormLabel>Current PW</FormLabel>
+                    <FormDiv marginBottom={32}>
+                        <FormLabel fontSize='14px'>Current PW</FormLabel>
                         <FormInput type="password" name="currentPassword" onChange={changeUserValue} />
                     </FormDiv>
-                    <FormDiv marginBottom={25}>
-                        <FormLabel>New PW</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                    <FormDiv marginBottom={42}>
+                        <FormLabel fontSize='14px'>New PW</FormLabel>
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
                             <FormInput type="password" name="newPassword" onChange={changeUserValue} />
                             <ErrorMessage>{passwordMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={25}>
-                        <FormLabel>Re New PW</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                    <FormDiv marginBottom={42}>
+                        <FormLabel fontSize='14px'>Re New PW</FormLabel>
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
                             <FormInput type="password" name="reNewPassword" onChange={changeUserValue} />
                             <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={25}>
-                        <FormLabel>Email</FormLabel>
+                    <FormDiv marginBottom={20}>
+                        <FormLabel fontSize='14px'>Email</FormLabel>
                         <FormInput type="email" name="email" value={user.email} onChange={changeUserValue} />
                     </FormDiv>
                     <FormDiv marginBottom={-30}>
-                        <FormLabel>Introduce</FormLabel>
+                        <FormLabel fontSize='14px'>Introduce</FormLabel>
                         <FormTextarea name='introduce' value={user.introduce} placeholder='유저들에게 자신을 소개해보세요!' onChange={changeUserValue}></FormTextarea>
                     </FormDiv>
                     <Button bottom={-80} right={153} onClick={editUser}>Edit</Button>
@@ -197,6 +197,10 @@ const DeleteImageButton = styled.button`
 `;
 
 const ErrorMessage = styled.p`
+    position: relative;
+    margin-bottom: -5px;
+    top: -6px;
+    left: 2px;
     color: red;
     font-size: 12px;
 `;

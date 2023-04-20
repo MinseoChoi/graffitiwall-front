@@ -44,21 +44,21 @@ const PostitEditModal = ({ element, closeModal }) => {
                 <ColorInput type='color' defaultValue={postitValue.color} onChange={changePostitValue} name='color' />
                 {
                     postitValue.title === '' || postitValue.contents === '' ?
-                        <CreatePostitButton 
+                        <EditPostitButton 
                             type="submit"
                             disabled ={true}
                             onClick={() => {
                                 closeModal();
                             }}
-                        >수정</CreatePostitButton>
-                        : <CreatePostitButton 
+                        >수정</EditPostitButton>
+                        : <EditPostitButton 
                             type="submit"
                             disabled={false}
                             onClick={() => {
                                 closeModal();
                                 onEdit();
                             }}
-                        >수정</CreatePostitButton>
+                        >수정</EditPostitButton>
                 }
             </ModalWrapper>
         </ModalOverlay>
@@ -167,7 +167,7 @@ const ColorInput = styled.input`
     }
 `;
 
-const CreatePostitButton = styled.button`
+const EditPostitButton = styled.button`
     width: 80px;
     height: 35px;
     font-size: 13px;

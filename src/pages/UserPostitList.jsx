@@ -16,7 +16,7 @@ const UserPostitList = () => {
     useEffect(() => {
         // API url 변경 필요!!! 일단, 확인을 위해 게시판 1에 있는 포스트잇 불러와 사용
         const getPostits = async () => {
-            await request(`/boards/1/postits`)
+            await request(`/boards/4/postits`)
             .then(json => setPostitListValue(json))
         };
         getPostits();

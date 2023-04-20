@@ -121,45 +121,45 @@ const Register = () => {
             <FormSpace>
                 <FormContainer>
                     <FormDiv>
-                        <FormLabel>ID</FormLabel>
+                        <FormLabel fontSize='14px'>ID</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type="text" name='id' onChange={onChangeId} />
+                            <FormInput top='-6px' type="text" name='id' onChange={onChangeId} />
                             <ErrorMessage>{idMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>NickName</FormLabel>
+                        <FormLabel fontSize='14px'>NickName</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type="text" name="nickname" onChange={onChangeName} />
+                            <FormInput top='-6px' type="text" name="nickname" onChange={onChangeName} />
                             <ErrorMessage >{nicknameMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>PW</FormLabel>
+                        <FormLabel fontSize='14px'>PW</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type="password" name="password" onChange={onChangePassword} />
+                            <FormInput top='-6px' type="password" name="password" onChange={onChangePassword} />
                             <ErrorMessage>{passwordMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>Re PW</FormLabel>
+                        <FormLabel fontSize='14px'>Re PW</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type="password" name="RePassword" onChange={onChangePasswordConfirm} />
+                            <FormInput top='-6px' type="password" name="RePassword" onChange={onChangePasswordConfirm} />
                             <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel fontSize='14px'>Email</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type="email" name="email" onChange={onChangeEmail} />
+                            <FormInput top='-6px' type="email" name="email" onChange={onChangeEmail} />
                             <ErrorMessage>{emailMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>Profile Image</FormLabel>
-                        <FormDiv padding='4px 6px' marginBottom={-25} width={50}>
+                        <FormLabel fontSize='14px'>Profile Image</FormLabel>
+                        <FormDiv padding='4px 6px' marginBottom={-50} width={50}>
                             {image ? (
-                                <div>
+                                <div style={{ position: 'relative', marginBottom: '-60px'}}>
                                     <Image src={URL.createObjectURL(image)} alt='프로필 이미지' />
                                     <DeleteImageButton type='button' onClick={() => setImage("")}>✕</DeleteImageButton>
                                 </div>
@@ -198,6 +198,9 @@ const FormSpace = styled.div`
 `;
 
 const ErrorMessage = styled.p`
+    position: relative;
+    top: -8px;
+    left: 6px;
     color: red;
     font-size: 12px;
 `;

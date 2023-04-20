@@ -165,7 +165,7 @@ const BoardList = () => {
                         <ListTitle>🗒️ 전체 게시판</ListTitle>
                         <div>
                             <PaginationButton onClick={() => handleAllPageChange(allPage - 1)} disabled={allPage === 1}>〈</PaginationButton>
-                            <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === 4 || allPage === allNumPages}>〉</PaginationButton>
+                            <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages}>〉</PaginationButton>
                         </div>
                     </BoardWrapper>
                     <BoardListWrapper>
@@ -238,6 +238,7 @@ const BoardListWrapper = styled.ul`
     font-size: 13px;
     background-color: #DDDDDD;
     border-radius: 5px;
+    box-shadow: 5px 5px 3px rgb(0, 0, 0, 0.06);
     overflow: auto;
 `;
 

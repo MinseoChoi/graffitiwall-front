@@ -125,16 +125,16 @@ const CreateBoard = () => {
         <div key="createBoard" className="createBoard">
             <Title>Create Board</Title>
             <FormSpace>
-                <FormContainer method='POST' top={50} left={-10}>
+                <FormContainer top={50} left={-10}>
                     <FormDiv>
-                        <FormLabel>게시판 이름</FormLabel>
+                        <FormLabel fontSize='14px'>게시판 이름</FormLabel>
                         <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput type='text' name='title' onChange={changeBoardValue} />
+                            <FormInput top='-8px' type='text' name='title' onChange={changeBoardValue} />
                             <ErrorMessage>{boardTitleMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
-                        <FormLabel>카테고리</FormLabel>
+                        <FormLabel fontSize='14px'>카테고리</FormLabel>
                         <SelectCategory>
                             <select name='category' onChange={changeBoardValue}>
                                 <option value=''>--- 카테고리를 선택해주세요. ---</option>
@@ -145,7 +145,7 @@ const CreateBoard = () => {
                         </SelectCategory>
                     </FormDiv>
                     <FormDiv textAlign='center'>
-                        <FormLabel>공개 유무</FormLabel>
+                        <FormLabel fontSize='14px'>공개 유무</FormLabel>
                         <FormDiv padding='4px 6px' width={50} height='15px'>
                             <Switch value={mode}>
                                 <span />
@@ -158,9 +158,9 @@ const CreateBoard = () => {
                             </Switch>
                             {boardValue.isPrivate === 'true' ? (
                                 <FormDiv>
-                                    <FormLabel width={60} fontSize={11} color='gray'>비밀번호</FormLabel>
+                                    <FormLabel width={60} fontSize='11px' color='gray'>비밀번호</FormLabel>
                                     <FormDiv display='block' height='fit-content' marginTop='-6px' marginBottom={-25}>
-                                        <FormInput padding='2px 3px' width='80px' height={10} fontSize={10} type='password' name='password' onChange={changeBoardValue} />
+                                        <FormInput padding='2px 3px' width='80px' height={10} fontSize='10px' type='password' name='password' onChange={changeBoardValue} />
                                         <ErrorMessage>{passwordMessage}</ErrorMessage>
                                     </FormDiv>
                                 </FormDiv>
@@ -196,8 +196,10 @@ const FormSpace = styled.div`
 `;
 
 const SelectCategory = styled.fieldset`
+    position: relative;
     margin: 0 auto;
     padding: 4px 6px;
+    top: -2px;
     width: 50vw;
     height: 15px;
     font-size: 13px;

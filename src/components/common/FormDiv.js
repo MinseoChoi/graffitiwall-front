@@ -8,5 +8,6 @@ export const FormDiv = styled.div`
     margin-left: ${props => props.marginLeft || 0}px;
     width: ${props => props.width + 'vw' || 'auto'};
     height: ${props => props.height || 'auto'};
+    justify-content: ${props => props.justifyContent || ''};
     text-align: ${props => props.textAlign || 'left'};
 `;
