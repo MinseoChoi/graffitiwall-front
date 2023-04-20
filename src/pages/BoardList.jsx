@@ -199,8 +199,8 @@ const BoardContainer = styled.div`
 const BoardSpace = styled.div`
     position: relative;
     top: -10px;
-    left: 50px;
-    margin-right: 120px;
+    left: calc(0.05rem + 6vw);
+    margin-right: calc(0.01rem + 15vw);
 `;
 
 const BoardWrapper = styled.div`
@@ -212,10 +212,11 @@ const BoardWrapper = styled.div`
 
 const ListTitle = styled.h4`
     position: relative;
-    width: 190px;
+    width: calc(1rem + 20vw);
     padding: 4px 6px;
     margin-bottom: 5px;
     text-align: left;
+    font-size: calc(0.5rem + 0.55vw);
     font-weight: bold;
     border: none;
     border-bottom: 1px solid black;
@@ -224,7 +225,8 @@ const ListTitle = styled.h4`
 const PaginationButton = styled.button`
     position: relative;
     top: 22px;
-    left: min(48%, 270px);
+    left: calc(0.1rem + 0.9vw);
+    // left: min(48%, 270px);
     background-color: white;
     border: 1px solid gray;
     border-radius: 3px;
@@ -232,8 +234,9 @@ const PaginationButton = styled.button`
 
 const BoardListWrapper = styled.ul`
     position: relative;
-    left: 20px;
-    width: 35vw;
+    // left: 20px;
+    left: calc(0.01rem + 1vw);
+    width: calc(0.01rem + 26vw);
     text-align: left;
     font-size: 13px;
     background-color: #DDDDDD;
@@ -251,6 +254,7 @@ const Board = styled.li`
     margin-bottom: 6px;
     border-bottom: 1px solid white;
     list-style-type: none;
+    font-size: calc(0.4rem + 0.5vw);
 
     &:hover {
         cursor: pointer;

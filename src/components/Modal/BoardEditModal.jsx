@@ -128,7 +128,7 @@ const BoardEditModal = ({ element, closeModal }) => {
                 <FormDiv>
                     <FormLabel fontSize='calc(0.6rem + 0.2vw)'>카테고리</FormLabel>
                     <SelectCategory>
-                        <select name="category" defaultValue={boardValue.category} onChange={changeBoardValue}>
+                        <select style={{ width: 'calc(1rem + 9vw)' }} name="category" defaultValue={boardValue.category} onChange={changeBoardValue}>
                             <option value=''>--- 카테고리를 선택해주세요. ---</option>
                             {boardCategory.map(value =>
                                 <option key={value.id} value={value.category}>{value.name}</option>
