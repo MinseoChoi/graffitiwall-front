@@ -60,7 +60,6 @@ const UserBoardList = () => {
     };
 
     const onEdit = element => {
-        console.log(element);
         setSelectedBoardValue({
             boardId: element.boardId,
             title: element.title,

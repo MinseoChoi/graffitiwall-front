@@ -84,14 +84,14 @@ const UserPostitList = () => {
         })
     }
 
-    const onDrop = e => {
-        e.preventDefault();
-        console.log('delete');
-    };
+    // const onDrop = e => {
+    //     e.preventDefault();
+    //     console.log('delete');
+    // };
 
-    const onDragEnter = e => {
-        e.preventDefault();
-    }
+    // const onDragEnter = e => {
+    //     e.preventDefault();
+    // }
 
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
@@ -128,7 +128,7 @@ const UserPostitList = () => {
                         </PostitOnContainer>
                     )}
                 </PostitContainer>
-                <DeletePostitButton ref={deleteRef} src={bin} alt="DeletePostit" onDrop={onDrop} onDragEnter={onDragEnter} />
+                <DeletePostitButton ref={deleteRef} src={bin} alt="DeletePostit" />
             </PostitSpace>
             {selectedPostitValue.show === true ?
                 <PostitEditModal element={selectedPostitValue} closeModal={closeModal} />

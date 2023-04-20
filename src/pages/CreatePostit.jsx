@@ -97,7 +97,7 @@ const CreatePostit = () => {
             .then(json => setPostitListValue(json))
         };
         getPostits();
-    }, []);
+    }, [postitListValue]);
 
     // 리스트에 포스트잇 추가
     const addPostitValue = postit => {
@@ -109,31 +109,6 @@ const CreatePostit = () => {
     const postitRef = useRef([]); // 포스트잇 영역(div) 위치 가져오기 위함 (여러 개이므로 배열 형태)
 
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위함
-
-    // 포스트잇 크기 변경
-    // const [{ x, y, w, h }, setConfig] = useState({
-    //     x: 0,
-    //     y: 0,
-    //     w: 0,
-    //     h: 0
-    // });
-
-    // const boundaryRef = useRef(null);
-
-    // useEffect(() => {
-    //     const boundary = boundaryRef.current.getBoundingClientRect();
-
-    //     if (boundary) {
-    //         const DEFAULT_W = 100;
-    //         const DEFAULT_H = 100;
-    //         setConfig({
-    //             x: Math.floor(boundary.width / 2 - DEFAULT_W / 2),
-    //             y: Math.floor(boundary.height / 2 - DEFAULT_H / 2),
-    //             w: DEFAULT_W,
-    //             h: DEFAULT_H
-    //         });
-    //     }
-    // }, []);
 
     // 클릭한 포스트잇 정보
     const [selectedPostitValue, setSelectedPostitValue] = useState({
@@ -209,9 +184,6 @@ const CreatePostit = () => {
             // 드래그 앤 드롭 이벤트인 경우, 좌표 저장
             const x = distanceChildFromLeft(element.postitId);
             const y = distanceChildFromTop(element.postitId);
-            
-            postitRef.current[element.postitId].top = y;
-            postitRef.current[element.postitId].left = x;
 
             const savePostit = async () => {
                 await request(`/postit/${element.postitId}`, {
@@ -258,127 +230,65 @@ const CreatePostit = () => {
                 {/* 게시판 영역에 포스트잇 생성 */}
                 <BoardContainer ref={boardRef}>
                     {postitListValue.map(element =>
-                        <Resizable
-                            style={{ top: element.positionY, left: element.positionX }}
+                        <Draggable
                             key={element.postitId}
-                            defaultSize={{ width: element.sizeX, height: element.sizeY }}
-                            minWidth={50}
-                            minHeight={50}
-                            maxWidth={400}
-                            maxHeight={400}
-                            onResizeStart={(e, direction) => {
-                                e.stopPropagation();
-                            }}
-                            onResizeStop={(e, direction, ref, d) => {
-                                const savePostit = async () => {
-                                    console.log('111');
-                                    await request(`/postit/${element.postitId}`, {
-                                        method: 'PATCH',
-                                        body: JSON.stringify({
-                                            boardId: element.boardId,
-                                            userId: element.userId,
-                                            postitId: element.postitId,
-                                            title: element.title,
-                                            contents: element.contents,
-                                            font: element.font,
-                                            color: element.color,
-                                            positionX: element.positionX,
-                                            positionY: element.positionY,
-                                            angle: element.angle,
-                                            sizeX: element.sizeX + d.width,
-                                            sizeY: element.sizeY + d.height,
-                                            views: element.views
-                                        })
-                                    });
-                                }
-                                savePostit();
-                            }}
-                            enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                            onStart={e => onStart(e, element)}
+                            onStop={e => onStop(e, element)}
                         >
-                            {/* // <div key={element.postitId}
-                            //     style={{ 
-                            //         position: 'relative',
-                            //         top: `${element.positionY - 1}px`,
-                            //         left: `${element.positionX - 1}px`,
-                            //         backgroundColor: 'black', 
-                            //         width: `${element.sizeX + 3}px`,
-                            //         height: `${element.sizeY + 10}px` 
-                            //     }}
-                            // > */}
-                                <Draggable
-                                    key={element.postitId}
-                                    onStart={e => onStart(e, element)}
-                                    onStop={e => onStop(e, element)}
-                                >
-                                    <PostitOnBoard
-                                        ref={el => postitRef.current[element.postitId] = el}
-                                        key={element.postitId}
-                                        // top={1}
-                                        // left={1}
-                                        width={element.sizeX}
-                                        height={element.sizeY}
-                                        top={element.positionY}
-                                        left={element.positionX}
-                                        color={element.color}
-                                    >
-                                        <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                        <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                                    </PostitOnBoard>
-                                </Draggable>
-                            {/* </div> */}
-                        </Resizable>
-                        // <Draggable
-                        //     key={element.postitId}
-                        //     onStart={e => onStart(e, element)}
-                        //     onStop={e => onStop(e, element)}
-                        // >
-                        //     <Resizable
-                        //         key={element.postitId}
-                        //         defaultSize={{ width: element.sizeX, height: element.sizeY }}
-                        //         minWidth={50}
-                        //         minHeight={50}
-                        //         maxWidth={400}
-                        //         maxHeight={400}
-                        //         onResizeStart={(e, direction) => {
-                        //             e.stopPropagation();
-                        //         }}
-                        //         onResizeStop={(e, direction, ref, d) => {
-                        //             const savePostit = async () => {
-                        //                 await request(`/postit/${element.postitId}`, {
-                        //                     method: 'PATCH',
-                        //                     body: JSON.stringify({
-                        //                         boardId: element.boardId,
-                        //                         userId: element.userId,
-                        //                         postitId: element.postitId,
-                        //                         title: element.title,
-                        //                         contents: element.contents,
-                        //                         font: element.font,
-                        //                         color: element.color,
-                        //                         positionX: element.positionX,
-                        //                         positionY: element.positionY,
-                        //                         angle: element.angle,
-                        //                         sizeX: element.sizeX + d.width,
-                        //                         sizeY: element.sizeY + d.height,
-                        //                         views: element.views
-                        //                     })
-                        //                 });
-                        //             }
-                        //             savePostit();
-                        //         }}
-                        //         enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
-                        //     >
-                        //         <PostitOnBoard
-                        //             ref={el => postitRef.current[element.postitId] = el}
-                        //             key={element.postitId}
-                        //             top={element.positionY}
-                        //             left={element.positionX}
-                        //             color={element.color}
-                        //         >
-                        //             <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                        //             <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                        //         </PostitOnBoard>
-                        //     </Resizable>
-                        // </Draggable>
+                            <Resizable
+                                style={{ 
+                                    position: 'absolute',
+                                    display: 'block',
+                                    width: element.sizeX + 'px',
+                                    height: element.sizeY + 'px',
+                                    paddingTop: '6px',
+                                    top: element.positionY + 'px',
+                                    left: element.positionX + 'px',
+                                    backgroundColor: element.color,
+                                    boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer'
+                                }}
+                                key={element.postitId}
+                                defaultSize={{ width: element.sizeX, height: element.sizeY }}
+                                minWidth={50}
+                                minHeight={50}
+                                maxWidth={400}
+                                maxHeight={400}
+                                onResizeStart={(e, direction) => {
+                                    e.stopPropagation();
+                                }}
+                                onResizeStop={(e, direction, ref, d) => {
+                                    const savePostit = async () => {
+                                        await request(`/postit/${element.postitId}`, {
+                                            method: 'PATCH',
+                                            body: JSON.stringify({
+                                                boardId: element.boardId,
+                                                userId: element.userId,
+                                                postitId: element.postitId,
+                                                title: element.title,
+                                                contents: element.contents,
+                                                font: element.font,
+                                                color: element.color,
+                                                positionX: element.positionX,
+                                                positionY: element.positionY,
+                                                angle: element.angle,
+                                                sizeX: element.sizeX + d.width,
+                                                sizeY: element.sizeY + d.height,
+                                                views: element.views
+                                            })
+                                        });
+                                    }
+                                    savePostit();
+                                }}
+                                enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                            >
+                                <div ref={el => postitRef.current[element.postitId] = el}>
+                                    <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                    <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                </div>
+                            </Resizable>
+                        </Draggable>
                     )}
                 </BoardContainer>
                 {/* <BoardContainer ref={boardRef}>
