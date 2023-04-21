@@ -8,8 +8,6 @@ import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
 
-// const { Resizable, ResizableBox } = require('react-resizable');
-
 const CreatePostit = () => {
     // const containerRef = useRef(null);
     // const dragComponentRef = useRef(null);
@@ -97,6 +95,14 @@ const CreatePostit = () => {
             .then(json => setPostitListValue(json))
         };
         getPostits();
+    }, []);
+
+    useEffect(() => {
+        const getPostits = async () => {
+            await request(`/boards/${boardId}/postits`)
+            .then(json => setPostitListValue(json))
+        };
+        getPostits();
     }, [postitListValue]);
 
     // 리스트에 포스트잇 추가
@@ -104,7 +110,63 @@ const CreatePostit = () => {
         setPostitListValue(postitListValue.concat({ ...postit }));
     };
 
-    /* ------ 드래그 앤 드롭 / 클릭 이벤트 ------ */
+    /* ------ Board Zoom and Pan ------ */
+    let posX = 0;
+    let posY = 0;
+    const [screen, setScreen] = useState({ top: 0, left: 0 });
+    const [ratio, setRatio] = useState(1);
+
+    // Zoom 이벤트 - 0.4 ~ 2배
+    const wheelHandler = e => {
+        setRatio(
+            ratio >= 0.4 ? ratio + (-0.001) * e.deltaY : 0.4
+        );
+    };
+
+    // onDragStart 이벤트
+    const moveScreenStart = e => {
+        const img = new Image();
+        e.dataTransfer.setDragImage(img, 0, 0);
+
+        posX = e.pageX;
+        posY = e.pageY;
+    };
+
+    // onDrag 이벤트
+    const moveScreen = e => {
+        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+        
+        e.target.style.left = limitX
+            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+            : '0px';
+        e.target.style.top = limitY
+            ? `${e.target.offsetTop + (e.pageY - posY)}px`
+            : '0px';
+            
+        posX = limitX ? e.pageX : 0;
+        posY = limitY ? e.pageY : 0;
+    };
+
+    // onDragEnd 이벤트
+    const moveScreenEnd = e => {
+        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+
+        e.target.style.left = limitX
+            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+            : '0px';
+        e.target.style.top = limitY
+            ? `${e.target.offsetTop + (e.pageY - posY)}px`
+            : '0px';
+        
+        posX = limitX ? e.pageX : 0;
+        posY = limitY ? e.pageY : 0;
+
+        setScreen({ top: e.target.style.top, left: e.target.style.left });
+    }
+
+    /* ------ Postit Drag and Drop & Click ------ */
     const boardRef = useRef(null); // 게시판 영역(div) 위치 가져오기 위함
     const postitRef = useRef([]); // 포스트잇 영역(div) 위치 가져오기 위함 (여러 개이므로 배열 형태)
 
@@ -121,7 +183,7 @@ const CreatePostit = () => {
         updatedAt: ''
     });
 
-    // 드래그 시작
+    // onDragStart 이벤트
     const onStart = e => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
     };
@@ -140,7 +202,7 @@ const CreatePostit = () => {
         return chLeft - peLeft;
     }
 
-    // 드래그 끝
+    // onDragEnd 이벤트
     const onStop = (e, element) => {
         // 좌표 변화 계산
         const dragX = Math.abs(dragStartPos.x - e.pageX);
@@ -209,6 +271,7 @@ const CreatePostit = () => {
         }
     };
 
+    /* ------ Postit Resize ------ */
     const savePostit = async (element, d) => {
         await request(`/postit/${element.postitId}`, {
             method: 'PATCH',
@@ -248,8 +311,16 @@ const CreatePostit = () => {
         <div>
             <Title>{boardData.title}</Title>
             <BoardSpace>
-                {/* 게시판 영역에 포스트잇 생성 */}
-                <BoardContainer ref={boardRef}>
+                <BoardContainer 
+                    ref={boardRef} 
+                    ratio={ratio} 
+                    onWheel={wheelHandler}
+                    onDragStart={e => moveScreenStart(e)}
+                    onDrag={e => moveScreen(e)}
+                    onDragEnd={e => moveScreenEnd(e)}
+                    draggable
+                >
+                    {/* 게시판 영역에 포스트잇 생성 */}
                     {postitListValue.map(element =>
                         <Draggable
                             key={element.postitId}
@@ -284,7 +355,7 @@ const CreatePostit = () => {
                                 }}
                                 enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
                             >
-                                <div ref={el => postitRef.current[element.postitId] = el}>
+                                <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
                                     <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                     <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
                                 </div>
@@ -294,7 +365,7 @@ const CreatePostit = () => {
                 </BoardContainer>
             </BoardSpace>
             <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
-            {/* 포스트잇 입력 모달 창 */}
+            {/* 포스트잇 생성 모달 창 */}
             {modal === true ? 
                 <PostitCreateModal 
                     boardId={boardId}
@@ -316,25 +387,44 @@ export default CreatePostit;
 
 const BoardSpace = styled.div`
     position: absolute;
+    margin: 0 auto;
+    // right: 25px;
     top: 195px;
-    left: 120px;
+    left: 100px;
     width: 80%;
-    height: 70vh;
+    height: 67vh;
+    border: 1px solid lightgray;
+    padding: 10px 0 30px 0;
+    border-raius;
+    margin-bottom: 50px;
+    background-color: white;
+    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
+    overflow: hidden;
+    // top: 195px;
+    // left: 120px;
+    // width: 80%;
+    // height: 70vh;
 `;
 
 const BoardContainer = styled.div`
     position: relative;
-    margin: 0 auto;
-    right: 25px;
-    width: 100%;
-    height: 67vh;
-    border: 1px solid lightgray;
-    padding: 10px 0 30px 0;
-    border-radius: 5px;
-    margin-bottom: 50px;
-    background-color: white;
-    box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
-    overflow: auto;
+    top: 0;
+    left: 0;
+    width: ${props => 160 / props.ratio}%;
+    height: ${props => 160 / props.ratio}%;
+    transform: scale(${props => props.ratio >= 2 ? 2: props.ratio});
+    transform-origin: left top;
+    // margin: 0 auto;
+    // right: 25px;
+    // width: 100%;
+    // height: 67vh;
+    // border: 1px solid lightgray;
+    // padding: 10px 0 30px 0;
+    // border-radius: 5px;
+    // margin-bottom: 50px;
+    // background-color: white;
+    // box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
+    // overflow: auto;
 `;
 
 const PostitOnBoard = styled.div`
@@ -343,8 +433,10 @@ const PostitOnBoard = styled.div`
     width: ${props => props.width || 100}px;
     height: ${props => props.height || 100}px;
     padding-top: 6px;
-    top: ${props => props.top}px;
-    left: ${props => props.left}px;
+    top: 0px;
+    left: 0px;
+    // top: ${props => props.top}px;
+    // left: ${props => props.left}px;
     background-color: ${props => props.color || 'consilk'};
     box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     border-radius: 5px;

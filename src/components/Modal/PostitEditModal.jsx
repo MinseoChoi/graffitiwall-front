@@ -4,11 +4,12 @@ import modalClose from '../../assets/modalClose.svg';
 import { request } from "../../utils/api";
 import { fontData } from "../../assets/fontData";
 
+/* 포스트잇 수정 모달 창 */
 const PostitEditModal = ({ element, closeModal }) => {
     // 포스트잇 정보
     const [postitValue, setPostitValue] = useState(element);
 
-    // input 값이 변경될 때마다 해당 값 set
+    // 입력값이 변경될 때마다 해당 값 set
     const changePostitValue = useCallback(e => {
         const { name, value } = e.target;
         setPostitValue({
@@ -27,7 +28,6 @@ const PostitEditModal = ({ element, closeModal }) => {
     };
 
     return (
-        /* 모달 창 */
         <ModalOverlay>
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />

@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { useState } from "react";
 import modalClose from '../../assets/modalClose.svg';
-import { request } from "../../utils/api";
 import { fontData } from "../../assets/fontData";
+import { request } from "../../utils/api";
 
+/* 포스트잇 생성 모달 창 */
 const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) => {
     // 포스트잇 정보
     const [postitValue, setPostitValue] = useState({
@@ -22,7 +23,7 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
         views: 0
     });
 
-    // input 값이 변경될 때마다 해당 값 set
+    // 입력값이 변경될 때마다 해당 값 set
     const changePostitValue = e => {
         const { name, value } = e.target;
         setPostitValue({
@@ -31,7 +32,7 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
         })
     };
 
-    // POST 메소드로 포스트잇 정보들 DB에 저장
+    // POST 메소드로 포스트잇 정보 저장
     const onSubmit = async (e) => {
         await request('/postit', {
             method: 'POST',
@@ -47,7 +48,6 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
     };
 
     return (
-        /* 모달 창 */
         <ModalOverlay>
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />

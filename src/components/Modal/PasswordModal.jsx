@@ -3,18 +3,22 @@ import { useState } from "react";
 import { useNavigate  } from 'react-router-dom';
 import modalClose from '../../assets/modalClose.svg';
 
+/* 비공개 게시판 비밀번호 입력 모달 창 */
 const PasswordModal = ({boardValue, closeModal}) => {
     // 게시판 정보
     const [password, setPassword] = useState(0);
 
+    // 오류메시지 상태 지정
     const [passwordMessage, setPasswordMessage] = useState('');
 
+    // 입력값이 바뀔 때마다 set
     const changePassword = e => {
         const { value } = e.target;
         setPassword(value);
         setPasswordMessage('');
     };
 
+    // 비밀번호 검사 후, 선택한 게시판 url로 라우팅
     const navigate = useNavigate();
     const onConfirm = () => {
         if (password !== boardValue.password) {
@@ -25,7 +29,6 @@ const PasswordModal = ({boardValue, closeModal}) => {
     }
 
     return (
-        /* 모달 창 */
         <ModalOverlay>
             <ModalWrapper>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />

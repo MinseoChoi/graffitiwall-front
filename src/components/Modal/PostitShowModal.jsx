@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import modalClose from '../../assets/modalClose.svg';
 
+// 선택한 포스트잇 보여주는 모달 창
 const PostitShowModal = ({ element, closeModal }) => {
+    // 수정 날짜
     const updatedAt = new Date(element.updatedAt);
 
     // 조회수 & 수정 날짜 부분 CSS 수정

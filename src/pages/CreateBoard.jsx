@@ -4,8 +4,9 @@ import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput } from '../components/common';
 import { boardCategory } from '../assets/boardCategory';
 
+/* 게시판 생성 페이지 */
 const CreateBoard = () => {
-    // DB에 있는 게시판 정보들 가져와 저장
+    // GET 메소드로 게시판 정보(title) 가져오기
     const [boardNameList, setBoardNameList] = useState([]);
     useEffect(() => {
         const getBoardList = async () => {
@@ -46,6 +47,7 @@ const CreateBoard = () => {
     // 공개 유무 토글 버튼 모드
     const [mode, setMode] = useState('');
 
+    // 공개 유무 값이 바뀔 때마다 렌더링
     useEffect(() => {
         if (boardValue.isPrivate === 'true') {
             setMode('private');
@@ -78,6 +80,7 @@ const CreateBoard = () => {
         }
     };
 
+    // 게시판 이름 검사
     const checkBoardTitle = value => {
         if (isExist(value)) {
             setBoardTitleMessage("이미 존재하는 게시판 입니다.");
@@ -91,6 +94,7 @@ const CreateBoard = () => {
         }
     };
 
+    // 게시판 카테고리 검사
     const checkBoardCategory = value => {
         if (value === '') {
             setIsCategory(false);
@@ -99,6 +103,7 @@ const CreateBoard = () => {
         }
     };
 
+    // 게시판 비공개 시 비밀번호 검사
     const checkBoardPassword = value => {
         if (value.length < 4 || value.length > 12) {
             setPasswordMessage("비밀번호는 4자리 이상 12자리 이하로 입력해주세요.");
@@ -113,7 +118,6 @@ const CreateBoard = () => {
     const onSubmit = async e => {
         e.preventDefault();
 
-        // POST
         await request('/boards', {
             method: 'POST',
             body: JSON.stringify(boardValue)

@@ -5,11 +5,23 @@ import { request } from "../../utils/api";
 import { boardCategory } from "../../assets/boardCategory";
 import { FormDiv, FormLabel, FormInput, Title } from "../common";
 
+/* 게시판 수정 모달 창 */
 const BoardEditModal = ({ element, closeModal }) => {
     // 게시판 정보
     const [boardValue, setBoardValue] = useState(element);
-    const originBoardName = element.title;
+    const originBoardName = element.title; // 기존 게시판 이름
     const [boardNameList, setBoardNameList] = useState([]);
+
+    // 오류메시지 상태 지정
+    const [boardTitleMessage, setBoardTitleMessage] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+
+    // 유효성 검사
+    const [isBoardTitle, setIsBoardTitle] = useState(true);
+    const [isCategory, setIsCategory] = useState(true);
+    const [isPassword, setIsPassword] = useState(element.isPrivate === 'true' ? true: false);
+
+    // GET 메소드로 모든 게시판 이름 가져오기
     useEffect(() => {
         const getBoardList = async () => {
             await request('/boards')
@@ -28,7 +40,7 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     };
 
-    // input 값이 변경될 때마다 해당 값 set
+    // 입력값이 변경될 때마다 해당 값 set
     const changeBoardValue = useCallback(e => {
         const { name, value } = e.target;
         setBoardValue({
@@ -46,6 +58,7 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     });
 
+    // 게시판 이름 검사
     const checkBoardTitle = value => {
         if (isExist(value)) {
             setBoardTitleMessage("이미 존재하는 게시판 입니다.");
@@ -59,6 +72,7 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     };
 
+    // 게시판 카테고리 검사
     const checkBoardCategory = value => {
         if (value === '') {
             setIsCategory(false);
@@ -67,6 +81,7 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     };
 
+    // 비공개 시, 게시판 비밀번호 검사
     const checkBoardPassword = value => {
         if (value.length < 4 || value.length > 12) {
             setPasswordMessage("비밀번호는 4자리 이상 12자리 이하로 입력해주세요.");
@@ -77,18 +92,10 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     };
 
-    // 오류메시지 상태 지정
-    const [boardTitleMessage, setBoardTitleMessage] = useState('');
-    const [passwordMessage, setPasswordMessage] = useState('');
-
-    // 유효성 검사
-    const [isBoardTitle, setIsBoardTitle] = useState(true);
-    const [isCategory, setIsCategory] = useState(true);
-    const [isPassword, setIsPassword] = useState(element.isPrivate === 'true' ? true: false);
-
     // 공개 유무 토글 버튼 모드
     const [mode, setMode] = useState(element.isPrivate === 'true' ? 'private' : 'public');
 
+    // 공개 유무 값이 바뀔 때마다 렌더링
     useEffect(() => {
         if (boardValue.isPrivate === 'true') {
             setMode('private');
@@ -113,7 +120,6 @@ const BoardEditModal = ({ element, closeModal }) => {
     };
 
     return (
-        /* 모달 창 */
         <SelectedBoardContainer>
             <CloseModalButton src={modalClose} alt="게시판 수정 창 닫기" onClick={closeModal} />
             <ModalTitle>게시판 수정</ModalTitle>

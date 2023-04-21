@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+/* 사이드바 - 마이페이지 */
 const MyPage = ({ closeSidebar }) => {
+    // 클릭한 버튼에 해당하는 url로 라우팅
     const navigate = useNavigate();
     const handleClick = (url) => {
         closeSidebar('');

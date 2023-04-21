@@ -4,6 +4,7 @@ import { FileUploader } from 'react-drag-drop-files';
 import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
 
+/* 회원가입 페이지 */
 const Register = () => {
     // 이미지를 입력하지 않으면 -> 기본 이미지로?
 
@@ -29,6 +30,7 @@ const Register = () => {
     const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
     const [isEmail, setIsEmail] = useState(false);
 
+    // ID 검사
     const onChangeId = e => {
         const currentId = e.target.value;
         setId(currentId);
@@ -43,6 +45,7 @@ const Register = () => {
         }
     };
 
+    // 닉네임 검사
     const onChangeName = e => {
         const currentName = e.target.value;
         setNickname(currentName);
@@ -56,6 +59,7 @@ const Register = () => {
         }
     };
 
+    // 비밀번호 검사
     const onChangePassword = e => {
         const currentPassword = e.target.value;
         setPassword(currentPassword);
@@ -69,6 +73,7 @@ const Register = () => {
         }
     };
 
+    // 비밀번호 확인 검사
     const onChangePasswordConfirm = e => {
         const currentPasswordConfirm = e.target.value;
         setPasswordConfirm(currentPasswordConfirm);
@@ -81,6 +86,7 @@ const Register = () => {
         }
     };
 
+    // 이메일 검사
     const onChangeEmail = e => {
         const currentEmail = e.target.value;
         setEmail(currentEmail);
@@ -95,6 +101,7 @@ const Register = () => {
         }
     };
 
+    // 버튼 클릭 시, POST 메소드로 유저 정보 DB에 저장
     const register = async e => {
         e.preventDefault();
 
@@ -164,7 +171,7 @@ const Register = () => {
                                     <DeleteImageButton type='button' onClick={() => setImage("")}>✕</DeleteImageButton>
                                 </div>
                             ) : (
-                                <FileUploader handleChange={(file) => setImage(file)} name="file" type="file" multiple={false} />
+                                <FileUploader handleChange={(file) => setImage(file)} name="file" types={["JPG", "PNG", "JPEG", "SVG"]} multiple={false} />
                             )}
                         </FormDiv>
                     </FormDiv>

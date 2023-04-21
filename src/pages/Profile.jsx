@@ -5,8 +5,11 @@ import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
 import userImage from '../assets/user.svg';
 
+/* 프로필 페이지 */
 const Profile = () => {
+    // 닉네임 중복 체크 필요
     // 프로필 img로 변경 필요
+    // 유저 정보
     const [user, setUser] = useState({
         id: 1,
         userId: '',
@@ -17,13 +20,16 @@ const Profile = () => {
         status: 'ACTIVE'
     });
 
+    // 현재 비밀번호 / 새 비밀번호 / 새 비밀번호 확인
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [reNewPassword, setReNewPassword] = useState('');
 
+    // 오류메시지 상태 지정
     const [passwordMessage, setPasswordMessage] = useState('');
     const [passwordConfirmMessage, setPasswordConfirmMessage] = useState('');
 
+    // 유효성 검사
     const [isPassword, setIsPassword] = useState(false);
     const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
 
@@ -38,9 +44,11 @@ const Profile = () => {
         getUser();
     }, []);
 
+    // 유저 정보가 바뀔 때마다 set
     const changeUserValue = e => {
         const { name, value } = e.target;
 
+        // 유효성 검사
         if (name === 'currentPassword') {
             setCurrentPassword(value);
         } else if (name === 'newPassword') {
@@ -57,6 +65,7 @@ const Profile = () => {
         }
     };
 
+    // 새 비밀번호 검사
     const onChangePassword = value => {
         const passwordRegExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
         if (!passwordRegExp.test(value)) {
@@ -68,6 +77,7 @@ const Profile = () => {
         }
     };
 
+    // 새 비밀번호 확인 검사
     const onChangePasswordConfirm = value => {
         if (newPassword !== value) {
             setPasswordConfirmMessage("비밀번호가 일치하지 않습니다,");
@@ -78,13 +88,16 @@ const Profile = () => {
         }
     };
 
+    // 버튼 클릭 시
     const editUser = async e => {
         e.preventDefault();
 
+        // 수정 필요
         if (!currentPassword && !newPassword) {
             return;
         }
 
+        // 예외 처리
         if (currentPassword !== user.password) {
             alert('현재 비밀번호와 일치하지 않습니다. 다시 입력해주세요.');
             return;
@@ -123,7 +136,7 @@ const Profile = () => {
                                     <DeleteImageButton type='button' onClick={() => setUser({ ...user, imageUrl: "" })}>✕</DeleteImageButton>
                                 </div>
                             ) : (
-                                <FileUploader handleChange={(file) => setUser({ ...user, imageUrl: file})} name="file" type="file" multiple={false} />
+                                <FileUploader handleChange={(file) => setUser({ ...user, imageUrl: file})} name="file" types={["JPG", "PNG", "JPEG", "SVG"]} multiple={false} />
                             )}
                         </FormDiv>
                     </FormDiv>

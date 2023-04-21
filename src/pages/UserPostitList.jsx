@@ -1,20 +1,18 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import Draggable from 'react-draggable';
 import { PostitEditModal } from "../components/Modal";
 import bin from '../assets/bin.svg';
 import { Title } from "../components/common";
 import { request } from '../utils/api';
 
+/* 유저가 생성한 포스트잇 목록 페이지 */
 const UserPostitList = () => {
-    // 추후 가능하다면, 검색 기능
-
     // 포스트잇 리스트
     const [postitListValue, setPostitListValue] = useState([]);
 
     // GET 메소드로 포스트잇 정보 가져오기
     useEffect(() => {
-        // API url 변경 필요!!! 일단, 확인을 위해 게시판 1에 있는 포스트잇 불러와 사용
+        // API url 변경 필요!!! 일단, 확인을 위해 게시판 4에 있는 포스트잇 불러와 사용
         const getPostits = async () => {
             await request(`/boards/4/postits`)
             .then(json => setPostitListValue(json))
@@ -22,6 +20,7 @@ const UserPostitList = () => {
         getPostits();
     }, [postitListValue]);
 
+    /* ------ Postit Drag and Drop ------ */
     const containerRef = useRef(null);
     const postitRef = useRef([]);
     const deleteRef = useRef(null);
@@ -47,35 +46,38 @@ const UserPostitList = () => {
         views: 0
     });
 
-    // 드래그 시작
+    // onDragStart 이벤트
     const onStart = (e, element) => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
         setOriginPos({ x: e.target.offsetLeft, y: e.target.offsetTop });
     };
 
+    // onDrag 이벤트
     const onDrag = (e, element) => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
-    }
+    };
 
-    // 드래그 끝
+    // onDragEnd 이벤트
     const onStop = (e, element) => {
         let deleteTop = deleteRef.current.getBoundingClientRect().top;            
         let deleteLeft = deleteRef.current.getBoundingClientRect().left;
 
+        // 휴지통 영역에 드롭된 경우, 해당 포스트잇 삭제
         if (dragStartPos.y - deleteTop >= 0 && dragStartPos.x - deleteLeft >= 0) {
-            // 휴지통 영역에 드롭된 경우, 해당 포스트잇 삭제
             const onDelete = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'DELETE'
                 })
             };
             onDelete();
-        } else {
-            // 휴지통 영역에 드롭되지 않았을 경우, 원래 자리로 이동
+        }
+        // 휴지통 영역에 드롭되지 않았을 경우, 원래 자리로 이동
+        else {
             setDragStartPos(originPos);
         }
     };
 
+    // 포스트잇 클릭 시, 선택한 포스트잇 정보 저장
     const onClick = (e, element) => {
         openModal();
         setSelectedPostitValue({
@@ -121,6 +123,7 @@ const UserPostitList = () => {
                 </PostitContainer>
                 <DeletePostitButton ref={deleteRef} src={bin} alt="DeletePostit" />
             </PostitSpace>
+            {/* 선택한 포스트잇 보여주는 모달 창 */}
             {selectedPostitValue.show === true ?
                 <PostitEditModal element={selectedPostitValue} closeModal={closeModal} />
                 : null

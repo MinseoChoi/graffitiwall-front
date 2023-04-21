@@ -2,23 +2,25 @@ import '../../css/Sidebar.css';
 import styled from 'styled-components';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from './LoginForm';
-import Favorites from './Favorites';
+import { LoginForm, MyPage, Favorites } from './';
 import home from '../../assets/home.svg';
 import user from '../../assets/user.svg';
 import boardList from '../../assets/boardList.svg';
 import back from '../../assets/back.svg';
-import MyPage from './MyPage';
 
+/* 사이드바 */
 const Sidebar = () => {
+    // 사이드바 state(open/close, user/boardList)
     const [isOpen, setOpen] = useState(false);
     const [name, setName] = useState('');
 
+    // 사이드바 state 변경 함수
     const toggle = (name) => {
         setOpen(!isOpen);
         setName(name);
     };
 
+    // 메인 페이지로 라우팅
     const navigate = useNavigate();
     const handleClick = () => {
         navigate("/");

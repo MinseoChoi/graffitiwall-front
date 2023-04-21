@@ -49,14 +49,14 @@ const dataList = [
     }
 ];
 
-/* 메인 창 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
+/* 메인 페이지 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
 const BoardList = () => {
     // 게시판 목록 저장
     const [boardList, setBoardList] = useState([]);
     const [popularBoardList, setPopularBoardList] = useState([]);
     const [randomBoardList, setRandomBoardList] = useState([]);
     
-    // 페이지네이션 -> 코드 간소화 필요
+    /* ------ 페이지네이션 UI ------ */
     const [limit, setLimit] = useState(5);
     const [popularPage, setPopularPage] = useState(1);
     const [randomPage, setRandomPage] = useState(1);
@@ -95,6 +95,8 @@ const BoardList = () => {
     // if (!loading && boards) {
     //     console.log(boards);
     // }
+
+    // 비공개 게시판 정보
     const [selectedPrivateValue, setSelectedPrivateValue] = useState({
         private: false,
         boardId: 1,
@@ -112,17 +114,20 @@ const BoardList = () => {
             });
             openModal();
             return;
-            // 비밀번호 입력 창 생성 필요
         }
         navigate(`/boards/${boardValue.boardId}`);
     };
+
+    // 게시판 생성 버튼 클릭 시 ===> 제거 필요
     const handleCreateClick = (data) => {
         navigate(`/boards/${data}`);
     }
 
+    /* ------ 모달 창 ------ */
+    // 모달 창 state(open/close)
     const [modal, setModal] = useState(false);
 
-    // 모달 창 open / close
+    // 모달 창 state 변경 함수
     const openModal = () => setModal(true);
     const closeModal = () => setModal(false);
 
@@ -131,6 +136,7 @@ const BoardList = () => {
             <Title>Board List</Title>
             <BoardContainer>
                 <BoardSpace>
+                    {/* 인기 게시판 목록 */}
                     <BoardWrapper>
                         <ListTitle>👍🏻 인기 게시판</ListTitle>
                         <div>
@@ -145,6 +151,7 @@ const BoardList = () => {
                             </Board>
                         )}
                     </BoardListWrapper>
+                    {/* 랜덤 게시판 목록 */}
                     <BoardWrapper>
                         <ListTitle>🎲 랜덤 게시판</ListTitle>
                         <div>
@@ -160,6 +167,7 @@ const BoardList = () => {
                         )}
                     </BoardListWrapper>
                 </BoardSpace>
+                {/* 전체 게시판 목록 */}
                 <BoardSpace>
                     <BoardWrapper>
                         <ListTitle>🗒️ 전체 게시판</ListTitle>
@@ -177,7 +185,9 @@ const BoardList = () => {
                     </BoardListWrapper>
                 </BoardSpace>
             </BoardContainer>
+            {/* 게시판 생성 버튼 제거 필요 */}
             <AddBoardButton src={add} alt="addBoard" onClick={() => handleCreateClick('create')} />
+            {/* 비공개 게시판 비밀번호 입력 모달 창 */}
             {selectedPrivateValue.private && modal ?
                 <PasswordModal boardValue={selectedPrivateValue} closeModal={closeModal}/>
             : ''}

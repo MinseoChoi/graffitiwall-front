@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+/* 사이드바 - 로그인 */
 const LoginForm = ({ closeSidebar }) => {
+    // 동작 구현 필요
+    // 회원가입 버튼 클릭 시, 회원가입 페이지로 라우팅
     const navigate = useNavigate();
     const handleClick = () => {
         closeSidebar('');

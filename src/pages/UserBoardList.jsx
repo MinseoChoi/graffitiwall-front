@@ -5,12 +5,12 @@ import { request } from "../utils/api.js";
 import { BoardEditModal, PasswordModal } from "../components/Modal";
 import { Title } from "../components/common/Title.js";
 
-/* 각 유저가 생성한 게시판 목록 */
+/* 유저가 생성한 게시판 목록 페이지 */
 const UserBoardList = () => {
-    // 게시판 목록 저장
+    // 게시판 목록 정보
     const [boardList, setBoardList] = useState([]);
     
-    // 페이지네이션 -> 코드 간소화 필요
+    /* 페이지네이션 UI */
     const [limit, setLimit] = useState(10);
     const [allPage, setAllPage] = useState(1);
     const allOffset = (allPage - 1) * limit;
@@ -29,12 +29,14 @@ const UserBoardList = () => {
         getAllBoardList();
     }, [boardList]);
 
+    // 비공개 게시판 정보
     const [selectedPrivateValue, setSelectedPrivateValue] = useState({
         private: false,
         boardId: 1,
         password: null
     });
 
+    // 수정할 게시판 정보
     const [selectedBoardValue, setSelectedBoardValue] = useState({
         boardId: 1,
         title: '',
@@ -48,7 +50,7 @@ const UserBoardList = () => {
     const navigate = useNavigate();
     const handleBoardClick = (boardValue) => {
         if (boardValue.private === true) {
-            openModal();
+            openPrivateModal();
             setSelectedPrivateValue({
                 private: true,
                 boardId: boardValue.boardId,
@@ -59,6 +61,7 @@ const UserBoardList = () => {
         navigate(`/boards/${boardValue.boardId}`);
     };
 
+    // 수정 버튼 클릭 시, 선택한 게시판 정보 set
     const onEdit = element => {
         setSelectedBoardValue({
             boardId: element.boardId,
@@ -71,20 +74,25 @@ const UserBoardList = () => {
         openEditModal();
     }
 
+    // 삭제 버튼 클릭 시, DB에서 해당 게시판 정보 삭제
     const onDelete = async (element) => {
         await request(`/boards/${element.boardId}`, {
             method: 'DELETE'
         });
     };
 
-    const [modal, setModal] = useState(false);
+    /* ------ 모달 창 ------ */
+    // 비공개 게시판 비밀번호 입력 모달 창 state(open/close)
+    const [privateModal, setPrivateModal] = useState(false);
 
-    // 모달 창 open / close
-    const openModal = () => setModal(true);
-    const closeModal = () => setModal(false);
+    // 비공개 게시판 비밀번호 입력 모달 창 state 변경 함수
+    const openPrivateModal = () => setPrivateModal(true);
+    const closePrivateModal = () => setPrivateModal(false);
 
+    // 게시판 수정 모달 창 state(open/close)
     const [editModal, setEditModal] = useState(false);
 
+    // 게시판 수정 모달 창 state 변경 함수
     const openEditModal = () => setEditModal(true);
     const closeEditModal = () => setEditModal(false);
 
@@ -112,14 +120,16 @@ const UserBoardList = () => {
                     </BoardListWrapper>
                 </BoardSpace>
                 <BoardSpace>
+                    {/* 게시판 수정 모달 창 */}
                     {editModal ?
                         <BoardEditModal element={selectedBoardValue} closeModal={closeEditModal} />
                         : ''
                     }
                 </BoardSpace>
             </BoardContainer>
-            {selectedPrivateValue.private && modal ?
-                <PasswordModal boardValue={selectedPrivateValue} closeModal={closeModal}/>
+            {/* 비공개 게시판 비밀번호 입력 모달 창 */}
+            {selectedPrivateValue.private && privateModal ?
+                <PasswordModal boardValue={selectedPrivateValue} closeModal={closePrivateModal}/>
             : ''}
         </div>
     );
