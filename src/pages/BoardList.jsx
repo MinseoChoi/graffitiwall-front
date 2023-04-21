@@ -103,6 +103,19 @@ const BoardList = () => {
         password: null
     });
 
+    // 게시판 생성 버튼 클릭 시 ===> 제거 필요
+    const handleCreateClick = (data) => {
+        navigate(`/boards/${data}`);
+    }
+
+    /* ------ 모달 창 ------ */
+    // 모달 창 state(open/close)
+    const [modal, setModal] = useState(false);
+
+    // 모달 창 state 변경 함수
+    const openModal = () => setModal(true);
+    const closeModal = () => setModal(false);
+
     // 선택한 게시판 url로 라우팅
     const navigate = useNavigate();
     const handleBoardClick = (boardValue) => {
@@ -117,19 +130,6 @@ const BoardList = () => {
         }
         navigate(`/boards/${boardValue.boardId}`);
     };
-
-    // 게시판 생성 버튼 클릭 시 ===> 제거 필요
-    const handleCreateClick = (data) => {
-        navigate(`/boards/${data}`);
-    }
-
-    /* ------ 모달 창 ------ */
-    // 모달 창 state(open/close)
-    const [modal, setModal] = useState(false);
-
-    // 모달 창 state 변경 함수
-    const openModal = () => setModal(true);
-    const closeModal = () => setModal(false);
 
     return (
         <div key="boardList" className="boardList">

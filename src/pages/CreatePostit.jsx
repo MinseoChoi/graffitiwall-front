@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
+import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitCreateModal, PostitShowModal } from '../components/Modal';
 import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
@@ -70,6 +71,8 @@ const CreatePostit = () => {
     //     return true;
     // }
 
+    const [loading, setLoading] = useState(true);
+
     // 게시판 정보 ( 게시판 ID, 제목 )
     const [boardData, setBoardData] = useState({
         boardId: 1,
@@ -89,18 +92,15 @@ const CreatePostit = () => {
             .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
         };
         getBoardName();
-
-        const getPostits = async () => {
-            await request(`/boards/${boardId}/postits`)
-            .then(json => setPostitListValue(json))
-        };
-        getPostits();
     }, []);
 
     useEffect(() => {
         const getPostits = async () => {
             await request(`/boards/${boardId}/postits`)
-            .then(json => setPostitListValue(json))
+            .then(json => {
+                setPostitListValue(json);
+            })
+            .then(res => setLoading(false))
         };
         getPostits();
     }, [postitListValue]);
@@ -143,7 +143,7 @@ const CreatePostit = () => {
         e.target.style.top = limitY
             ? `${e.target.offsetTop + (e.pageY - posY)}px`
             : '0px';
-            
+
         posX = limitX ? e.pageX : 0;
         posY = limitY ? e.pageY : 0;
     };
@@ -313,15 +313,61 @@ const CreatePostit = () => {
             <BoardSpace>
                 <BoardContainer 
                     ref={boardRef} 
-                    ratio={ratio} 
-                    onWheel={wheelHandler}
-                    onDragStart={e => moveScreenStart(e)}
-                    onDrag={e => moveScreen(e)}
-                    onDragEnd={e => moveScreenEnd(e)}
-                    draggable
+                    // ratio={ratio} 
+                    // onWheel={wheelHandler}
+                    // onDragStart={e => moveScreenStart(e)}
+                    // onDrag={e => moveScreen(e)}
+                    // onDragEnd={e => moveScreenEnd(e)}
+                    // draggable
                 >
+                    {loading ? <LoadingWrapper>
+                            <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
+                        </LoadingWrapper>
+                        : 
+                            postitListValue.map(element =>
+                                <Draggable
+                                    key={element.postitId}
+                                    onStart={e => onStart(e, element)}
+                                    onStop={e => onStop(e, element)}
+                                >
+                                    <Resizable
+                                        style={{ 
+                                            position: 'absolute',
+                                            display: 'block',
+                                            width: element.sizeX + 'px',
+                                            height: element.sizeY + 'px',
+                                            paddingTop: '10px',
+                                            top: element.positionY + 'px',
+                                            left: element.positionX + 'px',
+                                            backgroundColor: element.color,
+                                            boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
+                                            borderRadius: '5px',
+                                            cursor: 'pointer'
+                                        }}
+                                        key={element.postitId}
+                                        defaultSize={{ width: element.sizeX, height: element.sizeY }}
+                                        minWidth={80}
+                                        minHeight={80}
+                                        maxWidth={300}
+                                        maxHeight={300}
+                                        onResizeStart={(e, direction) => {
+                                            e.stopPropagation();
+                                        }}
+                                        onResizeStop={(e, direction, ref, d) => {
+                                            savePostit(element, d);
+                                        }}
+                                        enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                                    >
+                                        <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
+                                            <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                            <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                        </div>
+                                    </Resizable>
+                                </Draggable>
+                            )
+                    }
                     {/* 게시판 영역에 포스트잇 생성 */}
-                    {postitListValue.map(element =>
+                    {/* {postitListValue.map(element =>
                         <Draggable
                             key={element.postitId}
                             onStart={e => onStart(e, element)}
@@ -361,7 +407,7 @@ const CreatePostit = () => {
                                 </div>
                             </Resizable>
                         </Draggable>
-                    )}
+                    )} */}
                 </BoardContainer>
             </BoardSpace>
             <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
@@ -410,9 +456,11 @@ const BoardContainer = styled.div`
     position: relative;
     top: 0;
     left: 0;
-    width: ${props => 160 / props.ratio}%;
-    height: ${props => 160 / props.ratio}%;
-    transform: scale(${props => props.ratio >= 2 ? 2: props.ratio});
+    width: 100%;
+    height: 100%;
+    // width: ${props => 160 / props.ratio}%;
+    // height: ${props => 160 / props.ratio}%;
+    // transform: scale(${props => props.ratio >= 2 ? 2: props.ratio});
     transform-origin: left top;
     // margin: 0 auto;
     // right: 25px;
@@ -447,6 +495,13 @@ const PostitOnBoard = styled.div`
         outline-style: solid;
         box-shadow: 0 0 0 1px lightgray;
     }
+`;
+
+const LoadingWrapper = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 `;
 
 const PostitTitle = styled.div`

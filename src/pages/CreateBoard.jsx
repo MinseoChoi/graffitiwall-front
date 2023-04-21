@@ -16,16 +16,6 @@ const CreateBoard = () => {
         getBoardList();
     }, []);
 
-    // 게시판 이름 중복 체크 함수
-    const isExist = (name) => {
-        const data = boardNameList.filter(data => data.title === name);
-        if (!data.length) {
-            return false
-        } else {
-            return true
-        }
-    }
-
     // 게시판 정보 (게시판 이름, 카테고리, 공개 유무, 비공개 시 비밀번호)
     const [boardValue, setBoardValue] = useState({
         title: '',
@@ -44,24 +34,6 @@ const CreateBoard = () => {
     const [isCategory, setIsCategory] = useState(false);
     const [isPassword, setIsPassword] = useState(false);
 
-    // 공개 유무 토글 버튼 모드
-    const [mode, setMode] = useState('');
-
-    // 공개 유무 값이 바뀔 때마다 렌더링
-    useEffect(() => {
-        if (boardValue.isPrivate === 'true') {
-            setMode('private');
-        } else {
-            setMode('public');
-            setBoardValue({
-                ...boardValue,
-                password: null
-            });
-            setPasswordMessage('');
-            setIsPassword(false);
-        }
-    }, [boardValue.isPrivate]);
-
     // 게시판 정보가 바뀔 때마다 set
     const changeBoardValue = e => {
         const { name, value } = e.target;
@@ -77,6 +49,16 @@ const CreateBoard = () => {
             checkBoardCategory(value);
         } else if (name === 'password') {
             checkBoardPassword(value);
+        }
+    };
+
+    // 게시판 이름 중복 체크 함수
+    const isExist = (name) => {
+        const data = boardNameList.filter(data => data.title === name);
+        if (!data.length) {
+            return false
+        } else {
+            return true
         }
     };
 
@@ -102,6 +84,24 @@ const CreateBoard = () => {
             setIsCategory(true);
         }
     };
+
+    // 공개 유무 토글 버튼 모드
+    const [mode, setMode] = useState('');
+
+    // 공개 유무 값이 바뀔 때마다 렌더링
+    useEffect(() => {
+        if (boardValue.isPrivate === 'true') {
+            setMode('private');
+        } else {
+            setMode('public');
+            setBoardValue({
+                ...boardValue,
+                password: null
+            });
+            setPasswordMessage('');
+            setIsPassword(false);
+        }
+    }, [boardValue.isPrivate]);
 
     // 게시판 비공개 시 비밀번호 검사
     const checkBoardPassword = value => {

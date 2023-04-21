@@ -1,12 +1,15 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate  } from 'react-router-dom';
+import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import { BoardEditModal, PasswordModal } from "../components/Modal";
 import { Title } from "../components/common/Title.js";
 
 /* 유저가 생성한 게시판 목록 페이지 */
 const UserBoardList = () => {
+    const [loading, setLoading] = useState(true);
+
     // 게시판 목록 정보
     const [boardList, setBoardList] = useState([]);
     
@@ -25,6 +28,7 @@ const UserBoardList = () => {
         const getAllBoardList = async () => {
             await request(`/users/1/boards`)
             .then(json => setBoardList(json))
+            .then(res => setLoading(false))
         };
         getAllBoardList();
     }, [boardList]);
@@ -45,6 +49,21 @@ const UserBoardList = () => {
         password: null,
         userId: 1,
     })
+
+    /* ------ 모달 창 ------ */
+    // 비공개 게시판 비밀번호 입력 모달 창 state(open/close)
+    const [privateModal, setPrivateModal] = useState(false);
+
+    // 비공개 게시판 비밀번호 입력 모달 창 state 변경 함수
+    const openPrivateModal = () => setPrivateModal(true);
+    const closePrivateModal = () => setPrivateModal(false);
+
+    // 게시판 수정 모달 창 state(open/close)
+    const [editModal, setEditModal] = useState(false);
+
+    // 게시판 수정 모달 창 state 변경 함수
+    const openEditModal = () => setEditModal(true);
+    const closeEditModal = () => setEditModal(false);
 
     // 선택한 게시판 url로 라우팅
     const navigate = useNavigate();
@@ -81,21 +100,6 @@ const UserBoardList = () => {
         });
     };
 
-    /* ------ 모달 창 ------ */
-    // 비공개 게시판 비밀번호 입력 모달 창 state(open/close)
-    const [privateModal, setPrivateModal] = useState(false);
-
-    // 비공개 게시판 비밀번호 입력 모달 창 state 변경 함수
-    const openPrivateModal = () => setPrivateModal(true);
-    const closePrivateModal = () => setPrivateModal(false);
-
-    // 게시판 수정 모달 창 state(open/close)
-    const [editModal, setEditModal] = useState(false);
-
-    // 게시판 수정 모달 창 state 변경 함수
-    const openEditModal = () => setEditModal(true);
-    const closeEditModal = () => setEditModal(false);
-
     return (
         <div key="boardList" className="boardList">
             <Title>Board List</Title>
@@ -106,7 +110,10 @@ const UserBoardList = () => {
                         <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages}>〉</PaginationButton>
                     </div>
                     <BoardListWrapper>
-                        {boardList.slice(allOffset, allOffset + limit).map(element =>
+                        {loading ? <LoadingWrapper>
+                            <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
+                        </LoadingWrapper>
+                        : boardList.slice(allOffset, allOffset + limit).map(element =>
                             <BoardList key={element.boardId}>
                                 <Board onClick={() => handleBoardClick(element)}>
                                     {element.private ? '🔓 ' : ''}{element.title}
@@ -171,6 +178,13 @@ const BoardListWrapper = styled.ul`
     border-radius: 5px;
     box-shadow: 5px 5px 3px rgb(0, 0, 0, 0.06);
     overflow: auto;
+`;
+
+const LoadingWrapper = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 `;
 
 const BoardList = styled.li`

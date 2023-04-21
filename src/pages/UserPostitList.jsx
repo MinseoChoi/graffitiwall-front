@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
+import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitEditModal } from "../components/Modal";
 import bin from '../assets/bin.svg';
 import { Title } from "../components/common";
@@ -7,6 +8,8 @@ import { request } from '../utils/api';
 
 /* 유저가 생성한 포스트잇 목록 페이지 */
 const UserPostitList = () => {
+    const [loading, setLoading] = useState(true);
+
     // 포스트잇 리스트
     const [postitListValue, setPostitListValue] = useState([]);
 
@@ -16,6 +19,7 @@ const UserPostitList = () => {
         const getPostits = async () => {
             await request(`/boards/4/postits`)
             .then(json => setPostitListValue(json))
+            .then(res => setLoading(false))
         };
         getPostits();
     }, [postitListValue]);
@@ -77,15 +81,6 @@ const UserPostitList = () => {
         }
     };
 
-    // 포스트잇 클릭 시, 선택한 포스트잇 정보 저장
-    const onClick = (e, element) => {
-        openModal();
-        setSelectedPostitValue({
-            show: true,
-            ...element
-        })
-    };
-
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
     const [modal, setModal] = useState(false);
@@ -100,26 +95,39 @@ const UserPostitList = () => {
         });
     };
 
+    // 포스트잇 클릭 시, 선택한 포스트잇 정보 저장
+    const onClick = (e, element) => {
+        openModal();
+        setSelectedPostitValue({
+            show: true,
+            ...element
+        })
+    };
+
     return (
         <div>
             <Title>Postit List</Title>
             <PostitSpace>
                 <PostitContainer ref={containerRef}>
-                    {postitListValue.map(element =>
-                        <PostitOnContainer
-                            ref={el => postitRef.current[element.postitId] = el}
-                            key={element.postitId}
-                            color={element.color}
-                            draggable={true}
-                            onDragStart={e => onStart(e, element)}
-                            onDrag={e => onDrag(e, element)}
-                            onDragEnd={e => onStop(e, element)}
-                            onClick={e => onClick(e, element)}
-                        >
-                            <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                            <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                        </PostitOnContainer>
-                    )}
+                    {loading ? <LoadingWrapper>
+                            <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
+                        </LoadingWrapper>
+                        : postitListValue.map(element =>
+                            <PostitOnContainer
+                                ref={el => postitRef.current[element.postitId] = el}
+                                key={element.postitId}
+                                color={element.color}
+                                draggable={true}
+                                onDragStart={e => onStart(e, element)}
+                                onDrag={e => onDrag(e, element)}
+                                onDragEnd={e => onStop(e, element)}
+                                onClick={e => onClick(e, element)}
+                            >
+                                <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                            </PostitOnContainer>
+                        )
+                    }
                 </PostitContainer>
                 <DeletePostitButton ref={deleteRef} src={bin} alt="DeletePostit" />
             </PostitSpace>
@@ -157,6 +165,13 @@ const PostitContainer = styled.div`
     background-color: white;
     box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
     overflow: auto;
+`;
+
+const LoadingWrapper = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 `;
 
 const PostitOnContainer = styled.div`
