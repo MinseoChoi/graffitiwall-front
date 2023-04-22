@@ -203,14 +203,14 @@ const CreatePostit = () => {
              * < 원하는 방향 >
              *  - 드롭한 곳에 포스트잇이 정확히 위치해 있길 원함
              *  - 바뀐 포스트잇의 위치를 setState로 반영할 때, 바로바로 반영되길 원함
-             *  - 바뀐 정보를 PATCH 후, 다시 GET 하길 원함
+             *  - PATCH 할 때에도 이벤트로 인해 바뀐 모든 정보들이 잘 반영되길 원함
              * 
              * < 순서 >
-             *  드롭 ---> 바뀐 위치 반영(setState) ---> PATCH로 수정
+             *  드롭 ---> 바뀐 위치 반영(setState) ---> PATCH
              */
             const savePostit = async () => {
                 // 이벤트가 발생한 포스트잇의 위치만 set, 나머지는 원래 값 그대로
-                await setPostitListValue(postitListValue.map(postit =>
+                setPostitListValue(postitListValue.map(postit =>
                     postit.postitId === element.postitId ? { ...postit, positionX: x, positionY: y } : postit    
                 ));
         
@@ -232,14 +232,15 @@ const CreatePostit = () => {
     /**
      * < 원하는 방향 >
      *  - 바뀐 포스트잇의 크기를 setState로 반영할 때, 바로바로 반영되길 원함
-     *  - 바뀐 정보를 PATCH 후, 다시 GET 하길 원함
+     *  - PATCH 할 때에도 이벤트로 인해 바뀐 모든 정보들이 잘 반영되길 원함
      * 
-     *  리사이즈 ---> 바뀐 크기 반영(setState) ---> PATCH로 수정
+     * < 순서 >
+     *  리사이즈 ---> 바뀐 크기 반영(setState) ---> PATCH
      */
     const savePostit = async (element, d) => {
         const changePostitValue = async () => {
             // 이벤트가 발생한 포스트잇의 크기만 set, 나머지는 원래 값 그대로
-            await setPostitListValue(postitListValue.map(postit =>
+            setPostitListValue(postitListValue.map(postit =>
                 postit.postitId === element.postitId ? { ...postit, sizeX: element.sizeX + d.width, sizeY: element.sizeY + d.height } : postit    
             ));
 
@@ -254,11 +255,6 @@ const CreatePostit = () => {
         };
         changePostitValue();
     };
-
-    /**
-     * < 각 이벤트가 발생했을 때, 데이터 처리 >
-     *  - 리사이즈 이벤트 발생 => 이벤트가 발생한 포스트잇의 크기만 set, 나머지는 원래 값 그대로
-     */
 
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
