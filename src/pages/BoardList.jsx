@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate  } from 'react-router-dom';
+import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import PasswordModal from "../components/Modal/PasswordModal.jsx";
 import { Title } from "../components/common/Title.js";
@@ -51,6 +52,9 @@ const dataList = [
 
 /* 메인 페이지 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
 const BoardList = () => {
+    // 로딩 state
+    const [loading, setLoading] = useState(true);
+
     // 게시판 목록 저장
     const [boardList, setBoardList] = useState([]);
     const [popularBoardList, setPopularBoardList] = useState([]);
@@ -84,6 +88,7 @@ const BoardList = () => {
         const getAllBoardList = async () => {
             await request('/boards')
             .then(json => setBoardList(json))
+            .then(res => setLoading(false))
         };
         getAllBoardList();
     }, []);
@@ -177,7 +182,10 @@ const BoardList = () => {
                         </div>
                     </BoardWrapper>
                     <BoardListWrapper>
-                        {boardList.slice(allOffset, allOffset + limit + 5).map(element =>
+                        {loading ? <LoadingWrapper>
+                            <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
+                        </LoadingWrapper>
+                        : boardList.slice(allOffset, allOffset + limit + 5).map(element =>
                             <Board key={element.boardId} onClick={() => handleBoardClick(element)}>
                                 {element.private ? '🔓 ' : ''}{element.title}
                             </Board>
@@ -240,6 +248,13 @@ const PaginationButton = styled.button`
     background-color: white;
     border: 1px solid gray;
     border-radius: 3px;
+`;
+
+const LoadingWrapper = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 `;
 
 const BoardListWrapper = styled.ul`

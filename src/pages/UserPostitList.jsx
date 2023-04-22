@@ -8,6 +8,7 @@ import { request } from '../utils/api';
 
 /* 유저가 생성한 포스트잇 목록 페이지 */
 const UserPostitList = () => {
+    // 로딩 state
     const [loading, setLoading] = useState(true);
 
     // 포스트잇 리스트

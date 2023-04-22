@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
@@ -10,68 +10,8 @@ import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
 
 const CreatePostit = () => {
-    // const containerRef = useRef(null);
-    // const dragComponentRef = useRef(null);
-    // const [originPos, setOriginPos] = useState({ x: 0, y: 0 });
-    // const [clientPos, setClientPos] = useState({ x: 0, y: 0 });
-    // const [pos, setPos] = useState({ left: 0, top: 0 });
-
-    // const dragStartHandler = (e) => {
-    //     const blankCanvas = document.createElement('canvas')
-    //     blankCanvas.classList.add("canvas");
-    //     e.dataTransfer?.setDragImage(blankCanvas, 0, 0);
-    //     document.body?.appendChild(blankCanvas); // 투명 캔버스를 생성하여 글로벌 아이콘 제거
-    //     e.dataTransfer.effectAllowed = "move"; // 크롬의그린 +아이콘 제거
-    //     const originPosTemp = { ...originPos };
-    //     originPosTemp["x"] = e.target.offsetLeft;
-    //     originPosTemp["y"] = e.target.offsetTop;
-    //     console.log("originPosTemp", originPosTemp);
-    //     setOriginPos(originPosTemp); //드래그 시작할때 드래그 전 위치값을 저장
-
-    //     const clientPosTemp = { ...clientPos };
-    //     clientPosTemp["x"] = e.clientX;
-    //     clientPosTemp["y"] = e.clientY;
-    //     setClientPos(clientPosTemp);
-    // };
-
-    // const dragHandler = (e) => {
-    //     const PosTemp = { ...pos };
-    //     PosTemp["left"] = e.target.offsetLeft + e.clientX - clientPos.x;
-    //     PosTemp["top"] = e.target.offsetTop + e.clientY - clientPos.y;
-    //     setPos(PosTemp);
-
-    //     const clientPosTemp = { ...clientPos };
-    //     clientPosTemp["x"] = e.clientX;
-    //     clientPosTemp["y"] = e.clientY;
-    //     setClientPos(clientPosTemp);
-    // };
-
-    // const dragOverHandler = (e) => {
-    //     e.preventDefault(); // 드래그시에 플라잉백하는 고스트이미지를 제거한다
-    // };
-
-    // const dragEndHandler = (e) => {
-    //     if (!isInsideDragArea(e)) {
-    //         const posTemp = { ...pos };
-    //         posTemp["left"] = originPos.x;
-    //         posTemp["top"] = originPos.y;
-    //         setPos(posTemp);
-    //     }
-    //     // 캔버스 제거
-    //     const canvases = document.getElementsByClassName("canvas");
-    //     for (let i = 0; i < canvases.length; i++) {
-    //         let canvas = canvases[i];
-    //         canvas.parentNode?.removeChild(canvas);
-    //     }
-    //     // 캔버스로 인해 발생한 스크롤 방지 어트리뷰트 제거
-    //     document.body.removeAttribute("style");
-    // };
-
-    // const isInsideDragArea = (e) => {
-    //     return true;
-    // }
-
-    const [loading, setLoading] = useState(true);
+    // 로딩 state
+    const [loading, setLoading] = useState(false);
 
     // 게시판 정보 ( 게시판 ID, 제목 )
     const [boardData, setBoardData] = useState({
@@ -81,98 +21,100 @@ const CreatePostit = () => {
 
     // 포스트잇 리스트
     const [postitListValue, setPostitListValue] = useState([]);
+    
+    // 포스트잇 생성 모달 창을 통해 생성한 포스트잇을 포스트잇 리스트에 추가
+    const addPostitValue = postit => {
+        setPostitListValue(postitListValue.concat({ ...postit }));
+    };
 
     // url에서 게시판 ID 가져오기
     const {boardId} = useParams();
 
-    // GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) / 포스트잇 정보 가져오기
+    // 처음 렌더링 시, GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) / 포스트잇 정보 가져오기
     useEffect(() => {
         const getBoardName = async () => {
+            setLoading(true);
             await request(`/boards/${boardId}`)
             .then(json => setBoardData({ boardId: json.boardId, title: json.title}))
         };
         getBoardName();
-    }, []);
 
-    useEffect(() => {
         const getPostits = async () => {
             await request(`/boards/${boardId}/postits`)
             .then(json => {
                 setPostitListValue(json);
             })
-            .then(res => setLoading(false))
+            .then(res => setTimeout(() => {
+                setLoading(false)}
+                , 1500)
+            );
         };
         getPostits();
-    }, [postitListValue]);
+    }, []);
 
-    // 리스트에 포스트잇 추가
-    const addPostitValue = postit => {
-        setPostitListValue(postitListValue.concat({ ...postit }));
-    };
+    // /* ------ Board Zoom and Pan ------ */
+    // let posX = 0;
+    // let posY = 0;
+    // const [screen, setScreen] = useState({ top: 0, left: 0 });
+    // const [ratio, setRatio] = useState(1);
 
-    /* ------ Board Zoom and Pan ------ */
-    let posX = 0;
-    let posY = 0;
-    const [screen, setScreen] = useState({ top: 0, left: 0 });
-    const [ratio, setRatio] = useState(1);
+    // // Zoom 이벤트 - 0.4 ~ 2배
+    // const wheelHandler = e => {
+    //     setRatio(
+    //         ratio >= 0.4 ? ratio + (-0.001) * e.deltaY : 0.4
+    //     );
+    // };
 
-    // Zoom 이벤트 - 0.4 ~ 2배
-    const wheelHandler = e => {
-        setRatio(
-            ratio >= 0.4 ? ratio + (-0.001) * e.deltaY : 0.4
-        );
-    };
+    // // onDragStart 이벤트
+    // const moveScreenStart = e => {
+    //     const img = new Image();
+    //     e.dataTransfer.setDragImage(img, 0, 0);
 
-    // onDragStart 이벤트
-    const moveScreenStart = e => {
-        const img = new Image();
-        e.dataTransfer.setDragImage(img, 0, 0);
+    //     posX = e.pageX;
+    //     posY = e.pageY;
+    // };
 
-        posX = e.pageX;
-        posY = e.pageY;
-    };
-
-    // onDrag 이벤트
-    const moveScreen = e => {
-        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
-        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+    // // onDrag 이벤트
+    // const moveScreen = e => {
+    //     const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+    //     const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
         
-        e.target.style.left = limitX
-            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
-            : '0px';
-        e.target.style.top = limitY
-            ? `${e.target.offsetTop + (e.pageY - posY)}px`
-            : '0px';
+    //     e.target.style.left = limitX
+    //         ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+    //         : '0px';
+    //     e.target.style.top = limitY
+    //         ? `${e.target.offsetTop + (e.pageY - posY)}px`
+    //         : '0px';
 
-        posX = limitX ? e.pageX : 0;
-        posY = limitY ? e.pageY : 0;
-    };
+    //     posX = limitX ? e.pageX : 0;
+    //     posY = limitY ? e.pageY : 0;
+    // };
 
-    // onDragEnd 이벤트
-    const moveScreenEnd = e => {
-        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
-        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+    // // onDragEnd 이벤트
+    // const moveScreenEnd = e => {
+    //     const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+    //     const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
 
-        e.target.style.left = limitX
-            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
-            : '0px';
-        e.target.style.top = limitY
-            ? `${e.target.offsetTop + (e.pageY - posY)}px`
-            : '0px';
+    //     e.target.style.left = limitX
+    //         ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+    //         : '0px';
+    //     e.target.style.top = limitY
+    //         ? `${e.target.offsetTop + (e.pageY - posY)}px`
+    //         : '0px';
         
-        posX = limitX ? e.pageX : 0;
-        posY = limitY ? e.pageY : 0;
+    //     posX = limitX ? e.pageX : 0;
+    //     posY = limitY ? e.pageY : 0;
 
-        setScreen({ top: e.target.style.top, left: e.target.style.left });
-    }
+    //     setScreen({ top: e.target.style.top, left: e.target.style.left });
+    // };
 
     /* ------ Postit Drag and Drop & Click ------ */
-    const boardRef = useRef(null); // 게시판 영역(div) 위치 가져오기 위함
-    const postitRef = useRef([]); // 포스트잇 영역(div) 위치 가져오기 위함 (여러 개이므로 배열 형태)
+    const boardRef = useRef(null); // 게시판 영역(div) 위치(top, left) 가져오기 위함
+    const postitRef = useRef([]); // 포스트잇 영역(div) 위치(top, left) 가져오기 위함 (여러 개이므로 배열 형태)
 
-    const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그인지 클릭인지 확인하기 위함
+    const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그 이벤트인지 클릭 이벤트인지 확인하기 위함
 
-    // 클릭한 포스트잇 정보
+    // 클릭한 포스트잇 정보 => 클릭한 포스트잇 모달 창을 띄우기 위해 필요
     const [selectedPostitValue, setSelectedPostitValue] = useState({
         show: false,
         title: '',
@@ -183,33 +125,34 @@ const CreatePostit = () => {
         updatedAt: ''
     });
 
-    // onDragStart 이벤트
+    // onDragStart 이벤트 : 초기 위치 저장
     const onStart = e => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
     };
 
-    // 부모 요소(top)와의 거리 계산
+    // 부모 요소(board의 top)와 자식 요소(postit의 top)의 거리 계산
     const distanceChildFromTop = (postitId) => {
         let peTop = boardRef.current.getBoundingClientRect().top;
         let chTop = postitRef.current[postitId].getBoundingClientRect().top;
         return chTop - peTop;
     };
 
-    // 부모 요쇼(left)와의 거리 계산
+    // 부모 요쇼(board의 left)와 자식 요소(postit의 left)의 거리 계산
     const distanceChildFromLeft = (postitId) => {
         let peLeft = boardRef.current.getBoundingClientRect().left;
         let chLeft = postitRef.current[postitId].getBoundingClientRect().left;
         return chLeft - peLeft;
     }
 
-    // onDragEnd 이벤트
+    // onDragEnd 이벤트 : 좌표 변화를 계산하여 클릭 / 드래그 앤 드롭 이벤트 분리
     const onStop = (e, element) => {
         // 좌표 변화 계산
         const dragX = Math.abs(dragStartPos.x - e.pageX);
         const dragY = Math.abs(dragStartPos.y - e.pageY);
         
+        // Click 이벤트
         if (dragX === 0 && dragY === 0) {
-            // 클릭 이벤트인 경우, 클릭한 포스트잇 정보 저장 / 조회수 추가
+            // 클릭한 포스트잇 정보 저장
             setSelectedPostitValue({
                 show: true,
                 title: element.title,
@@ -242,56 +185,80 @@ const CreatePostit = () => {
                 })
             };
             // changeViews();
-        } else {
-            // 드래그 앤 드롭 이벤트인 경우, 좌표 저장
+        }
+        // Drag and Drop 이벤트
+        else {
+            // 좌표 계산
             const x = distanceChildFromLeft(element.postitId);
             const y = distanceChildFromTop(element.postitId);
 
+            /* ------ 수정해야 하는 부분 ------ */
+            /**
+             * < 문제 >
+             *  포스트잇 드롭 시, api에는 제대로 된 위치가 저장되며 새로고침했을 때에도 잘 불러와지지만,
+             *  화면 상에서 포스트잇이 드롭한 곳이 아닌 다른 곳에 위치한 것으로 보여짐
+             */
+
+            /**
+             * < 원하는 방향 >
+             *  - 드롭한 곳에 포스트잇이 정확히 위치해 있길 원함
+             *  - 바뀐 포스트잇의 위치를 setState로 반영할 때, 바로바로 반영되길 원함
+             *  - 바뀐 정보를 PATCH 후, 다시 GET 하길 원함
+             * 
+             * < 순서 >
+             *  드롭 ---> 바뀐 위치 반영(setState) ---> PATCH로 수정
+             */
             const savePostit = async () => {
+                // 이벤트가 발생한 포스트잇의 위치만 set, 나머지는 원래 값 그대로
+                await setPostitListValue(postitListValue.map(postit =>
+                    postit.postitId === element.postitId ? { ...postit, positionX: x, positionY: y } : postit    
+                ));
+        
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
-                        boardId: element.boardId,
-                        userId: element.userId,
-                        postitId: element.postitId,
-                        title: element.title,
-                        contents: element.contents,
-                        font: element.font,
-                        color: element.color,
+                        ...element,
                         positionX: x,
-                        positionY: y,
-                        angle: element.angle,
-                        sizeX: element.sizeX,
-                        sizeY: element.sizeY,
-                        views: element.views
+                        positionY: y
                     })
                 });
-            }
+            };
             savePostit();
         }
     };
 
     /* ------ Postit Resize ------ */
+    /* ------ 수정해야 하는 부분 ------ */
+    /**
+     * < 원하는 방향 >
+     *  - 바뀐 포스트잇의 크기를 setState로 반영할 때, 바로바로 반영되길 원함
+     *  - 바뀐 정보를 PATCH 후, 다시 GET 하길 원함
+     * 
+     *  리사이즈 ---> 바뀐 크기 반영(setState) ---> PATCH로 수정
+     */
     const savePostit = async (element, d) => {
-        await request(`/postit/${element.postitId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                boardId: element.boardId,
-                userId: element.userId,
-                postitId: element.postitId,
-                title: element.title,
-                contents: element.contents,
-                font: element.font,
-                color: element.color,
-                positionX: element.positionX,
-                positionY: element.positionY,
-                angle: element.angle,
-                sizeX: element.sizeX + d.width,
-                sizeY: element.sizeY + d.height,
-                views: element.views
-            })
-        });
+        const changePostitValue = async () => {
+            // 이벤트가 발생한 포스트잇의 크기만 set, 나머지는 원래 값 그대로
+            await setPostitListValue(postitListValue.map(postit =>
+                postit.postitId === element.postitId ? { ...postit, sizeX: element.sizeX + d.width, sizeY: element.sizeY + d.height } : postit    
+            ));
+
+            await request(`/postit/${element.postitId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    ...element,
+                    sizeX: element.sizeX + d.width,
+                    sizeY: element.sizeY + d.height
+                })
+            });
+        };
+        changePostitValue();
     };
+
+    /**
+     * < 각 이벤트가 발생했을 때, 데이터 처리 >
+     *  - 리사이즈 이벤트 발생 => 이벤트가 발생한 포스트잇의 크기만 set, 나머지는 원래 값 그대로
+     */
 
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
@@ -311,103 +278,58 @@ const CreatePostit = () => {
         <div>
             <Title>{boardData.title}</Title>
             <BoardSpace>
-                <BoardContainer 
-                    ref={boardRef} 
-                    // ratio={ratio} 
-                    // onWheel={wheelHandler}
-                    // onDragStart={e => moveScreenStart(e)}
-                    // onDrag={e => moveScreen(e)}
-                    // onDragEnd={e => moveScreenEnd(e)}
-                    // draggable
-                >
-                    {loading ? <LoadingWrapper>
+                <BoardContainer ref={boardRef}>
+                    {/* 
+                        로딩 중 -> 스피너
+                        로딩 끝 -> 게시판 영역에 포스트잇 display
+                     */}
+                    {loading ? 
+                        <LoadingWrapper>
                             <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
                         </LoadingWrapper>
-                        : 
-                            postitListValue.map(element =>
-                                <Draggable
-                                    key={element.postitId}
-                                    onStart={e => onStart(e, element)}
-                                    onStop={e => onStop(e, element)}
-                                >
-                                    <Resizable
-                                        style={{ 
-                                            position: 'absolute',
-                                            display: 'block',
-                                            width: element.sizeX + 'px',
-                                            height: element.sizeY + 'px',
-                                            paddingTop: '10px',
-                                            top: element.positionY + 'px',
-                                            left: element.positionX + 'px',
-                                            backgroundColor: element.color,
-                                            boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
-                                            borderRadius: '5px',
-                                            cursor: 'pointer'
-                                        }}
-                                        key={element.postitId}
-                                        defaultSize={{ width: element.sizeX, height: element.sizeY }}
-                                        minWidth={80}
-                                        minHeight={80}
-                                        maxWidth={300}
-                                        maxHeight={300}
-                                        onResizeStart={(e, direction) => {
-                                            e.stopPropagation();
-                                        }}
-                                        onResizeStop={(e, direction, ref, d) => {
-                                            savePostit(element, d);
-                                        }}
-                                        enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
-                                    >
-                                        <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
-                                            <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                            <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                                        </div>
-                                    </Resizable>
-                                </Draggable>
-                            )
-                    }
-                    {/* 게시판 영역에 포스트잇 생성 */}
-                    {/* {postitListValue.map(element =>
-                        <Draggable
-                            key={element.postitId}
-                            onStart={e => onStart(e, element)}
-                            onStop={e => onStop(e, element)}
-                        >
-                            <Resizable
-                                style={{ 
-                                    position: 'absolute',
-                                    display: 'block',
-                                    width: element.sizeX + 'px',
-                                    height: element.sizeY + 'px',
-                                    paddingTop: '10px',
-                                    top: element.positionY + 'px',
-                                    left: element.positionX + 'px',
-                                    backgroundColor: element.color,
-                                    boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer'
-                                }}
+                    : 
+                        postitListValue.map(element =>
+                            <Draggable
                                 key={element.postitId}
-                                defaultSize={{ width: element.sizeX, height: element.sizeY }}
-                                minWidth={80}
-                                minHeight={80}
-                                maxWidth={300}
-                                maxHeight={300}
-                                onResizeStart={(e, direction) => {
-                                    e.stopPropagation();
-                                }}
-                                onResizeStop={(e, direction, ref, d) => {
-                                    savePostit(element, d);
-                                }}
-                                enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                                onStart={e => onStart(e, element)}
+                                onStop={e => onStop(e, element)}
                             >
-                                <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
-                                    <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                    <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
-                                </div>
-                            </Resizable>
-                        </Draggable>
-                    )} */}
+                                <Resizable
+                                    style={{ 
+                                        position: 'absolute',
+                                        display: 'block',
+                                        width: element.sizeX + 'px',
+                                        height: element.sizeY + 'px',
+                                        paddingTop: '10px',
+                                        top: element.positionY + 'px',
+                                        left: element.positionX + 'px',
+                                        backgroundColor: element.color,
+                                        boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer'
+                                    }}
+                                    key={element.postitId}
+                                    defaultSize={{ width: element.sizeX, height: element.sizeY }}
+                                    minWidth={80}
+                                    minHeight={80}
+                                    maxWidth={300}
+                                    maxHeight={300}
+                                    onResizeStart={(e, direction) => {
+                                        e.stopPropagation();
+                                    }}
+                                    onResizeStop={(e, direction, ref, d) => {
+                                        savePostit(element, d);
+                                    }}
+                                    enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
+                                >
+                                    <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
+                                        <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                        <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                    </div>
+                                </Resizable>
+                            </Draggable>
+                        )
+                    }
                 </BoardContainer>
             </BoardSpace>
             <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
@@ -429,7 +351,7 @@ const CreatePostit = () => {
     );
 }
 
-export default CreatePostit;
+export default React.memo(CreatePostit);
 
 const BoardSpace = styled.div`
     position: absolute;

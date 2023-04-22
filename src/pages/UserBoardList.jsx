@@ -8,6 +8,7 @@ import { Title } from "../components/common/Title.js";
 
 /* 유저가 생성한 게시판 목록 페이지 */
 const UserBoardList = () => {
+    // 로딩 state
     const [loading, setLoading] = useState(true);
 
     // 게시판 목록 정보
