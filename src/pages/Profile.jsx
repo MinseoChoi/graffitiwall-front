@@ -17,8 +17,21 @@ const Profile = () => {
         email: '',
         imageUrl: null,
         introduce: '',
+        nickname: '',
         status: 'ACTIVE'
     });
+
+    const [userNicknameList, setUserNicknameList] = useState([]);
+
+    useEffect(() => {
+        const getuserNickname = async () => {
+            await request('/users')
+            .then(json => {
+                setUserNicknameList(json.nickname);
+            })
+        };
+        // getuserNickname();
+    }, []);
 
     // 현재 비밀번호 / 새 비밀번호 / 새 비밀번호 확인
     const [currentPassword, setCurrentPassword] = useState('');
@@ -26,12 +39,16 @@ const Profile = () => {
     const [reNewPassword, setReNewPassword] = useState('');
 
     // 오류메시지 상태 지정
+    const [nicknameMessage, setNicknameMessage] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
     const [passwordConfirmMessage, setPasswordConfirmMessage] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
 
     // 유효성 검사
-    const [isPassword, setIsPassword] = useState(false);
-    const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
+    const [isNickname, setIsNickname] = useState(true);
+    const [isPassword, setIsPassword] = useState(true);
+    const [isPasswordConfirm, setIsPasswordConfirm] = useState(true);
+    const [isEmail, setIsEmail] = useState(true);
 
     // GET 메소드로 유저 정보 가져오기
     useEffect(() => {
@@ -49,7 +66,13 @@ const Profile = () => {
         const { name, value } = e.target;
 
         // 유효성 검사
-        if (name === 'currentPassword') {
+        if (name === 'nickname') {
+            setUser({
+                ...user,
+                nickname: value
+            });
+            onChangeNickname(value);
+        } else if (name === 'currentPassword') {
             setCurrentPassword(value);
         } else if (name === 'newPassword') {
             setNewPassword(value);
@@ -57,11 +80,41 @@ const Profile = () => {
         } else if (name === 'reNewPassword') {
             setReNewPassword(value);
             onChangePasswordConfirm(value);
+        } else if (name === 'email') {
+            setUser({
+                ...user,
+                email: value
+            })
+            onChangeEmail(value);
         } else {
             setUser({
                 ...user,
                 [name]: value
             });
+        }
+    };
+
+    // 닉네임 중복 체크 함수
+    const isExist = (name) => {
+        const data = userNicknameList.filter(data => data === name);
+        if (!data.length) {
+            return false
+        } else {
+            return true
+        }
+    };
+
+    // 닉네임 검사
+    const onChangeNickname = value => {
+        if (isExist(value)) {
+            setNicknameMessage("이미 존재하는 닉네임 입니다.");
+            setIsNickname(false);
+        } else if (value.length < 2 || value.length > 20) {
+            setNicknameMessage("게시판 이름은 2글자 이상 20글자 이하로 입력해주세요.");
+            setIsNickname(false);
+        } else {
+            setNicknameMessage("사용가능한 이름 입니다.");
+            setIsNickname(true);
         }
     };
 
@@ -88,12 +141,26 @@ const Profile = () => {
         }
     };
 
+    // 이메일 검사
+    const onChangeEmail = value => {
+        const emailRegExp = /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
+
+        if (!emailRegExp.test(value)) {
+            setEmailMessage("이메일의 형식이 올바르지 않습니다.");
+            setIsEmail(false);
+        } else {
+            setEmailMessage("사용가능한 이메일 입니다.");
+            setIsEmail(true);
+        }
+    };
+
     // 버튼 클릭 시
     const editUser = async e => {
         e.preventDefault();
 
-        // 수정 필요
+        // 수정 필요 - 변경사항이 아예 없는 경우
         if (!currentPassword && !newPassword) {
+            alert('변경사항이 없습니다.');
             return;
         }
 
@@ -127,7 +194,7 @@ const Profile = () => {
             <Title>My Profile</Title>
             <FormSpace>
                 <FormContainer>
-                    <FormDiv marginBottom={30}>
+                    <FormDiv>
                         <FormLabel fontSize='14px'>Profile Image</FormLabel>
                         <FormDiv padding='4px 6px' marginBottom={-20} width={50}>
                             {user.imageUrl ? (
@@ -140,11 +207,14 @@ const Profile = () => {
                             )}
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={32}>
+                    <FormDiv marginBottom={42}>
                         <FormLabel fontSize='14px'>NickName</FormLabel>
-                        <FormInput type="text" name="userId" value={user.userId} onChange={changeUserValue} />
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
+                            <FormInput type="text" name="nickname" value={user.nickname} onChange={changeUserValue} />
+                            <ErrorMessage>{nicknameMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={32}>
+                    <FormDiv marginBottom={20}>
                         <FormLabel fontSize='14px'>Current PW</FormLabel>
                         <FormInput type="password" name="currentPassword" onChange={changeUserValue} />
                     </FormDiv>
@@ -162,9 +232,12 @@ const Profile = () => {
                             <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={20}>
+                    <FormDiv marginBottom={42}>
                         <FormLabel fontSize='14px'>Email</FormLabel>
-                        <FormInput type="email" name="email" value={user.email} onChange={changeUserValue} />
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
+                            <FormInput type="email" name="email" value={user.email} onChange={changeUserValue} />
+                            <ErrorMessage>{emailMessage}</ErrorMessage>
+                        </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={-30}>
                         <FormLabel fontSize='14px'>Introduce</FormLabel>

@@ -53,60 +53,60 @@ const CreatePostit = () => {
     }, []);
 
     // /* ------ Board Zoom and Pan ------ */
-    // let posX = 0;
-    // let posY = 0;
-    // const [screen, setScreen] = useState({ top: 0, left: 0 });
-    // const [ratio, setRatio] = useState(1);
+    let posX = 0;
+    let posY = 0;
+    const [screen, setScreen] = useState({ top: 0, left: 0 });
+    const [ratio, setRatio] = useState(1);
 
-    // // Zoom 이벤트 - 0.4 ~ 2배
-    // const wheelHandler = e => {
-    //     setRatio(
-    //         ratio >= 0.4 ? ratio + (-0.001) * e.deltaY : 0.4
-    //     );
-    // };
+    // Zoom 이벤트 - 0.4 ~ 2배
+    const wheelHandler = e => {
+        setRatio(ratio =>
+            ratio >= 0.4 ? ratio + (-0.001) * e.deltaY : 0.4
+        );
+    };
 
-    // // onDragStart 이벤트
-    // const moveScreenStart = e => {
-    //     const img = new Image();
-    //     e.dataTransfer.setDragImage(img, 0, 0);
+    // onDragStart 이벤트
+    const moveScreenStart = e => {
+        const img = new Image();
+        e.dataTransfer.setDragImage(img, 0, 0);
 
-    //     posX = e.pageX;
-    //     posY = e.pageY;
-    // };
+        posX = e.pageX;
+        posY = e.pageY;
+    };
 
-    // // onDrag 이벤트
-    // const moveScreen = e => {
-    //     const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
-    //     const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+    // onDrag 이벤트
+    const moveScreen = e => {
+        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
         
-    //     e.target.style.left = limitX
-    //         ? `${e.target.offsestLeft + (e.pageX - posX)}px`
-    //         : '0px';
-    //     e.target.style.top = limitY
-    //         ? `${e.target.offsetTop + (e.pageY - posY)}px`
-    //         : '0px';
+        e.target.style.left = limitX
+            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+            : '0px';
+        e.target.style.top = limitY
+            ? `${e.target.offsetTop + (e.pageY - posY)}px`
+            : '0px';
 
-    //     posX = limitX ? e.pageX : 0;
-    //     posY = limitY ? e.pageY : 0;
-    // };
+        posX = limitX ? e.pageX : 0;
+        posY = limitY ? e.pageY : 0;
+    };
 
-    // // onDragEnd 이벤트
-    // const moveScreenEnd = e => {
-    //     const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
-    //     const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
+    // onDragEnd 이벤트
+    const moveScreenEnd = e => {
+        const limitX = e.target.offsetLeft + (e.pageX - posX) <= 0;
+        const limitY = e.target.offsetTop + (e.pageY - posY) <= 0;
 
-    //     e.target.style.left = limitX
-    //         ? `${e.target.offsestLeft + (e.pageX - posX)}px`
-    //         : '0px';
-    //     e.target.style.top = limitY
-    //         ? `${e.target.offsetTop + (e.pageY - posY)}px`
-    //         : '0px';
+        e.target.style.left = limitX
+            ? `${e.target.offsestLeft + (e.pageX - posX)}px`
+            : '0px';
+        e.target.style.top = limitY
+            ? `${e.target.offsetTop + (e.pageY - posY)}px`
+            : '0px';
         
-    //     posX = limitX ? e.pageX : 0;
-    //     posY = limitY ? e.pageY : 0;
+        posX = limitX ? e.pageX : 0;
+        posY = limitY ? e.pageY : 0;
 
-    //     setScreen({ top: e.target.style.top, left: e.target.style.left });
-    // };
+        setScreen({ top: e.target.style.top, left: e.target.style.left });
+    };
 
     /* ------ Postit Drag and Drop & Click ------ */
     const boardRef = useRef(null); // 게시판 영역(div) 위치(top, left) 가져오기 위함
@@ -222,6 +222,11 @@ const CreatePostit = () => {
                         positionY: y
                     })
                 });
+
+                await request(`/boards/${boardId}/postits`)
+                .then(json => {
+                    setPostitListValue(json);
+                })
             };
             savePostit();
         }
@@ -251,6 +256,11 @@ const CreatePostit = () => {
                     sizeX: element.sizeX + d.width,
                     sizeY: element.sizeY + d.height
                 })
+            });
+
+            await request(`/boards/${boardId}/postits`)
+            .then(json => {
+                setPostitListValue(json);
             });
         };
         changePostitValue();
@@ -302,7 +312,7 @@ const CreatePostit = () => {
                                         backgroundColor: element.color,
                                         boxShadow: '3px 3px 3px rgb(0, 0, 0, 0.1)',
                                         borderRadius: '5px',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
                                     }}
                                     key={element.postitId}
                                     defaultSize={{ width: element.sizeX, height: element.sizeY }}
@@ -320,7 +330,16 @@ const CreatePostit = () => {
                                 >
                                     <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
                                         <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                        <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                        <PostitContent height={element.sizeY} fontFamily={element.font}>
+                                            {element.contents.split('\n').map(line => {
+                                                return (
+                                                    <span>
+                                                        {line}
+                                                        <br />
+                                                    </span>
+                                                );
+                                            })}
+                                        </PostitContent>
                                     </div>
                                 </Resizable>
                             </Draggable>
@@ -356,13 +375,14 @@ const BoardSpace = styled.div`
     top: 195px;
     left: 100px;
     width: 80%;
-    height: 67vh;
+    height: 70vh;
     border: 1px solid lightgray;
-    padding: 10px 0 30px 0;
-    border-raius;
-    margin-bottom: 50px;
+    // padding: 10px 0 30px 0;
+    border-radius: 5px;
+    // margin-bottom: 50px;
     background-color: white;
     box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
+    border-radius: 5px;
     overflow: hidden;
     // top: 195px;
     // left: 120px;
@@ -376,10 +396,11 @@ const BoardContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
+    border-radius: 5px;
     // width: ${props => 160 / props.ratio}%;
     // height: ${props => 160 / props.ratio}%;
     // transform: scale(${props => props.ratio >= 2 ? 2: props.ratio});
-    transform-origin: left top;
+    // transform-origin: left top;
     // margin: 0 auto;
     // right: 25px;
     // width: 100%;
@@ -390,7 +411,7 @@ const BoardContainer = styled.div`
     // margin-bottom: 50px;
     // background-color: white;
     // box-shadow: 3px 3px 3px rgb(0, 0, 0, 0.1);
-    // overflow: auto;
+    overflow: auto;
 `;
 
 const PostitOnBoard = styled.div`
@@ -432,6 +453,7 @@ const PostitTitle = styled.div`
 
 const PostitContent = styled.div`
     position: relative;
+    height: ${props => props.height * 0.45}px;
     padding: 4px 6px;
     font-family: ${props => props.fontFamily};
     font-size: 75%;

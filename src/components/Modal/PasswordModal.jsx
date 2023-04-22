@@ -14,6 +14,7 @@ const PasswordModal = ({boardValue, closeModal}) => {
     // 입력값이 바뀔 때마다 set
     const changePassword = e => {
         const { value } = e.target;
+        
         setPassword(value);
         setPasswordMessage('');
     };

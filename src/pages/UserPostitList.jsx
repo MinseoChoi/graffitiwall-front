@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitEditModal } from "../components/Modal";
 import bin from '../assets/bin.svg';
@@ -14,16 +15,20 @@ const UserPostitList = () => {
     // 포스트잇 리스트
     const [postitListValue, setPostitListValue] = useState([]);
 
+    // url에서 userId 가져오기
+    const { userId } = useParams();
+
     // GET 메소드로 포스트잇 정보 가져오기
     useEffect(() => {
         // API url 변경 필요!!! 일단, 확인을 위해 게시판 4에 있는 포스트잇 불러와 사용
         const getPostits = async () => {
+            // await request(`/users/${userId}/postits`)
             await request(`/boards/4/postits`)
             .then(json => setPostitListValue(json))
             .then(res => setLoading(false))
         };
         getPostits();
-    }, [postitListValue]);
+    }, []);
 
     /* ------ Postit Drag and Drop ------ */
     const containerRef = useRef(null);
@@ -73,6 +78,9 @@ const UserPostitList = () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'DELETE'
                 })
+
+                await request(`/boards/4/postits`)
+                .then(json => setPostitListValue(json))
             };
             onDelete();
         }
@@ -94,6 +102,13 @@ const UserPostitList = () => {
             ...selectedPostitValue,
             show: false
         });
+        // 변경변경!!!
+        const getChangedPostit = async () => {
+            await request(`/boards/4/postits`)
+            .then(json => setPostitListValue(json))
+        };
+
+        getChangedPostit();
     };
 
     // 포스트잇 클릭 시, 선택한 포스트잇 정보 저장
@@ -125,7 +140,16 @@ const UserPostitList = () => {
                                 onClick={e => onClick(e, element)}
                             >
                                 <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                <PostitContent fontFamily={element.font}>{element.contents}</PostitContent>
+                                <PostitContent fontFamily={element.font}>
+                                    {element.contents.split('\n').map(line => {
+                                        return (
+                                            <span>
+                                                {line}
+                                                <br />
+                                            </span>
+                                        );
+                                    })}
+                                </PostitContent>
                             </PostitOnContainer>
                         )
                     }
@@ -207,6 +231,7 @@ const PostitTitle = styled.div`
 
 const PostitContent = styled.div`
     position: relative;
+    height: 60%;
     padding: 4px 2px;
     font-family: ${props => props.fontFamily};
     font-size: 11px;

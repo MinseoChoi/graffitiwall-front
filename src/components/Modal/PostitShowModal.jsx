@@ -12,14 +12,21 @@ const PostitShowModal = ({ element, closeModal }) => {
         <ModalOverlay>
             <ModalWrapper color={element.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
-                <TextDiv height={30} fontFamily={element.font} fontSize={15}>
+                <TextDiv height={23} fontFamily={element.font} fontSize={15} textAlign='right'>
                     조회수 {element.views} / 수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
                 </TextDiv>
                 <TextDiv height={30} fontFamily={element.font} fontSize={18}>
                     {element.title}
                 </TextDiv>
-                <TextDiv height={250} fontFamily={element.font} fontSize={15} textAlign='left'>
-                    {element.contents}
+                <TextDiv height={250} fontFamily={element.font} fontSize={15} textAlign='left' overflow='auto'>
+                    {element.contents.split('\n').map(line => {
+                        return (
+                            <span>
+                                {line}
+                                <br />
+                            </span>
+                        );
+                    })}
                 </TextDiv>
             </ModalWrapper>
         </ModalOverlay>
@@ -73,10 +80,11 @@ const CloseModalButton = styled.img`
 const TextDiv = styled.div`
     position: relative;
     left: 4.5%;
-    width: 30vw;
+    width: 28.8vw;
     height: ${props => props.height}px;
     margin-top: 10px;
     padding-left: 6px;
+    padding-right: 6px;
     font-family: ${props => props.fontFamily};
     font-size: ${props => props.fontSize}px;
     text-align: ${props => props.textAlign || 'center'};
@@ -86,5 +94,5 @@ const TextDiv = styled.div`
     border-radius: 5px;
     outline: none;
     opacity: 0.6;
-    overflow: hidden;
+    overflow: ${props => props.overflow || 'hidden'};
 `;

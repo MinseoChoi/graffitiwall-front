@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate, useParams  } from 'react-router-dom';
 import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import { BoardEditModal, PasswordModal } from "../components/Modal";
@@ -24,10 +24,12 @@ const UserBoardList = () => {
         setAllPage(page);
     };
 
+    const { userId } = useParams();
+
     // GET 메소드로 유저가 생성한 게시판 목록 가져오기
     useEffect(() => {
         const getAllBoardList = async () => {
-            await request(`/users/1/boards`)
+            await request(`/users/${userId}/boards`)
             .then(json => setBoardList(json))
             .then(res => setLoading(false))
         };

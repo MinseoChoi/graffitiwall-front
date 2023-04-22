@@ -22,7 +22,10 @@ const PostitEditModal = ({ element, closeModal }) => {
     const onEdit = async (e) => {
         await request(`/postit/${postitValue.postitId}`, {
             method: 'PATCH',
-            body: JSON.stringify(postitValue)
+            body: JSON.stringify({
+                ...postitValue,
+                contents: (postitValue.contents).replace(/<br\s*\?>/g, '\n')
+            })
         })
         .then(json => alert('포스트잇이 수정되었습니다.'));
     };

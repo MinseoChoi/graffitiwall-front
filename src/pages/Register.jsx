@@ -9,48 +9,48 @@ const Register = () => {
     // 이미지를 입력하지 않으면 -> 기본 이미지로?
 
     // 초기값 - 아이디, 닉네임, 비밀번호, 비밀번호 확인, 이메일, 이미지
-    const [id, setId] = useState('');
+    const [userId, setUserId] = useState('');
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [email, setEmail] = useState('');
-    const [image, setImage] = useState("");
+    const [image, setImage] = useState('');
 
     // 오류메시지 상태 지정
-    const [idMessage, setIdMessage] = useState('');
+    const [userIdMessage, setUserIdMessage] = useState('');
     const [nicknameMessage, setNicknameMessage] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
     const [passwordConfirmMessage, setPasswordConfirmMessage] = useState('');
     const [emailMessage, setEmailMessage] = useState('');
 
     // 유효성 검사
-    const [isId, setIsId] = useState(false);
+    const [isUserId, setIsUserId] = useState(false);
     const [isNickname, setIsNickname] = useState(false);
     const [isPassword, setIsPassword] = useState(false);
     const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
     const [isEmail, setIsEmail] = useState(false);
 
     // ID 검사
-    const onChangeId = e => {
-        const currentId = e.target.value;
-        setId(currentId);
+    const onChangeUserId = e => {
+        const currentUserId = e.target.value;
+        setUserId(currentUserId);
         const idRegExp = /^[a-zA-Z0-9]{4,12}$/;
 
-        if (!idRegExp.test(currentId)) {
-            setIdMessage("4-12 사이 대소문자 또는 숫자만 입력해주세요.");
-            setIsId(false);
+        if (!idRegExp.test(currentUserId)) {
+            setUserIdMessage("4-12 사이 대소문자 또는 숫자만 입력해주세요.");
+            setIsUserId(false);
         } else {
-            setIdMessage('사용가능한 아이디 입니다.');
-            setIsId(true);
+            setUserIdMessage('사용가능한 아이디 입니다.');
+            setIsUserId(true);
         }
     };
 
     // 닉네임 검사
-    const onChangeName = e => {
-        const currentName = e.target.value;
-        setNickname(currentName);
+    const onChangeNickname = e => {
+        const currentNickName = e.target.value;
+        setNickname(currentNickName);
 
-        if (currentName.length < 2 || currentName.length > 5) {
+        if (currentNickName.length < 2 || currentNickName.length > 5) {
             setNicknameMessage("닉네임은 2글자 이상 5글자 이하로 입력해주세요.");
             setIsNickname(false);
         } else {
@@ -111,7 +111,7 @@ const Register = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                userId: id,
+                userId: userId,
                 nickname: nickname,
                 password: password,
                 email: email,
@@ -129,35 +129,35 @@ const Register = () => {
                 <FormContainer>
                     <FormDiv>
                         <FormLabel fontSize='14px'>ID</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput top='-6px' type="text" name='id' onChange={onChangeId} />
-                            <ErrorMessage>{idMessage}</ErrorMessage>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
+                            <FormInput top='-6px' type="text" name='userId' onChange={onChangeUserId} />
+                            <ErrorMessage>{userIdMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
                         <FormLabel fontSize='14px'>NickName</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
-                            <FormInput top='-6px' type="text" name="nickname" onChange={onChangeName} />
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
+                            <FormInput top='-6px' type="text" name="nickname" onChange={onChangeNickname} />
                             <ErrorMessage >{nicknameMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
                         <FormLabel fontSize='14px'>PW</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
                             <FormInput top='-6px' type="password" name="password" onChange={onChangePassword} />
                             <ErrorMessage>{passwordMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
                         <FormLabel fontSize='14px'>Re PW</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
                             <FormInput top='-6px' type="password" name="RePassword" onChange={onChangePasswordConfirm} />
                             <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
                         <FormLabel fontSize='14px'>Email</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
                             <FormInput top='-6px' type="email" name="email" onChange={onChangeEmail} />
                             <ErrorMessage>{emailMessage}</ErrorMessage>
                         </FormDiv>
@@ -175,19 +175,22 @@ const Register = () => {
                             )}
                         </FormDiv>
                     </FormDiv>
-                    <Button
-                        right={150}
-                        onClick={register}
-                        disabled={
-                            isId === true &&
-                            isNickname === true &&
-                            isPassword === true &&
-                            isPasswordConfirm === true &&
-                            isEmail === true
-                                ? false
-                                : true
-                        }
-                    >Register</Button>
+                    <FormDiv>
+                        <Button
+                            right={150}
+                            onClick={register}
+                            disabled={
+                                isUserId === true &&
+                                isNickname === true &&
+                                isPassword === true &&
+                                isPasswordConfirm === true &&
+                                isEmail === true
+                                    ? false
+                                    : true
+                            }
+                        >Register
+                    </Button>
+                    </FormDiv>
                 </FormContainer>
             </FormSpace>
         </div>

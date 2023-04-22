@@ -39,7 +39,10 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(postitValue)
+            body: JSON.stringify({
+                ...postitValue,
+                contents: (postitValue.contents).replace(/<br\s*\?>/g, '\n')
+            })
         })
         .then(json => alert('포스트잇이 생성되었습니다.'))
         .catch(error => {
@@ -52,7 +55,7 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
             <ModalWrapper color={postitValue.color}>
                 <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
                 <TitleInput fontFamily={postitValue.font} type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
-                <ContentInput fontFamily={postitValue.font} rows='5' cols='33' placeholder='내용' onChange={changePostitValue} name='contents' required="required"></ContentInput><br />
+                <ContentInput fontFamily={postitValue.font} rows='5' cols='33' wrap="hard" placeholder='내용' onChange={changePostitValue} name='contents' required="required"></ContentInput><br />
                 <SelectFont>
                     <select name='font' onChange={changePostitValue}>
                         <option value=''>--- 폰트를 선택해주세요. ---</option>
