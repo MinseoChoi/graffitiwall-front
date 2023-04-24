@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
 import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
+import { UserDeleteModal } from '../components/Modal';
 import userImage from '../assets/user.svg';
+import { useNavigate } from 'react-router-dom';
 
 /* 프로필 페이지 */
 const Profile = () => {
-    // 닉네임 중복 체크 필요
     // 프로필 img로 변경 필요
     // 유저 정보
     const [user, setUser] = useState({
@@ -22,16 +23,6 @@ const Profile = () => {
     });
 
     const [userNicknameList, setUserNicknameList] = useState([]);
-
-    useEffect(() => {
-        const getuserNickname = async () => {
-            await request('/users')
-            .then(json => {
-                setUserNicknameList(json.nickname);
-            })
-        };
-        // getuserNickname();
-    }, []);
 
     // 현재 비밀번호 / 새 비밀번호 / 새 비밀번호 확인
     const [currentPassword, setCurrentPassword] = useState('');
@@ -87,6 +78,7 @@ const Profile = () => {
             })
             onChangeEmail(value);
         } else {
+            console.log('image?');
             setUser({
                 ...user,
                 [name]: value
@@ -94,26 +86,33 @@ const Profile = () => {
         }
     };
 
+    const [result, setResult] = useState(false);
+
     // 닉네임 중복 체크 함수
-    const isExist = (name) => {
-        const data = userNicknameList.filter(data => data === name);
-        if (!data.length) {
-            return false
+    const isExist = async () => {
+        await request(`/users/${user.nickname}/duplicate`)
+        .then(json => 
+            json.nicknameExist === false ? setResult(false) : setResult(true)
+        )
+
+        if (result) {
+            setNicknameMessage("이미 존재하는 닉네임 입니다.");
+            setIsNickname(false);
         } else {
-            return true
+            setNicknameMessage("사용가능한 닉네임 입니다.");
+            setIsNickname(true);   
         }
     };
 
     // 닉네임 검사
-    const onChangeNickname = value => {
-        if (isExist(value)) {
-            setNicknameMessage("이미 존재하는 닉네임 입니다.");
-            setIsNickname(false);
-        } else if (value.length < 2 || value.length > 20) {
-            setNicknameMessage("게시판 이름은 2글자 이상 20글자 이하로 입력해주세요.");
+    const onChangeNickname = () => {
+        const nickname = user.nickname;
+
+        if (nickname.length < 2 || nickname.length > 10) {
+            setNicknameMessage("닉네임은 2글자 이상 10글자 이하로 입력해주세요.");
             setIsNickname(false);
         } else {
-            setNicknameMessage("사용가능한 이름 입니다.");
+            setNicknameMessage("사용가능한 닉네임 입니다.");
             setIsNickname(true);
         }
     };
@@ -158,12 +157,6 @@ const Profile = () => {
     const editUser = async e => {
         e.preventDefault();
 
-        // 수정 필요 - 변경사항이 아예 없는 경우
-        if (!currentPassword && !newPassword) {
-            alert('변경사항이 없습니다.');
-            return;
-        }
-
         // 예외 처리
         if (currentPassword !== user.password) {
             alert('현재 비밀번호와 일치하지 않습니다. 다시 입력해주세요.');
@@ -189,6 +182,29 @@ const Profile = () => {
         }
     };
 
+    /* ------ 모달 창 ------ */
+    // 모달 창 state(open/close)
+    const [modal, setModal] = useState(false);
+
+    // 모달 창 state 변경 함수
+    const openModal = () => setModal(true);
+    const closeModal = () => setModal(false);
+
+    const onDelete = async () => {
+        closeModal();
+        alert('정상적으로 탈퇴가 되었습니다.');
+        handleClick();
+        // await request('/users/1', {
+        //     method: 'DELETE'
+        // })
+        // .then(json => alert('정상적으로 탈퇴가 되었습니다.'));
+    };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate('/');
+    };
+
     return (
         <div key="profile">
             <Title>My Profile</Title>
@@ -196,14 +212,14 @@ const Profile = () => {
                 <FormContainer>
                     <FormDiv>
                         <FormLabel fontSize='14px'>Profile Image</FormLabel>
-                        <FormDiv padding='4px 6px' marginBottom={-20} width={50}>
+                        <FormDiv padding='4px 6px' marginBottom={-26} width={50}>
                             {user.imageUrl ? (
-                                <div style={{ position: 'relative', marginBottom: '-30px' }}>
+                                <div style={{ position: 'relative', marginBottom: '-45px' }}>
                                     <Image src={URL.createObjectURL(user.imageUrl)} alt='프로필 이미지' />
                                     <DeleteImageButton type='button' onClick={() => setUser({ ...user, imageUrl: "" })}>✕</DeleteImageButton>
                                 </div>
                             ) : (
-                                <FileUploader handleChange={(file) => setUser({ ...user, imageUrl: file})} name="file" types={["JPG", "PNG", "JPEG", "SVG"]} multiple={false} />
+                                <FileUploader handleChange={(file) => setUser({ ...user, imageUrl: file })} name="file" types={["JPG", "PNG", "JPEG", "SVG"]} multiple={false} />
                             )}
                         </FormDiv>
                     </FormDiv>
@@ -211,7 +227,10 @@ const Profile = () => {
                         <FormLabel fontSize='14px'>NickName</FormLabel>
                         <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
                             <FormInput type="text" name="nickname" value={user.nickname} onChange={changeUserValue} />
-                            <ErrorMessage>{nicknameMessage}</ErrorMessage>
+                            <FormDiv marginBottom={15} style={{ justifyContent: 'space-between' }}>
+                                <ErrorMessage>{nicknameMessage}</ErrorMessage>
+                                <DuplicateCheckButton type='button' onClick={isExist}>중복 확인</DuplicateCheckButton>
+                            </FormDiv>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={20}>
@@ -220,32 +239,38 @@ const Profile = () => {
                     </FormDiv>
                     <FormDiv marginBottom={42}>
                         <FormLabel fontSize='14px'>New PW</FormLabel>
-                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-30}>
                             <FormInput type="password" name="newPassword" onChange={changeUserValue} />
                             <ErrorMessage>{passwordMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={42}>
                         <FormLabel fontSize='14px'>Re New PW</FormLabel>
-                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-30}>
                             <FormInput type="password" name="reNewPassword" onChange={changeUserValue} />
                             <ErrorMessage>{passwordConfirmMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv marginBottom={42}>
                         <FormLabel fontSize='14px'>Email</FormLabel>
-                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-25}>
+                        <FormDiv display='block' marginTop='-2px' height='fit-content' marginBottom={-30}>
                             <FormInput type="email" name="email" value={user.email} onChange={changeUserValue} />
                             <ErrorMessage>{emailMessage}</ErrorMessage>
                         </FormDiv>
                     </FormDiv>
-                    <FormDiv marginBottom={-30}>
+                    <FormDiv marginBottom={-40}>
                         <FormLabel fontSize='14px'>Introduce</FormLabel>
                         <FormTextarea name='introduce' value={user.introduce} placeholder='유저들에게 자신을 소개해보세요!' onChange={changeUserValue}></FormTextarea>
                     </FormDiv>
                     <Button bottom={-80} right={153} onClick={editUser}>Edit</Button>
                 </FormContainer>
             </FormSpace>
+            <DeleteUser onClick={openModal}>탈퇴하기</DeleteUser>
+            {
+                modal ?
+                    <UserDeleteModal closeModal={closeModal} onDelete={onDelete} />
+                    : null
+            }
         </div>
     );
 };
@@ -282,6 +307,18 @@ const DeleteImageButton = styled.button`
     }
 `;
 
+const DuplicateCheckButton = styled.button`
+    position: relative;
+    top: 5px;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 5px;
+
+    &:hover {
+        cursor: pointer;
+    }
+`;
+
 const ErrorMessage = styled.p`
     position: relative;
     margin-bottom: -5px;
@@ -300,4 +337,17 @@ const FormTextarea = styled.textarea`
     border: 1px solid black;
     border-radius: 5px;
     vertical-align: top;
+`;
+
+const DeleteUser = styled.span`
+    position: fixed;
+    left: 80px;
+    bottom: 15px;
+    color: gray;
+    font-size: 13px;
+    text-decoration: underline;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;

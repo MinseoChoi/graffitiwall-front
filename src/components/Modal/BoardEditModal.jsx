@@ -177,11 +177,8 @@ const BoardEditModal = ({ element, closeModal }) => {
                                 }}
                             >수정</EditBoardButton>
                             : <EditBoardButton 
-                                type="submit"
+                                type="button"
                                 disabled={true}
-                                onClick={() => {
-                                    closeModal();
-                                }}
                             >수정</EditBoardButton>
                     }
                 </FormDiv>
@@ -329,8 +326,6 @@ const EditBoardButton = styled.button`
 
     &:hover {
         cursor: pointer;
-        outline-color: transparent;
-        outline-style: solid;
         border: none;
         background-color: black;
         color: white;

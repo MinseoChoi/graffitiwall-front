@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import { FileUploader } from 'react-drag-drop-files';
 import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
@@ -34,7 +35,7 @@ const Register = () => {
     const onChangeUserId = e => {
         const currentUserId = e.target.value;
         setUserId(currentUserId);
-        const idRegExp = /^[a-zA-Z0-9]{4,12}$/;
+        const idRegExp = /^(?=.*[a-zA-Z])(?=.*[0-9]).{4,12}$/;
 
         if (!idRegExp.test(currentUserId)) {
             setUserIdMessage("4-12 사이 대소문자 또는 숫자만 입력해주세요.");
@@ -44,14 +45,32 @@ const Register = () => {
             setIsUserId(true);
         }
     };
+    
+    const [result, setResult] = useState(false);
+
+    // 닉네임 중복 체크 함수
+    const isExist = async () => {
+        await request(`/users/${nickname}/duplicate`)
+        .then(json => 
+            json.nicknameExist === false ? setResult(false) : setResult(true)
+        )
+
+        if (result) {
+            setNicknameMessage("이미 존재하는 닉네임 입니다.");
+            setIsNickname(false);
+        } else {
+            setNicknameMessage("사용가능한 닉네임 입니다.");
+            setIsNickname(true);   
+        }
+    };
 
     // 닉네임 검사
     const onChangeNickname = e => {
         const currentNickName = e.target.value;
         setNickname(currentNickName);
 
-        if (currentNickName.length < 2 || currentNickName.length > 5) {
-            setNicknameMessage("닉네임은 2글자 이상 5글자 이하로 입력해주세요.");
+        if (currentNickName.length < 2 || currentNickName.length > 10) {
+            setNicknameMessage("닉네임은 2글자 이상 10글자 이하로 입력해주세요.");
             setIsNickname(false);
         } else {
             setNicknameMessage("사용가능한 닉네임 입니다.");
@@ -120,6 +139,13 @@ const Register = () => {
             })
         })
         .then(json => alert('회원가입이 완료되었습니다.'));
+
+        handleClick();
+    };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate('/');
     };
 
     return (
@@ -138,7 +164,10 @@ const Register = () => {
                         <FormLabel fontSize='14px'>NickName</FormLabel>
                         <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
                             <FormInput top='-6px' type="text" name="nickname" onChange={onChangeNickname} />
-                            <ErrorMessage >{nicknameMessage}</ErrorMessage>
+                            <FormDiv marginBottom={5} style={{ justifyContent: 'space-between' }}>
+                                <ErrorMessage>{nicknameMessage}</ErrorMessage>
+                                <DuplicateCheckButton type='button' onClick={isExist}>중복 확인</DuplicateCheckButton>
+                            </FormDiv>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
@@ -205,6 +234,19 @@ const FormSpace = styled.div`
     left: 100px;
     width: 80%;
     height: 70vh;
+`;
+
+const DuplicateCheckButton = styled.button`
+    position: relative;
+    top: 5px;
+    height: 3vh;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 5px;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 const ErrorMessage = styled.p`

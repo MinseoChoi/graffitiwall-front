@@ -85,6 +85,18 @@ const BoardList = () => {
 
     // GET 메소드로 전체 게시판 목록 가져오기
     useEffect(() => {
+        const getPopularBoardList = async () => {
+            await request('/boards/popular')
+            .then(json => setPopularBoardList(json))
+        };
+        // getPopularBoardList();
+
+        const getRandomBoardList = async () => {
+            await request('/boards/random')
+            .then(json => setRandomBoardList(json))
+        };
+        getRandomBoardList();
+
         const getAllBoardList = async () => {
             await request('/boards')
             .then(json => setBoardList(json))
@@ -92,14 +104,6 @@ const BoardList = () => {
         };
         getAllBoardList();
     }, []);
-
-    // const [state, refetch] = useAsync(getJson, [], true);
-    // const { loading, data: boards, error } = state;
-    // // console.log(boards);
-
-    // if (!loading && boards) {
-    //     console.log(boards);
-    // }
 
     // 비공개 게시판 정보
     const [selectedPrivateValue, setSelectedPrivateValue] = useState({
@@ -165,9 +169,9 @@ const BoardList = () => {
                         </div>
                     </BoardWrapper>
                     <BoardListWrapper>
-                        {dataList.slice(randomOffset, randomOffset + limit).map(element => 
-                            <Board key={element.id} onClick={() => handleBoardClick(element)}>
-                                {element.name}
+                        {randomBoardList.slice(randomOffset, randomOffset + limit).map(element => 
+                            <Board key={element.boardId} onClick={() => handleBoardClick(element)}>
+                                {element.title}
                             </Board>
                         )}
                     </BoardListWrapper>

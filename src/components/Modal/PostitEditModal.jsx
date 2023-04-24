@@ -58,8 +58,8 @@ const PostitEditModal = ({ element, closeModal }) => {
                             type="submit"
                             disabled={false}
                             onClick={() => {
-                                closeModal();
                                 onEdit();
+                                closeModal();
                             }}
                         >수정</EditPostitButton>
                 }

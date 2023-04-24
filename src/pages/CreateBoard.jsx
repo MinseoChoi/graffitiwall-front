@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput } from '../components/common';
 import { boardCategory } from '../assets/boardCategory';
@@ -123,6 +124,13 @@ const CreateBoard = () => {
             body: JSON.stringify(boardValue)
         })
         .then(json => alert('게시판이 생성되었습니다.'));
+
+        handleClick();
+    };
+
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate('/');
     };
 
     return (

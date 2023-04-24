@@ -122,7 +122,8 @@ const CreatePostit = () => {
         color: '',
         font: '',
         views: 0,
-        updatedAt: ''
+        updatedAt: '',
+        writer: ''
     });
 
     // onDragStart 이벤트 : 초기 위치 저장
@@ -153,38 +154,38 @@ const CreatePostit = () => {
         // Click 이벤트
         if (dragX === 0 && dragY === 0) {
             // 클릭한 포스트잇 정보 저장
-            setSelectedPostitValue({
-                show: true,
-                title: element.title,
-                contents: element.contents,
-                color: element.color,
-                font: element.font,
-                views: element.views,
-                updatedAt: element.updatedAt
-            });
 
             // 조회수 변경 -> 백엔드에서 구현 후 추가
             const changeViews = async () => {
+                setSelectedPostitValue({
+                    show: true,
+                    title: element.title,
+                    contents: element.contents,
+                    color: element.color,
+                    font: element.font,
+                    views: element.views + 1,
+                    updatedAt: element.updatedAt,
+                    writer: element.writer
+                });
+    
+                setPostitListValue(postitListValue.map(postit =>
+                    postit.postitId === element.postitId ? { ...postit, view: element.view + 1, writer: element.writer } : postit    
+                ));
+    
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
-                        boardId: element.boardId,
-                        userId: element.userId,
-                        postitId: element.postitId,
-                        title: element.title,
-                        contents: element.contents,
-                        font: element.font,
-                        color: element.color,
-                        positionX: element.positionX,
-                        positionY: element.positionY,
-                        angle: element.angle,
-                        sizeX: element.sizeX,
-                        sizeY: element.sizeY,
+                        ...element,
                         views: element.views + 1
                     })
                 })
+    
+                await request(`/boards/${boardId}/postits`)
+                .then(json => {
+                    setPostitListValue(json);
+                });
             };
-            // changeViews();
+            changeViews();
         }
         // Drag and Drop 이벤트
         else {
@@ -331,9 +332,9 @@ const CreatePostit = () => {
                                     <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
                                         <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                         <PostitContent height={element.sizeY} fontFamily={element.font}>
-                                            {element.contents.split('\n').map(line => {
+                                            {element.contents.split('\n').map((line, index) => {
                                                 return (
-                                                    <span>
+                                                    <span key={index}>
                                                         {line}
                                                         <br />
                                                     </span>
@@ -449,17 +450,32 @@ const PostitTitle = styled.div`
     font-family: ${props => props.fontFamily};
     font-size: 80%;
     font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 `;
 
 const PostitContent = styled.div`
     position: relative;
-    height: ${props => props.height * 0.45}px;
+    height: ${props => props.height * 0.8}px;
     padding: 4px 6px;
     font-family: ${props => props.fontFamily};
     font-size: 75%;
+    // word-wrap: break-word;
+    // white-space: rowwrap;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 `;
 
 const AddPostitButton = styled.img`

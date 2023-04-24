@@ -20,10 +20,8 @@ const UserPostitList = () => {
 
     // GET 메소드로 포스트잇 정보 가져오기
     useEffect(() => {
-        // API url 변경 필요!!! 일단, 확인을 위해 게시판 4에 있는 포스트잇 불러와 사용
         const getPostits = async () => {
-            // await request(`/users/${userId}/postits`)
-            await request(`/boards/4/postits`)
+            await request(`/users/${userId}/postit`)
             .then(json => setPostitListValue(json))
             .then(res => setLoading(false))
         };
@@ -79,7 +77,7 @@ const UserPostitList = () => {
                     method: 'DELETE'
                 })
 
-                await request(`/boards/4/postits`)
+                await request(`/users/${userId}/postit`)
                 .then(json => setPostitListValue(json))
             };
             onDelete();
@@ -96,19 +94,16 @@ const UserPostitList = () => {
 
     // 모달 창 state 변경 함수
     const openModal = () => setModal(true);
-    const closeModal = () => {
+    const closeModal = async () => {
         setModal(false);
+
         setSelectedPostitValue({
             ...selectedPostitValue,
             show: false
         });
-        // 변경변경!!!
-        const getChangedPostit = async () => {
-            await request(`/boards/4/postits`)
-            .then(json => setPostitListValue(json))
-        };
 
-        getChangedPostit();
+        await request(`/users/${userId}/postit`)
+        .then(json => setPostitListValue(json));
     };
 
     // 포스트잇 클릭 시, 선택한 포스트잇 정보 저장
@@ -141,9 +136,9 @@ const UserPostitList = () => {
                             >
                                 <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                 <PostitContent fontFamily={element.font}>
-                                    {element.contents.split('\n').map(line => {
+                                    {element.contents.split('\n').map((line, index) => {
                                         return (
-                                            <span>
+                                            <span key={index}>
                                                 {line}
                                                 <br />
                                             </span>
