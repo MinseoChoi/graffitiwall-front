@@ -91,10 +91,10 @@ const BoardEditModal = ({ element, closeModal }) => {
         }
     };
 
-    // 공개 유무 토글 버튼 모드
+    // 공개 여부 토글 버튼 모드
     const [mode, setMode] = useState(element.isPrivate === 'true' ? 'private' : 'public');
 
-    // 공개 유무 값이 바뀔 때마다 렌더링
+    // 공개 여부 값이 바뀔 때마다 렌더링
     useEffect(() => {
         if (boardValue.isPrivate === 'true') {
             setMode('private');
@@ -142,7 +142,7 @@ const BoardEditModal = ({ element, closeModal }) => {
                     </SelectCategory>
                 </FormDiv>
                 <FormDiv>
-                    <FormLabel fontSize='calc(0.6rem + 0.2vw)'>공개 유무</FormLabel>
+                    <FormLabel fontSize='calc(0.6rem + 0.2vw)'>공개 여부</FormLabel>
                     <FormDiv display='block' marginBottom={35}>
                         <Switch value={mode}>
                             <span />

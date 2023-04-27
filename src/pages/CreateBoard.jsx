@@ -27,14 +27,12 @@ const CreateBoard = () => {
             getBoardList();
         } else {
             alert('로그인이 필요한 서비스입니다.');
-            // handleClick();
-            // 홈으로 가도록!
+            handleClick();
             return;
         }
-        // getBoardList();
     }, []);
 
-    // 게시판 정보 (게시판 이름, 카테고리, 공개 유무, 비공개 시 비밀번호)
+    // 게시판 정보 (게시판 이름, 카테고리, 공개 여부, 비공개 시 비밀번호)
     const [boardValue, setBoardValue] = useState({
         title: '',
         category: '',
@@ -103,10 +101,10 @@ const CreateBoard = () => {
         }
     };
 
-    // 공개 유무 토글 버튼 모드
+    // 공개 여부 토글 버튼 모드
     const [mode, setMode] = useState('');
 
-    // 공개 유무 값이 바뀔 때마다 렌더링
+    // 공개 여부 값이 바뀔 때마다 렌더링
     useEffect(() => {
         if (boardValue.isPrivate === 'true') {
             setMode('private');
@@ -174,7 +172,7 @@ const CreateBoard = () => {
                         </SelectCategory>
                     </FormDiv>
                     <FormDiv textAlign='center'>
-                        <FormLabel fontSize='14px'>공개 유무</FormLabel>
+                        <FormLabel fontSize='14px'>공개 여부</FormLabel>
                         <FormDiv padding='4px 6px' width={50} height='15px'>
                             <Switch value={mode}>
                                 <span />

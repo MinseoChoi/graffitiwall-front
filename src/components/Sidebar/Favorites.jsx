@@ -8,12 +8,21 @@ const BoardList = ({ closeSidebar }) => {
     // 게시판 목록 저장
     const [allBoardList, setAllBoardList] = useState([]);
 
+    let sessionStorage = window.sessionStorage;
+    const [flag, setFlag] = useState(false);
+
     useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId');
+
         const getAllBoardList = async () => {
-            await request('/boards')
+            await request(`/users/${sessionSearch}/boards`)
             .then(json => setAllBoardList(json))
+            .then(res => setFlag(true))
         };
-        getAllBoardList();
+
+        if (sessionSearch) {
+            getAllBoardList();
+        }
     }, []);
 
     const navigate = useNavigate();
@@ -26,17 +35,20 @@ const BoardList = ({ closeSidebar }) => {
         /* 사이드바 즐겨찾기 영역 */
         <BoardListContainer>
             <BoardListTitle>⭐︎ Favorites</BoardListTitle>
-            <BoardWrapper>
-                <ScrollBlind>
-                    <BoardUl>
-                        {allBoardList.map(element =>
-                            <Board key={element.boardId} onClick={() => handleClick(element.boardId)}>
-                                {element.title}
-                            </Board>
-                        )}
-                    </BoardUl>
-                </ScrollBlind>
-            </BoardWrapper>
+            {flag ?
+                <BoardWrapper>
+                    <ScrollBlind>
+                        <BoardUl>
+                            {allBoardList.map(element =>
+                                <Board key={element.boardId} onClick={() => handleClick(element.boardId)}>
+                                    {element.title}
+                                </Board>
+                            )}
+                        </BoardUl>
+                    </ScrollBlind>
+                </BoardWrapper>
+                : <Notice>로그인이 필요한 서비스입니다.</Notice>
+            }
         </BoardListContainer>
     );
 };
@@ -93,4 +105,12 @@ const Board = styled.li`
         font-weight: bold;
         letter-spacing: 5px;
     }
+`;
+
+const Notice = styled.div`
+    position: relative;
+    top: 70px;
+    left: -40px;
+    font-size: 15px;
+    font-weight: bold;
 `;
