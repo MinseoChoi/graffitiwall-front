@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitEditModal } from "../components/Modal";
-import bin from '../assets/bin.svg';
 import { Title } from "../components/common";
 import { request } from '../utils/api';
 
@@ -149,7 +148,7 @@ const UserPostitList = () => {
                         )
                     }
                 </PostitContainer>
-                <DeletePostitButton ref={deleteRef} src={bin} alt="DeletePostit" />
+                <DeletePostitButton ref={deleteRef} src={process.env.PUBLIC_URL + '/assets/bin.svg'} alt="DeletePostit" />
             </PostitSpace>
             {/* 선택한 포스트잇 보여주는 모달 창 */}
             {selectedPostitValue.show === true ?

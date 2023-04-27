@@ -5,7 +5,6 @@ import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitCreateModal, PostitShowModal } from '../components/Modal';
-import add from '../assets/addPostit.svg';
 import { Title } from '../components/common/Title.js';
 import { request } from '../utils/api';
 
@@ -30,8 +29,17 @@ const CreatePostit = () => {
     // url에서 게시판 ID 가져오기
     const {boardId} = useParams();
 
+    let sessionStorage = window.sessionStorage;
+    const [userId, setUserId] = useState(0);
+
     // 처음 렌더링 시, GET 메소드로 게시판 정보(게시판 ID, 게시판 제목) / 포스트잇 정보 가져오기
     useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId');
+        
+        if (sessionSearch) {
+            setUserId(sessionSearch);
+        }
+
         const getBoardName = async () => {
             setLoading(true);
             await request(`/boards/${boardId}`)
@@ -123,7 +131,8 @@ const CreatePostit = () => {
         font: '',
         views: 0,
         updatedAt: '',
-        writer: ''
+        writer: '',
+        userId: 1
     });
 
     // onDragStart 이벤트 : 초기 위치 저장
@@ -155,8 +164,12 @@ const CreatePostit = () => {
         if (dragX === 0 && dragY === 0) {
             // 클릭한 포스트잇 정보 저장
 
-            // 조회수 변경 -> 백엔드에서 구현 후 추가
+            // 조회수 변경
             const changeViews = async () => {
+                setPostitListValue(postitListValue.map(postit =>
+                    postit.postitId === element.postitId ? { ...postit, view: element.view + 1, writer: element.writer } : postit    
+                ));
+
                 setSelectedPostitValue({
                     show: true,
                     title: element.title,
@@ -165,12 +178,9 @@ const CreatePostit = () => {
                     font: element.font,
                     views: element.views + 1,
                     updatedAt: element.updatedAt,
-                    writer: element.writer
+                    writer: element.writer,
+                    userId: element.userId
                 });
-    
-                setPostitListValue(postitListValue.map(postit =>
-                    postit.postitId === element.postitId ? { ...postit, view: element.view + 1, writer: element.writer } : postit    
-                ));
     
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
@@ -178,7 +188,7 @@ const CreatePostit = () => {
                         ...element,
                         views: element.views + 1
                     })
-                })
+                });
     
                 await request(`/boards/${boardId}/postits`)
                 .then(json => {
@@ -272,7 +282,10 @@ const CreatePostit = () => {
     const [modal, setModal] = useState(false);
 
     // 모달 창 state 변경 함수
-    const openModal = () => setModal(true);
+    const openModal = () => {
+        if (userId !== 0) setModal(true);
+        else alert('로그인이 필요한 서비스입니다.');
+    };
     const closeModal = () => {
         setModal(false);
         setSelectedPostitValue({
@@ -329,7 +342,7 @@ const CreatePostit = () => {
                                     }}
                                     enable={{ top: false, right: false, bottom: false, left: false, topLeft: false, topRight: false, bottomLeft: false, bottomRight: true }}
                                 >
-                                    <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId}>
+                                    <div ref={el => postitRef.current[element.postitId] = el} key={element.postitId} style={{ width: element.sizeX + 'px', height: element.sizeY + 'px' }}>
                                         <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
                                         <PostitContent height={element.sizeY} fontFamily={element.font}>
                                             {element.contents.split('\n').map((line, index) => {
@@ -348,7 +361,7 @@ const CreatePostit = () => {
                     }
                 </BoardContainer>
             </BoardSpace>
-            <AddPostitButton src={add} alt="포스트잇 생성" onClick={openModal} />
+            <AddPostitButton src={process.env.PUBLIC_URL + '/assets/add.svg'} alt="포스트잇 생성" onClick={openModal} />
             {/* 포스트잇 생성 모달 창 */}
             {modal === true ? 
                 <PostitCreateModal 
@@ -462,7 +475,7 @@ const PostitTitle = styled.div`
 
 const PostitContent = styled.div`
     position: relative;
-    height: ${props => props.height * 0.8}px;
+    height: ${props => props.height - 50}px;
     padding: 4px 6px;
     font-family: ${props => props.fontFamily};
     font-size: 75%;

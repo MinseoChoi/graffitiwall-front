@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useCallback, useState, useEffect } from "react";
-import modalClose from '../../assets/modalClose.svg';
 import { request } from "../../utils/api";
 import { boardCategory } from "../../assets/boardCategory";
 import { FormDiv, FormLabel, FormInput, Title } from "../common";
@@ -121,7 +120,7 @@ const BoardEditModal = ({ element, closeModal }) => {
 
     return (
         <SelectedBoardContainer>
-            <CloseModalButton src={modalClose} alt="게시판 수정 창 닫기" onClick={closeModal} />
+            <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="게시판 수정 창 닫기" onClick={closeModal} />
             <ModalTitle>게시판 수정</ModalTitle>
             <FormDiv display='block' padding='80px calc(1rem + 0.5vw)' textAlign='center'>
                 <FormDiv marginBottom={40}>

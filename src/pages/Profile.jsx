@@ -4,7 +4,6 @@ import { FileUploader } from 'react-drag-drop-files';
 import { request } from '../utils/api';
 import { Button, Title, FormContainer, FormDiv, FormLabel, FormInput, Image } from '../components/common';
 import { UserDeleteModal } from '../components/Modal';
-import userImage from '../assets/user.svg';
 import { useNavigate } from 'react-router-dom';
 
 /* 프로필 페이지 */
@@ -21,8 +20,6 @@ const Profile = () => {
         nickname: '',
         status: 'ACTIVE'
     });
-
-    const [userNicknameList, setUserNicknameList] = useState([]);
 
     // 현재 비밀번호 / 새 비밀번호 / 새 비밀번호 확인
     const [currentPassword, setCurrentPassword] = useState('');
@@ -41,15 +38,22 @@ const Profile = () => {
     const [isPasswordConfirm, setIsPasswordConfirm] = useState(true);
     const [isEmail, setIsEmail] = useState(true);
 
+    let sessionStorage = window.sessionStorage;
+
     // GET 메소드로 유저 정보 가져오기
     useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId')
+        
         const getUser = async () => {
-            await request('/users/1')
+            await request(`/users/${sessionSearch}`)
             .then(json => {
                 setUser(json);
+                setCurrentPassword(json.password);
             })
         };
-        getUser();
+
+        if (sessionSearch) getUser();
+        else alert('로그인이 필요한 서비스입니다.');
     }, []);
 
     // 유저 정보가 바뀔 때마다 set
@@ -78,7 +82,6 @@ const Profile = () => {
             })
             onChangeEmail(value);
         } else {
-            console.log('image?');
             setUser({
                 ...user,
                 [name]: value
@@ -90,7 +93,7 @@ const Profile = () => {
 
     // 닉네임 중복 체크 함수
     const isExist = async () => {
-        await request(`/users/${user.nickname}/duplicate`)
+        await request(`/users/nickname/${user.nickname}/duplicate`)
         .then(json => 
             json.nicknameExist === false ? setResult(false) : setResult(true)
         )
@@ -168,7 +171,7 @@ const Profile = () => {
             alert('새로운 비밀번호가 일치하지 않습니다. 동일하게 입력해주세요.');
             return;
         } else {
-            await request('/users/1', {
+            await request(`/users/${user.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +181,9 @@ const Profile = () => {
                     password: newPassword
                 })
             })
-            .then(json => alert('프로필이 수정되었습니다.'));
+            .then(json => {
+                alert('프로필이 수정되었습니다.');
+            });
         }
     };
 
@@ -192,12 +197,15 @@ const Profile = () => {
 
     const onDelete = async () => {
         closeModal();
-        alert('정상적으로 탈퇴가 되었습니다.');
+        
+        await request(`/users/${user.id}`, {
+            method: 'DELETE'
+        })
+        .then(json => {
+            alert('정상적으로 탈퇴가 되었습니다.');
+            sessionStorage.removeItem('userRawId');
+        });
         handleClick();
-        // await request('/users/1', {
-        //     method: 'DELETE'
-        // })
-        // .then(json => alert('정상적으로 탈퇴가 되었습니다.'));
     };
 
     const navigate = useNavigate();
@@ -262,7 +270,14 @@ const Profile = () => {
                         <FormLabel fontSize='14px'>Introduce</FormLabel>
                         <FormTextarea name='introduce' value={user.introduce} placeholder='유저들에게 자신을 소개해보세요!' onChange={changeUserValue}></FormTextarea>
                     </FormDiv>
-                    <Button bottom={-80} right={153} onClick={editUser}>Edit</Button>
+                    <Button 
+                        bottom={-80} 
+                        right={153} 
+                        disabled={isNickname && isPassword && isPasswordConfirm && isEmail ? false : true}
+                        onClick={editUser}
+                    >
+                        Edit
+                    </Button>
                 </FormContainer>
             </FormSpace>
             <DeleteUser onClick={openModal}>탈퇴하기</DeleteUser>

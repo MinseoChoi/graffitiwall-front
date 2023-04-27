@@ -1,27 +1,39 @@
+import { useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
-import modalClose from '../../assets/modalClose.svg';
+import { request } from "../../utils/api";
 
 // 선택한 포스트잇 보여주는 모달 창
 const PostitShowModal = ({ element, closeModal }) => {
     const updatedAt = new Date(element.updatedAt); // 수정 날짜
+    const [status, setStatus] = useState('');
+
+    useEffect(() => {
+        const getUser = async () => {
+            await request(`/users/${element.userId}`)
+            .then(json => setStatus(json.status))
+        };
+
+        getUser();
+    }, []);
 
     return (
         /* 모달 창 */
         <ModalOverlay>
             <ModalWrapper color={element.color}>
-                <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
-                <TextDiv display='flex' height={23} fontFamily={element.font} fontSize={12}>
-                    <TextDiv width='29%' left='-4px' marginTop={-3} textAlign='left'>
-                        작성자 {element.writer}
-                    </TextDiv>
-                    <TextDiv width='71%' left='2px' marginTop={-3} textAlign='right'>
-                        조회수 {element.views} / 수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
-                    </TextDiv>
+                <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="close" onClick={closeModal} />
+                <TextDiv height={40} fontFamily={element.font} fontSize={12} textAlign='right' lineHeight={1.5}>
+                    <div>
+                        작성자 {status === 'ACTIVE' ? element.writer : '(알 수 없음)'}
+                    </div>
+                    <div>
+                        조회수 {element.views >= 999 ? '999+' : element.views} / 수정 날짜 {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.{updatedAt.getDate()}
+                    </div>
                 </TextDiv>
                 <TextDiv height={30} fontFamily={element.font} fontSize={18}>
                     {element.title}
                 </TextDiv>
-                <TextDiv height={250} fontFamily={element.font} fontSize={15} textAlign='left' overflow='auto'>
+                <TextDiv height={260} fontFamily={element.font} fontSize={15} textAlign='left' overflow='auto'>
                     {element.contents.split('\n').map((line, index) => {
                         return (
                             <span key={index}>
@@ -53,9 +65,9 @@ const ModalOverlay = styled.div`
 const ModalWrapper = styled.form`
     position: absolute;
     top: 25%;
-    left: 33%;
-    width: calc(4rem + 34vw);
-    height: 370px;
+    left: 29%;
+    width: calc(4rem + 38vw);
+    height: 400px;
     background-color: ${props => props.color};
     border-radius: 15px;
     box-shadow: 10px 10px 5px rgb(0, 0, 0, 0.1);
@@ -82,16 +94,15 @@ const CloseModalButton = styled.img`
 
 const TextDiv = styled.div`
     position: relative;
-    display: ${props => props.display || 'block'};
-    justify-contents: ${props => props.display === 'flex' ? 'space-between' : ''};
     left: ${props => props.left || '4.2%'};
-    width: ${props => props.width || 'calc(2.5rem + 32vw)'};
+    width: ${props => props.width || 'calc(2.5rem + 36vw)'};
     height: ${props => props.height}px;
-    margin-top: ${props => props.marginTop || 10}px;
-    padding: ${props => props.padding || '6px 6px 0px 6px'};
+    margin-top: 12px;
+    padding: 6px 6px 0px 6px;
     font-family: ${props => props.fontFamily};
     font-size: ${props => props.fontSize}px;
     text-align: ${props => props.textAlign || 'center'};
+    line-height: ${props => props.lineHeight};
     white-space: normal;
     word-break: break-all;
     background-color: white;

@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useCallback, useState } from "react";
-import modalClose from '../../assets/modalClose.svg';
 import { request } from "../../utils/api";
 import { fontData } from "../../assets/fontData";
 
@@ -33,7 +32,7 @@ const PostitEditModal = ({ element, closeModal }) => {
     return (
         <ModalOverlay>
             <ModalWrapper color={postitValue.color}>
-                <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
+                <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="close" onClick={closeModal} />
                 <TitleInput fontFamily={postitValue.font} type='text' name='title' value={postitValue.title} onChange={changePostitValue} />
                 <ContentInput fontFamily={postitValue.font} rows='5' cols='33' name='contents' value={postitValue.contents} onChange={changePostitValue}></ContentInput><br />
                 <SelectFont>

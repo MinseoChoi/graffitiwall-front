@@ -5,16 +5,23 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import MyPage from './MyPage';
 import Favorites from './Favorites';
-import home from '../../assets/home.svg';
-import user from '../../assets/user.svg';
-import boardList from '../../assets/boardList.svg';
-import back from '../../assets/back.svg';
+import { useEffect } from 'react';
 
 /* 사이드바 */
-const Sidebar = () => {
+const Sidebar = ({ authenticated, login, userData, logout }) => {
     // 사이드바 state(open/close, user/boardList)
     const [isOpen, setOpen] = useState(false);
     const [name, setName] = useState('');
+
+    let sessionStorage = window.sessionStorage;
+
+    useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId');
+
+        if (!sessionSearch) {
+            authenticated = null;
+        }
+    }, []);
 
     // 사이드바 state 변경 함수
     const toggle = (name) => {
@@ -26,19 +33,26 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const handleClick = () => {
         navigate("/");
-    }
+    };
 
     return (
         <div>
             <SidebarContainer>
-                <Image src={home} alt="홈 화면" onClick={handleClick}/>
-                <Image src={user} alt="로그인 또는 마이페이지" onClick={() => toggle("user")}/>
-                <Image src={boardList} alt="게시판 즐겨찾기 리스트" onClick={() => toggle("boardList")}/>
+                <Image src={process.env.PUBLIC_URL + '/assets/home.svg'} alt="홈 화면" onClick={handleClick}/>
+                <Image src={process.env.PUBLIC_URL + '/assets/user.svg'} alt="로그인 또는 마이페이지" onClick={() => toggle("user")}/>
+                <Image src={process.env.PUBLIC_URL + '/assets/boardList.svg'} alt="게시판 즐겨찾기 리스트" onClick={() => toggle("boardList")}/>
             </SidebarContainer>
             <div className={isOpen ? 'open' : 'close'}>
-                <Image top={-5} right={-200} boxShadow='none' src={back} alt="사이드바 닫기" onClick={() => toggle('')}/>
-                {
-                    name === 'user' ? <MyPage closeSidebar={toggle} /> : (name === 'boardList' ? <Favorites closeSidebar={toggle} /> : null)
+                <Image top={-5} right={-200} boxShadow='none' src={process.env.PUBLIC_URL + '/assets/back.svg'} alt="사이드바 닫기" onClick={() => toggle('')}/>
+                {name === 'user' ? (
+                    !authenticated ?
+                        <LoginForm login={login} closeSidebar={toggle} />
+                        : <MyPage userData={userData} closeSidebar={toggle} logout={logout} /> 
+                    ) : (
+                        name === 'boardList' ?
+                            <Favorites userData={userData} closeSidebar={toggle} /> 
+                            : null
+                        )
                 }
             </div>
         </div>

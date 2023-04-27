@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useState } from "react";
-import modalClose from '../../assets/modalClose.svg';
 import { fontData } from "../../assets/fontData";
 import { request } from "../../utils/api";
+import { useEffect } from "react";
 
 /* 포스트잇 생성 모달 창 */
 const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) => {
@@ -20,8 +20,33 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
         angle: 0,
         sizeX: 100,
         sizeY: 100,
-        views: 0
+        views: 0,
+        wrtier: '',
     });
+
+    let sessionStorage = window.sessionStorage;
+
+    useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId');
+
+        const getUserData = async () => {
+            await request(`/users/${sessionSearch}`)
+            .then(json => {
+                setPostitValue({
+                    ...postitValue,
+                    userId: json.id,
+                    writer: json.nickname
+                })
+            })
+        };
+
+        if (sessionSearch) {
+            getUserData();            
+        } else {
+            alert('로그인이 필요한 서비스입니다.');
+            return;
+        }
+    }, []);
 
     // 입력값이 변경될 때마다 해당 값 set
     const changePostitValue = e => {
@@ -36,24 +61,20 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
     const onSubmit = async (e) => {
         await request('/postit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 ...postitValue,
                 contents: (postitValue.contents).replace(/<br\s*\?>/g, '\n')
             })
         })
-        .then(json => alert('포스트잇이 생성되었습니다.'))
-        .catch(error => {
-            console.log(error);
-        });
+        .then(json => {
+            alert('포스트잇 생성되었습니다.');
+        })
     };
 
     return (
         <ModalOverlay>
             <ModalWrapper color={postitValue.color}>
-                <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
+                <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="close" onClick={closeModal} />
                 <TitleInput fontFamily={postitValue.font} type='text' placeholder='제목' onChange={changePostitValue} name='title' required="required" />
                 <ContentInput fontFamily={postitValue.font} rows='5' cols='33' wrap="hard" placeholder='내용' onChange={changePostitValue} name='contents' required="required"></ContentInput><br />
                 <SelectFont>

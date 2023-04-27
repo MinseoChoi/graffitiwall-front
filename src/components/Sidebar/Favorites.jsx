@@ -1,89 +1,20 @@
+import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate  } from 'react-router-dom';
 import styled from 'styled-components';
+import { request } from '../../utils/api';
 
 const BoardList = ({ closeSidebar }) => {
-    const data = [
-        {
-            id: 1,
-            name: 'board1'
-        },
-        {
-            id: 2,
-            name: 'board2'
-        },
-        {
-            id: 3,
-            name: 'board3'
-        },
-        {
-            id: 4,
-            name: 'board4'
-        },
-        {
-            id: 5,
-            name: 'board5'
-        },
-        {
-            id: 6,
-            name: 'board6'
-        },
-        {
-            id: 7,
-            name: 'board7'
-        },
-        {
-            id: 8,
-            name: 'board8'
-        },
-        {
-            id: 9,
-            name: 'board9'
-        },
-        {
-            id: 10,
-            name: 'board10'
-        },
-        {
-            id: 11,
-            name: 'board11'
-        },
-        {
-            id: 12,
-            name: 'board12'
-        },
-        {
-            id: 13,
-            name: 'board13'
-        },
-        {
-            id: 14,
-            name: 'board14'
-        },
-        {
-            id: 15,
-            name: 'board15'
-        },
-        {
-            id: 16,
-            name: 'board16'
-        },
-        {
-            id: 17,
-            name: 'board17'
-        },
-        {
-            id: 18,
-            name: 'board18'
-        },
-        {
-            id: 19,
-            name: 'board19'
-        },
-        {
-            id: 20,
-            name: 'board20'
-        }
-    ];
+    // 게시판 목록 저장
+    const [allBoardList, setAllBoardList] = useState([]);
+
+    useEffect(() => {
+        const getAllBoardList = async () => {
+            await request('/boards')
+            .then(json => setAllBoardList(json))
+        };
+        getAllBoardList();
+    }, []);
 
     const navigate = useNavigate();
     const handleClick = (boardName) => {
@@ -94,13 +25,13 @@ const BoardList = ({ closeSidebar }) => {
     return (
         /* 사이드바 즐겨찾기 영역 */
         <BoardListContainer>
-            <BoardListTitle>Favorites</BoardListTitle>
+            <BoardListTitle>⭐︎ Favorites</BoardListTitle>
             <BoardWrapper>
                 <ScrollBlind>
                     <BoardUl>
-                        {data.map(element =>
-                            <Board key={element.id} onClick={() => handleClick(element.id)}>
-                                {element.name}
+                        {allBoardList.map(element =>
+                            <Board key={element.boardId} onClick={() => handleClick(element.boardId)}>
+                                {element.title}
                             </Board>
                         )}
                     </BoardUl>
@@ -153,6 +84,9 @@ const Board = styled.li`
     margin-bottom: 6px;
     list-style-type: none;
     transition: all 0.3s;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 
     &:hover {
         cursor: pointer;

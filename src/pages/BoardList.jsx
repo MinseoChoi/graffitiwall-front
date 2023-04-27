@@ -5,50 +5,6 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import PasswordModal from "../components/Modal/PasswordModal.jsx";
 import { Title } from "../components/common/Title.js";
-import add from '../assets/addPostit.svg';
-
-const dataList = [
-    {
-        id: 1,
-        name: 'board1'
-    },
-    {
-        id: 2,
-        name: 'board2'
-    },
-    {
-        id: 3,
-        name: 'board3'
-    },
-    {
-        id: 4,
-        name: 'board4'
-    },
-    {
-        id: 5,
-        name: 'board5'
-    },
-    {
-        id: 6,
-        name: 'board6'
-    },
-    {
-        id: 7,
-        name: 'board7'
-    },
-    {
-        id: 8,
-        name: 'board8'
-    },
-    {
-        id: 9,
-        name: 'board9'
-    },
-    {
-        id: 10,
-        name: 'board10'
-    }
-];
 
 /* 메인 페이지 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
 const BoardList = () => {
@@ -56,7 +12,7 @@ const BoardList = () => {
     const [loading, setLoading] = useState(true);
 
     // 게시판 목록 저장
-    const [boardList, setBoardList] = useState([]);
+    const [allBoardList, setAllBoardList] = useState([]);
     const [popularBoardList, setPopularBoardList] = useState([]);
     const [randomBoardList, setRandomBoardList] = useState([]);
     
@@ -68,8 +24,9 @@ const BoardList = () => {
     const popularOffset = (popularPage - 1) * limit;
     const randomOffset = (randomPage - 1) * limit;
     const allOffset = (allPage - 1) * (limit + 5);
-    const numPages = Math.ceil(dataList.length / limit);
-    const allNumPages = Math.ceil(boardList.length / (limit + 5));
+    const popularNumPages = Math.ceil(popularBoardList.length / limit);
+    const randomNumPages = Math.ceil(randomBoardList.length / limit);
+    const allNumPages = Math.ceil(allBoardList.length / (limit + 5));
 
     const handlePopularPageChange = page => {
         setPopularPage(page);
@@ -89,7 +46,7 @@ const BoardList = () => {
             await request('/boards/popular')
             .then(json => setPopularBoardList(json))
         };
-        // getPopularBoardList();
+        getPopularBoardList();
 
         const getRandomBoardList = async () => {
             await request('/boards/random')
@@ -99,7 +56,7 @@ const BoardList = () => {
 
         const getAllBoardList = async () => {
             await request('/boards')
-            .then(json => setBoardList(json))
+            .then(json => setAllBoardList(json))
             .then(res => setLoading(false))
         };
         getAllBoardList();
@@ -150,13 +107,13 @@ const BoardList = () => {
                         <ListTitle>👍🏻 인기 게시판</ListTitle>
                         <div>
                             <PaginationButton onClick={() => handlePopularPageChange(popularPage - 1)} disabled={popularPage === 1}>〈</PaginationButton>
-                            <PaginationButton onClick={() => handlePopularPageChange(popularPage + 1)} disabled={popularPage === 4 || popularPage === numPages}>〉</PaginationButton>
+                            <PaginationButton onClick={() => handlePopularPageChange(popularPage + 1)} disabled={popularPage === popularNumPages || popularNumPages === 0}>〉</PaginationButton>
                         </div>
                     </BoardWrapper>
-                    <BoardListWrapper>
-                        {dataList.slice(popularOffset, popularOffset + limit).map(element => 
-                            <Board key={element.id} onClick={() => handleBoardClick(element)}>
-                                {element.name}
+                    <BoardListWrapper height={23}>
+                        {popularBoardList.slice(popularOffset, popularOffset + limit).map(element => 
+                            <Board key={element.boardId} onClick={() => handleBoardClick(element)}>
+                                {element.private ? '🔓 ' : ''}{element.title}
                             </Board>
                         )}
                     </BoardListWrapper>
@@ -165,13 +122,13 @@ const BoardList = () => {
                         <ListTitle>🎲 랜덤 게시판</ListTitle>
                         <div>
                             <PaginationButton onClick={() => handleRandomPageChange(randomPage - 1)} disabled={randomPage === 1}>〈</PaginationButton>
-                            <PaginationButton onClick={() => handleRandomPageChange(randomPage + 1)} disabled={randomPage === 4 || randomPage === numPages}>〉</PaginationButton>
+                            <PaginationButton onClick={() => handleRandomPageChange(randomPage + 1)} disabled={randomPage === randomNumPages || randomNumPages === 0}>〉</PaginationButton>
                         </div>
                     </BoardWrapper>
-                    <BoardListWrapper>
+                    <BoardListWrapper height={23}>
                         {randomBoardList.slice(randomOffset, randomOffset + limit).map(element => 
                             <Board key={element.boardId} onClick={() => handleBoardClick(element)}>
-                                {element.title}
+                                {element.private ? '🔓 ' : ''}{element.title}
                             </Board>
                         )}
                     </BoardListWrapper>
@@ -182,14 +139,14 @@ const BoardList = () => {
                         <ListTitle>🗒️ 전체 게시판</ListTitle>
                         <div>
                             <PaginationButton onClick={() => handleAllPageChange(allPage - 1)} disabled={allPage === 1}>〈</PaginationButton>
-                            <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages}>〉</PaginationButton>
+                            <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages || allNumPages === 0}>〉</PaginationButton>
                         </div>
                     </BoardWrapper>
-                    <BoardListWrapper>
+                    <BoardListWrapper height={46}>
                         {loading ? <LoadingWrapper>
                             <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
                         </LoadingWrapper>
-                        : boardList.slice(allOffset, allOffset + limit + 5).map(element =>
+                        : allBoardList.slice(allOffset, allOffset + limit + 5).map(element =>
                             <Board key={element.boardId} onClick={() => handleBoardClick(element)}>
                                 {element.private ? '🔓 ' : ''}{element.title}
                             </Board>
@@ -198,7 +155,7 @@ const BoardList = () => {
                 </BoardSpace>
             </BoardContainer>
             {/* 게시판 생성 버튼 제거 필요 */}
-            <AddBoardButton src={add} alt="addBoard" onClick={() => handleCreateClick('create')} />
+            <AddBoardButton src={process.env.PUBLIC_URL + '/assets/add.svg'} alt="addBoard" onClick={() => handleCreateClick('create')} />
             {/* 비공개 게시판 비밀번호 입력 모달 창 */}
             {selectedPrivateValue.private && modal ?
                 <PasswordModal boardValue={selectedPrivateValue} closeModal={closeModal}/>
@@ -248,7 +205,6 @@ const PaginationButton = styled.button`
     position: relative;
     top: 22px;
     left: calc(0.1rem + 0.9vw);
-    // left: min(48%, 270px);
     background-color: white;
     border: 1px solid gray;
     border-radius: 3px;
@@ -263,11 +219,10 @@ const LoadingWrapper = styled.div`
 
 const BoardListWrapper = styled.ul`
     position: relative;
-    // left: 20px;
     left: calc(0.01rem + 1vw);
     width: calc(0.01rem + 26vw);
+    height: ${props => props.height}vh;
     text-align: left;
-    font-size: 13px;
     background-color: #DDDDDD;
     border-radius: 5px;
     box-shadow: 5px 5px 3px rgb(0, 0, 0, 0.06);
@@ -283,7 +238,10 @@ const Board = styled.li`
     margin-bottom: 6px;
     border-bottom: 1px solid white;
     list-style-type: none;
-    font-size: calc(0.4rem + 0.5vw);
+    font-size: calc(0.9rem + 0.01vw);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
         cursor: pointer;

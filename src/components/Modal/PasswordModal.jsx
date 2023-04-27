@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate  } from 'react-router-dom';
-import modalClose from '../../assets/modalClose.svg';
 
 /* 비공개 게시판 비밀번호 입력 모달 창 */
 const PasswordModal = ({boardValue, closeModal}) => {
@@ -32,7 +31,7 @@ const PasswordModal = ({boardValue, closeModal}) => {
     return (
         <ModalOverlay>
             <ModalWrapper>
-                <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
+                <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="close" onClick={closeModal} />
                 <p style={{ fontSize: '1.9vmin' }}>비공개 게시판입니다. 비밀번호를 입력해주세요.</p>
                 <PasswordInput type='password' placeholder='PASSWORD' onChange={changePassword} name='password' required="required" autoFocus/>
                 <ErrorMessage>{passwordMessage}</ErrorMessage>

@@ -110,7 +110,7 @@ const UserBoardList = () => {
                 <BoardSpace>
                     <div>
                         <PaginationButton onClick={() => handleAllPageChange(allPage - 1)} disabled={allPage === 1}>〈</PaginationButton>
-                        <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages}>〉</PaginationButton>
+                        <PaginationButton onClick={() => handleAllPageChange(allPage + 1)} disabled={allPage === allNumPages || allNumPages === 0}>〉</PaginationButton>
                     </div>
                     <BoardListWrapper>
                         {loading ? <LoadingWrapper>
@@ -176,6 +176,8 @@ const BoardListWrapper = styled.ul`
     top: 25px;
     left: calc(0.5rem + 0.9vw);
     width: calc(1rem + 29vw);
+    height: calc(1rem + 54vh);
+    padding-top: 5px;
     text-align: left;
     background-color: #DDDDDD;
     border-radius: 5px;
@@ -201,6 +203,7 @@ const BoardList = styled.li`
     border-bottom: 1px solid white;
     list-style-type: none;
     font-size: calc(0.6rem + 0.3vw);
+    line-height: 1.8;
 
     &:hover {
         font-weight: bold;
@@ -209,6 +212,11 @@ const BoardList = styled.li`
 
 const Board = styled.div`
     position: relative;
+    display: block;
+    width: calc(0.6rem + 20vw);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
         cursor: pointer;

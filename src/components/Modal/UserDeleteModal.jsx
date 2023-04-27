@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useState } from "react";
-import modalClose from '../../assets/modalClose.svg';
 import { FormLabel } from "../common";
 
 /* 비공개 게시판 비밀번호 입력 모달 창 */
@@ -16,7 +15,7 @@ const UserDeleteModal = ({ closeModal, onDelete }) => {
     return (
         <ModalOverlay>
             <ModalWrapper>
-                <CloseModalButton src={modalClose} alt="close" onClick={closeModal} />
+                <CloseModalButton src={process.env.PUBLIC_URL + '/assets/modalClose.svg'} alt="close" onClick={closeModal} />
                 <h4>탈퇴하시겠습니까?</h4>
                 <Notation style={{ height: 'fit-content', fontSize: '1.9vmin' }}>
                     탈퇴 시, 유저께서 만드신 게시판이나 포스트잇의 정보들은 삭제되지 않습니다.<br/>

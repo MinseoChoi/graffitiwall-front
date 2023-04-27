@@ -1,9 +1,24 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 /* 사이드바 - 로그인 */
-const LoginForm = ({ closeSidebar }) => {
+const LoginForm = ({ login, closeSidebar }) => {
     // 동작 구현 필요
+    const [user, setUser] = useState({
+        userId: '',
+        password: ''
+    });
+
+    const changeValue = e => {
+        const { name, value } = e.target;
+
+        setUser({
+            ...user,
+            [name]: value
+        })
+    };
+
     // 회원가입 버튼 클릭 시, 회원가입 페이지로 라우팅
     const navigate = useNavigate();
     const handleClick = () => {
@@ -11,12 +26,18 @@ const LoginForm = ({ closeSidebar }) => {
         navigate("/register");
     };
 
+    const signIn = e => {
+        e.preventDefault();
+
+        login(user);
+    };
+
     return (
         <LoginContainer>
             <LoginTitle>Log In</LoginTitle>
-            <LoginInput type="text" placeholder="ID" /><br/>
-            <LoginInput type="password" placeholder="PASSWORD" /><br/>
-            <LoginButton>Log in</LoginButton>
+            <LoginInput type="text" name="userId"  placeholder="ID" onChange={changeValue} /><br/>
+            <LoginInput type="password" name="password" placeholder="PASSWORD" onChange={changeValue} /><br/>
+            <LoginButton onClick={signIn}>Sign in</LoginButton>
             <LoginButton onClick={handleClick}>Register</LoginButton>
         </LoginContainer>
     );

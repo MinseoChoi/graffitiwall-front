@@ -9,12 +9,29 @@ import { boardCategory } from '../assets/boardCategory';
 const CreateBoard = () => {
     // GET 메소드로 게시판 정보(title) 가져오기
     const [boardNameList, setBoardNameList] = useState([]);
+    let sessionStorage = window.sessionStorage;
+    
     useEffect(() => {
+        const sessionSearch = sessionStorage.getItem('userRawId');
+
         const getBoardList = async () => {
             await request('/boards')
-            .then(json => setBoardNameList(json));
+            .then(json => setBoardNameList(json))
+            .then(res => setBoardValue({
+                ...boardValue,
+                userId: sessionSearch
+            }));
         };
-        getBoardList();
+
+        if (sessionSearch) {
+            getBoardList();
+        } else {
+            alert('로그인이 필요한 서비스입니다.');
+            // handleClick();
+            // 홈으로 가도록!
+            return;
+        }
+        // getBoardList();
     }, []);
 
     // 게시판 정보 (게시판 이름, 카테고리, 공개 유무, 비공개 시 비밀번호)
@@ -23,7 +40,7 @@ const CreateBoard = () => {
         category: '',
         password: null,
         userId: 1,
-        isPrivate: false
+        isPrivate: 'false'
     });
 
     // 오류메시지 상태 지정

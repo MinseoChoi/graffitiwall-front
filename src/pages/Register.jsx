@@ -46,16 +46,31 @@ const Register = () => {
         }
     };
     
-    const [result, setResult] = useState(false);
+    const [userIdResult, setUserIdResult] = useState(false);
+    const [nicknameResult, setNicknameResult] = useState(false);
 
-    // 닉네임 중복 체크 함수
-    const isExist = async () => {
-        await request(`/users/${nickname}/duplicate`)
-        .then(json => 
-            json.nicknameExist === false ? setResult(false) : setResult(true)
+    const isExistUserId = async () => {
+        await request(`/users/userid/${userId}/duplicate`)
+        .then(json => json.idExist === false ? setUserIdResult(false) : setUserIdResult(true)
         )
 
-        if (result) {
+        if (userIdResult) {
+            setUserIdMessage("이미 존재하는 아이디 입니다.");
+            setIsUserId(false);
+        } else {
+            setUserIdMessage("사용가능한 아이디 입니다.");
+            setIsUserId(true);   
+        }
+    };
+
+    // 닉네임 중복 체크 함수
+    const isExistNickname = async () => {
+        await request(`/users/nickname/${nickname}/duplicate`)
+        .then(json => 
+            json.nicknameExist === false ? setNicknameResult(false) : setNicknameResult(true)
+        )
+
+        if (nicknameResult) {
             setNicknameMessage("이미 존재하는 닉네임 입니다.");
             setIsNickname(false);
         } else {
@@ -155,18 +170,21 @@ const Register = () => {
                 <FormContainer>
                     <FormDiv>
                         <FormLabel fontSize='14px'>ID</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-30}>
                             <FormInput top='-6px' type="text" name='userId' onChange={onChangeUserId} />
-                            <ErrorMessage>{userIdMessage}</ErrorMessage>
+                            <FormDiv marginBottom={5} style={{ justifyContent: 'space-between' }}>
+                                <ErrorMessage>{userIdMessage}</ErrorMessage>
+                                <DuplicateCheckButton type='button' onClick={isExistUserId}>중복 확인</DuplicateCheckButton>
+                            </FormDiv>
                         </FormDiv>
                     </FormDiv>
                     <FormDiv>
                         <FormLabel fontSize='14px'>NickName</FormLabel>
-                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-40}>
+                        <FormDiv display='block' height='fit-content' marginTop='1px' marginBottom={-30}>
                             <FormInput top='-6px' type="text" name="nickname" onChange={onChangeNickname} />
                             <FormDiv marginBottom={5} style={{ justifyContent: 'space-between' }}>
                                 <ErrorMessage>{nicknameMessage}</ErrorMessage>
-                                <DuplicateCheckButton type='button' onClick={isExist}>중복 확인</DuplicateCheckButton>
+                                <DuplicateCheckButton type='button' onClick={isExistNickname}>중복 확인</DuplicateCheckButton>
                             </FormDiv>
                         </FormDiv>
                     </FormDiv>
