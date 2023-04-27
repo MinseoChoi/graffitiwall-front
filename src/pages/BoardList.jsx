@@ -5,6 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import PasswordModal from "../components/Modal/PasswordModal.jsx";
 import { Title } from "../components/common/Title.js";
+import { SearchBox } from "../components/SearchBox.jsx";
 
 /* 메인 페이지 - 전체 게시판 & 조회수가 높은 게시판 & 랜덤 게시판 */
 const BoardList = () => {
@@ -40,6 +41,12 @@ const BoardList = () => {
         setAllPage(page);
     };
 
+    const [keyword, setKeyword] = useState('');
+
+    const onChangeKeyword = e => {
+        setKeyword(e.target.value);
+    };
+
     // GET 메소드로 전체 게시판 목록 가져오기
     useEffect(() => {
         const getPopularBoardList = async () => {
@@ -69,11 +76,6 @@ const BoardList = () => {
         password: null
     });
 
-    // 게시판 생성 버튼 클릭 시 ===> 제거 필요
-    const handleCreateClick = (data) => {
-        navigate(`/boards/${data}`);
-    }
-
     /* ------ 모달 창 ------ */
     // 모달 창 state(open/close)
     const [modal, setModal] = useState(false);
@@ -100,6 +102,18 @@ const BoardList = () => {
     return (
         <div key="boardList" className="boardList">
             <Title>Board List</Title>
+            <SearchBox name='게시판' keyword={keyword} onChangeKeyword={onChangeKeyword} />
+            {keyword ? <AutoSearchContainer>
+                <AutoSearchWrap>
+                    {allBoardList.filter(element => element.title.toLowerCase().includes(keyword.toLowerCase()))
+                    .map(element =>
+                        <AutoSearchData key={element.boardId} onClick={() => handleBoardClick(element)}>
+                            {element.private ? '🔓 ' : ''}{element.title}
+                        </AutoSearchData>
+                    )}
+                </AutoSearchWrap>
+            </AutoSearchContainer>
+            : null}
             <BoardContainer>
                 <BoardSpace>
                     {/* 인기 게시판 목록 */}
@@ -154,8 +168,6 @@ const BoardList = () => {
                     </BoardListWrapper>
                 </BoardSpace>
             </BoardContainer>
-            {/* 게시판 생성 버튼 제거 필요 */}
-            <AddBoardButton src={process.env.PUBLIC_URL + '/assets/add.svg'} alt="addBoard" onClick={() => handleCreateClick('create')} />
             {/* 비공개 게시판 비밀번호 입력 모달 창 */}
             {selectedPrivateValue.private && modal ?
                 <PasswordModal boardValue={selectedPrivateValue} closeModal={closeModal}/>
@@ -249,23 +261,39 @@ const Board = styled.li`
     }
 `;
 
-const AddBoardButton = styled.img`
+
+const AutoSearchContainer = styled.div`
+    z-index: 3;
+    height: fit-content;
+    width: 25%;
+    max-width: 60%;
+    margin: 0 auto;
+    left: calc(2rem + 70vw);
+    background-color: #fff;
     position: fixed;
-    display: inline-block;
-    bottom: 15px;
-    right: 25px;
-    width: 40px;
-    height: 40px;
-    background-color: transparent;
-    border: 2px solid black;
-    border-radius: 8px;
-    transition: 0.8s ease;
-    overflow: hidden;
+    top: 181px;
+    border: 1px solid gray;
+    border-radius: 5px;
+`;
+
+const AutoSearchWrap = styled.ul`
+    width: 80%;
+    text-align: left;
+`;
+
+const AutoSearchData = styled.li`
+    width: 100%;
+    font-size: 10px;
+    border-bottom: 1px solid black;
+    margin-bottom: 8px;
+    z-index: 4;
+    letter-spacing: 2px;
+    list-style-type: none;
 
     &:hover {
+        background-color: #edf5f5;
         cursor: pointer;
-        outline-color: transparent;
-        outline-style: solid;
-        box-shadow: 0 0 0 1px black;
+        font-weight: bold;
     }
+    position: relative;
 `;

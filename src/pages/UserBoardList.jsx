@@ -5,6 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import { request } from "../utils/api.js";
 import { BoardEditModal, PasswordModal } from "../components/Modal";
 import { Title } from "../components/common/Title.js";
+import { SearchBox } from "../components/SearchBox.jsx";
 
 /* 유저가 생성한 게시판 목록 페이지 */
 const UserBoardList = () => {
@@ -25,6 +26,12 @@ const UserBoardList = () => {
     };
 
     const { userId } = useParams();
+
+    const [keyword, setKeyword] = useState('');
+
+    const onChangeKeyword = e => {
+        setKeyword(e.target.value);
+    };
 
     // GET 메소드로 유저가 생성한 게시판 목록 가져오기
     useEffect(() => {
@@ -106,6 +113,7 @@ const UserBoardList = () => {
     return (
         <div key="boardList" className="boardList">
             <Title>Board List</Title>
+            <SearchBox name='게시판' keyword={keyword} onChangeKeyword={onChangeKeyword} />
             <BoardContainer>
                 <BoardSpace>
                     <div>
@@ -116,17 +124,22 @@ const UserBoardList = () => {
                         {loading ? <LoadingWrapper>
                             <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
                         </LoadingWrapper>
-                        : boardList.slice(allOffset, allOffset + limit).map(element =>
-                            <BoardList key={element.boardId}>
-                                <Board onClick={() => handleBoardClick(element)}>
-                                    {element.private ? '🔓 ' : ''}{element.title}
-                                </Board>
-                                <div>
-                                    <BoardButton onClick={() => onEdit(element)}>✏️</BoardButton>
-                                    <BoardButton onClick={() => onDelete(element)}>🗑️</BoardButton>
-                                </div>
-                            </BoardList>
-                        )}
+                        : boardList.slice(allOffset, allOffset + limit)
+                            .filter(element =>
+                                element.title.toLowerCase().includes(keyword.toLowerCase())
+                            )
+                            .map(element =>
+                                <BoardList key={element.boardId}>
+                                    <Board onClick={() => handleBoardClick(element)}>
+                                        {element.private ? '🔓 ' : ''}{element.title}
+                                    </Board>
+                                    <div>
+                                        <BoardButton onClick={() => onEdit(element)}>✏️</BoardButton>
+                                        <BoardButton onClick={() => onDelete(element)}>🗑️</BoardButton>
+                                    </div>
+                                </BoardList>
+                            )
+                        }
                     </BoardListWrapper>
                 </BoardSpace>
                 <BoardSpace>

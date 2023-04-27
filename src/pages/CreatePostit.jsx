@@ -121,6 +121,7 @@ const CreatePostit = () => {
     const postitRef = useRef([]); // 포스트잇 영역(div) 위치(top, left) 가져오기 위함 (여러 개이므로 배열 형태)
 
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 }); // 드래그 이벤트인지 클릭 이벤트인지 확인하기 위함
+    const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
 
     // 클릭한 포스트잇 정보 => 클릭한 포스트잇 모달 창을 띄우기 위해 필요
     const [selectedPostitValue, setSelectedPostitValue] = useState({
@@ -138,6 +139,11 @@ const CreatePostit = () => {
     // onDragStart 이벤트 : 초기 위치 저장
     const onStart = e => {
         setDragStartPos({ x: e.pageX, y: e.pageY });
+        setCurrentPos({ x: e.pageX, y: e.pageY });
+    };
+
+    const onDrag = (e, element) => {
+        setCurrentPos({ x: distanceChildFromLeft(element.postitId), y: distanceChildFromTop(element.postitId) - 10 });
     };
 
     // 부모 요소(board의 top)와 자식 요소(postit의 top)의 거리 계산
@@ -152,24 +158,23 @@ const CreatePostit = () => {
         let peLeft = boardRef.current.getBoundingClientRect().left;
         let chLeft = postitRef.current[postitId].getBoundingClientRect().left;
         return chLeft - peLeft;
-    }
+    };
 
     // onDragEnd 이벤트 : 좌표 변화를 계산하여 클릭 / 드래그 앤 드롭 이벤트 분리
     const onStop = (e, element) => {
         // 좌표 변화 계산
         const dragX = Math.abs(dragStartPos.x - e.pageX);
         const dragY = Math.abs(dragStartPos.y - e.pageY);
-        
+
         // Click 이벤트
         if (dragX === 0 && dragY === 0) {
-            // 클릭한 포스트잇 정보 저장
-
             // 조회수 변경
             const changeViews = async () => {
                 setPostitListValue(postitListValue.map(postit =>
                     postit.postitId === element.postitId ? { ...postit, view: element.view + 1, writer: element.writer } : postit    
                 ));
 
+                // 클릭한 포스트잇 정보 저장
                 setSelectedPostitValue({
                     show: true,
                     title: element.title,
@@ -199,10 +204,6 @@ const CreatePostit = () => {
         }
         // Drag and Drop 이벤트
         else {
-            // 좌표 계산
-            const x = distanceChildFromLeft(element.postitId);
-            const y = distanceChildFromTop(element.postitId);
-
             /* ------ 수정해야 하는 부분 ------ */
             /**
              * < 문제 >
@@ -214,45 +215,34 @@ const CreatePostit = () => {
              * < 원하는 방향 >
              *  - 드롭한 곳에 포스트잇이 정확히 위치해 있길 원함
              *  - 바뀐 포스트잇의 위치를 setState로 반영할 때, 바로바로 반영되길 원함
-             *  - PATCH 할 때에도 이벤트로 인해 바뀐 모든 정보들이 잘 반영되길 원함
              * 
              * < 순서 >
              *  드롭 ---> 바뀐 위치 반영(setState) ---> PATCH
              */
+            setPostitListValue(postitListValue.map(postit =>
+                postit.postitId === element.postitId ? { ...postit, positionX: currentPos.x, positionY: currentPos.y } : postit
+            ));
+
             const savePostit = async () => {
                 // 이벤트가 발생한 포스트잇의 위치만 set, 나머지는 원래 값 그대로
-                setPostitListValue(postitListValue.map(postit =>
-                    postit.postitId === element.postitId ? { ...postit, positionX: x, positionY: y } : postit    
-                ));
-        
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
                         ...element,
-                        positionX: x,
-                        positionY: y
+                        positionX: currentPos.x,
+                        positionY: currentPos.y
                     })
                 });
 
                 await request(`/boards/${boardId}/postits`)
                 .then(json => {
                     setPostitListValue(json);
-                })
+                });
             };
             savePostit();
         }
     };
 
-    /* ------ Postit Resize ------ */
-    /* ------ 수정해야 하는 부분 ------ */
-    /**
-     * < 원하는 방향 >
-     *  - 바뀐 포스트잇의 크기를 setState로 반영할 때, 바로바로 반영되길 원함
-     *  - PATCH 할 때에도 이벤트로 인해 바뀐 모든 정보들이 잘 반영되길 원함
-     * 
-     * < 순서 >
-     *  리사이즈 ---> 바뀐 크기 반영(setState) ---> PATCH
-     */
     const savePostit = async (element, d) => {
         const changePostitValue = async () => {
             // 이벤트가 발생한 포스트잇의 크기만 set, 나머지는 원래 값 그대로
@@ -312,6 +302,7 @@ const CreatePostit = () => {
                             <Draggable
                                 key={element.postitId}
                                 onStart={e => onStart(e, element)}
+                                onDrag={e => onDrag(e, element)}
                                 onStop={e => onStop(e, element)}
                             >
                                 <Resizable

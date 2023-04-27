@@ -5,6 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import { PostitEditModal } from "../components/Modal";
 import { Title } from "../components/common";
 import { request } from '../utils/api';
+import { SearchBox } from "../components/SearchBox";
 
 /* 유저가 생성한 포스트잇 목록 페이지 */
 const UserPostitList = () => {
@@ -16,6 +17,12 @@ const UserPostitList = () => {
 
     // url에서 userId 가져오기
     const { userId } = useParams();
+
+    const [keyword, setKeyword] = useState('');
+
+    const onChangeKeyword = e => {
+        setKeyword(e.target.value);
+    };
 
     // GET 메소드로 포스트잇 정보 가져오기
     useEffect(() => {
@@ -117,35 +124,41 @@ const UserPostitList = () => {
     return (
         <div>
             <Title>Postit List</Title>
+            <SearchBox name='포스트잇' keyword={keyword} onChangeKeyword={onChangeKeyword} />
             <PostitSpace>
                 <PostitContainer ref={containerRef}>
                     {loading ? <LoadingWrapper>
                             <FadeLoader radius={2} height={15} width={5} color="#B0D6B2" />
                         </LoadingWrapper>
-                        : postitListValue.map(element =>
-                            <PostitOnContainer
-                                ref={el => postitRef.current[element.postitId] = el}
-                                key={element.postitId}
-                                color={element.color}
-                                draggable={true}
-                                onDragStart={e => onStart(e, element)}
-                                onDrag={e => onDrag(e, element)}
-                                onDragEnd={e => onStop(e, element)}
-                                onClick={e => onClick(e, element)}
-                            >
-                                <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
-                                <PostitContent fontFamily={element.font}>
-                                    {element.contents.split('\n').map((line, index) => {
-                                        return (
-                                            <span key={index}>
-                                                {line}
-                                                <br />
-                                            </span>
-                                        );
-                                    })}
-                                </PostitContent>
-                            </PostitOnContainer>
-                        )
+                        : postitListValue
+                            .filter(element =>
+                                element.title.toLowerCase().includes(keyword.toLowerCase())
+                                || element.contents.toLowerCase().includes(keyword.toLowerCase())
+                            )
+                            .map(element =>
+                                <PostitOnContainer
+                                    ref={el => postitRef.current[element.postitId] = el}
+                                    key={element.postitId}
+                                    color={element.color}
+                                    draggable={true}
+                                    onDragStart={e => onStart(e, element)}
+                                    onDrag={e => onDrag(e, element)}
+                                    onDragEnd={e => onStop(e, element)}
+                                    onClick={e => onClick(e, element)}
+                                >
+                                    <PostitTitle fontFamily={element.font}>{element.title}</PostitTitle>
+                                    <PostitContent fontFamily={element.font}>
+                                        {element.contents.split('\n').map((line, index) => {
+                                            return (
+                                                <span key={index}>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            );
+                                        })}
+                                    </PostitContent>
+                                </PostitOnContainer>
+                            )
                     }
                 </PostitContainer>
                 <DeletePostitButton ref={deleteRef} src={process.env.PUBLIC_URL + '/assets/bin.svg'} alt="DeletePostit" />
