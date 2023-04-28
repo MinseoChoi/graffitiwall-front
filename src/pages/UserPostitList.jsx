@@ -75,9 +75,9 @@ const UserPostitList = () => {
     const onStop = (e, element) => {
         let deleteTop = deleteRef.current.getBoundingClientRect().top;            
         let deleteLeft = deleteRef.current.getBoundingClientRect().left;
-
+        
         // 휴지통 영역에 드롭된 경우, 해당 포스트잇 삭제
-        if (dragStartPos.y - deleteTop >= 0 && dragStartPos.x - deleteLeft >= 0) {
+        if (dragStartPos.y  - deleteTop >= 0 && dragStartPos.x - deleteLeft >= 0) {
             const onDelete = async () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'DELETE'

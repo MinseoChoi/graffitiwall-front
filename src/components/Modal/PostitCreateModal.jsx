@@ -21,7 +21,7 @@ const PostitCreateModal = ({ boardId, postitId, addPostitValue, closeModal }) =>
         sizeX: 100,
         sizeY: 100,
         views: 0,
-        wrtier: '',
+        writer: '',
     });
 
     let sessionStorage = window.sessionStorage;

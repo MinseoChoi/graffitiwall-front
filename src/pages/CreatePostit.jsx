@@ -228,7 +228,13 @@ const CreatePostit = () => {
                 await request(`/postit/${element.postitId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
-                        ...element,
+                        title: element.title,
+                        contents: element.contents,
+                        color: element.color,
+                        angle: element.angle,
+                        sizeX: element.sizeX,
+                        sizeY: element.sizeY,
+                        font: element.font,
                         positionX: currentPos.x,
                         positionY: currentPos.y
                     })
@@ -253,7 +259,13 @@ const CreatePostit = () => {
             await request(`/postit/${element.postitId}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
-                    ...element,
+                    title: element.title,
+                    contents: element.contents,
+                    color: element.color,
+                    angle: element.angle,
+                    positionX: element.positionX,
+                    positionY: element.positionY,
+                    font: element.font,
                     sizeX: element.sizeX + d.width,
                     sizeY: element.sizeY + d.height
                 })

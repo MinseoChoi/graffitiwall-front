@@ -36,8 +36,8 @@ const App = () => {
     })
     .then(res => res.json())
     .then(json => {
-        setUser(json);
-        sessionStorage.setItem('userRawId', json.id);
+      setUser(json);
+      sessionStorage.setItem('userRawId', json.id);
     })
     .catch(e => alert('아이디 또는 비밀번호를 잘못 입력하였습니다.'));
   }
